@@ -10,6 +10,8 @@ class DefaultTaskDataSource(
     private val db: InhabitRoutineDatabase
 ): TaskDataSource {
 
+    private val taskDao = db.taskDaoQueries
+
     override fun readTaskById(taskId: String): Flow<TaskEntity?> {
         return flow { emit(null) }
     }
