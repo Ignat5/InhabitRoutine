@@ -6,7 +6,36 @@ CREATE TABLE IF NOT EXISTS TaskTable(
     description TEXT NOT NULL,
     startEpochDay INTEGER NOT NULL,
     endEpochDay INTEGER NOT NULL,
-    priority INTEGER NOT NULL,
     createdAt INTEGER NOT NULL,
     deletedAt INTEGER
+);
+
+CREATE TABLE IF NOT EXISTS TaskContentTable(
+    id TEXT NOT NULL PRIMARY KEY,
+    taskId TEXT NOT NULL,
+    progress TEXT NOT NULL,
+    frequency TEXT NOT NULL,
+    archive TEXT NOT NULL,
+    startEpochDay INTEGER NOT NULL,
+    createdAt INTEGER NOT NULL,
+    FOREIGN KEY (taskId) REFERENCES TaskTable(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS ReminderTable(
+    id TEXT NOT NULL PRIMARY KEY,
+    taskId TEXT NOT NULL,
+    time TEXT NOT NULL,
+    type TEXT NOT NULL,
+    schedule TEXT NOT NULL,
+    createdAt INTEGER NOT NULL,
+    FOREIGN KEY (taskId) REFERENCES TaskTable(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS RecordTable(
+    id TEXT NOT NULL PRIMARY KEY,
+    taskId TEXT NOT NULL,
+    entry TEXT NOT NULL,
+    entryEpochDay INTEGER NOT NULL,
+    createdAt INTEGER NOT NULL,
+    FOREIGN KEY (taskId) REFERENCES TaskTable(id) ON DELETE CASCADE
 );
