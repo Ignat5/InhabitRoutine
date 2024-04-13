@@ -13,12 +13,13 @@ java {
 sqldelight {
     databases {
         create("InhabitRoutineDatabase") {
-            packageName.set("com.example.inhabitroutine.core.database")
+            packageName.set("com.example.inhabitroutine.core.database.impl")
         }
     }
 }
 
 dependencies {
+    implementation(project(":core:database:api"))
     implementation(libs.kotlin.coroutines.core)
     implementation(libs.bundles.sqldelight)
 }

@@ -1,4 +1,4 @@
-package com.example.inhabitroutine.core.database
+package com.example.inhabitroutine.core.database.impl.util
 
 import app.cash.sqldelight.Query
 import app.cash.sqldelight.coroutines.asFlow

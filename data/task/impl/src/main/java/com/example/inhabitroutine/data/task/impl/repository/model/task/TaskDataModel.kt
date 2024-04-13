@@ -1,11 +1,11 @@
-package com.example.inhabitroutine.data.task.impl.repository.model
+package com.example.inhabitroutine.data.task.impl.repository.model.task
 
-import com.example.inhabitroutine.data.task.impl.repository.model.reminder.ReminderEntity
+import com.example.inhabitroutine.data.task.impl.repository.model.reminder.ReminderDataModel
 import com.example.inhabitroutine.domain.model.task.type.TaskProgressType
 import com.example.inhabitroutine.domain.model.task.type.TaskType
 import kotlinx.datetime.LocalDate
 
-data class TaskEntity(
+data class TaskDataModel(
     val id: String,
     val type: TaskType,
     val progressType: TaskProgressType,
@@ -13,10 +13,10 @@ data class TaskEntity(
     val description: String,
     val startDate: LocalDate,
     val endDate: LocalDate?,
-    val progress: TaskContentEntity.ProgressContent,
-    val frequency: TaskContentEntity.FrequencyContent,
-    val archive: TaskContentEntity.ArchiveContent,
-    val reminder: ReminderEntity?,
+    val progress: TaskContentDataModel.ProgressContent,
+    val frequency: TaskContentDataModel.FrequencyContent,
+    val archive: TaskContentDataModel.ArchiveContent,
+    val reminder: ReminderDataModel?,
     val versionSinceDate: LocalDate,
     val createdAt: Long,
     val deletedAt: Long?

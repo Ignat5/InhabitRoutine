@@ -1,9 +1,9 @@
 package com.example.inhabitroutine.data.task.impl.repository.util
 
-import com.example.inhabitroutine.data.task.impl.repository.model.TaskContentEntity
-import com.example.inhabitroutine.data.task.impl.repository.model.TaskEntity
-import com.example.inhabitroutine.data.task.impl.repository.model.reminder.ReminderContentEntity
-import com.example.inhabitroutine.data.task.impl.repository.model.reminder.ReminderEntity
+import com.example.inhabitroutine.data.task.impl.repository.model.task.TaskContentDataModel
+import com.example.inhabitroutine.data.task.impl.repository.model.task.TaskDataModel
+import com.example.inhabitroutine.data.task.impl.repository.model.reminder.ReminderContentDataModel
+import com.example.inhabitroutine.data.task.impl.repository.model.reminder.ReminderDataModel
 import com.example.inhabitroutine.domain.model.reminder.ReminderModel
 import com.example.inhabitroutine.domain.model.reminder.content.ReminderSchedule
 import com.example.inhabitroutine.domain.model.task.TaskModel
@@ -13,7 +13,7 @@ import com.example.inhabitroutine.domain.model.task.content.TaskProgress
 import com.example.inhabitroutine.domain.model.task.type.TaskProgressType
 import com.example.inhabitroutine.domain.model.task.type.TaskType
 
-internal fun TaskEntity.toTaskModel(): TaskModel? = runCatching {
+internal fun TaskDataModel.toTaskModel(): TaskModel? = runCatching {
     when (this.type) {
         TaskType.Habit -> {
             when (this.progressType) {
@@ -111,7 +111,7 @@ internal fun TaskEntity.toTaskModel(): TaskModel? = runCatching {
     }
 }.getOrNull()
 
-private fun ReminderEntity.toReminderModel(): ReminderModel {
+private fun ReminderDataModel.toReminderModel(): ReminderModel {
     return ReminderModel(
         id = this.id,
         taskId = this.taskId,
@@ -121,31 +121,31 @@ private fun ReminderEntity.toReminderModel(): ReminderModel {
     )
 }
 
-private fun ReminderContentEntity.ScheduleContent.toReminderSchedule() =
+private fun ReminderContentDataModel.ScheduleContent.toReminderSchedule() =
     when (this) {
-        is ReminderContentEntity.ScheduleContent.EveryDay -> ReminderSchedule.EveryDay
-        is ReminderContentEntity.ScheduleContent.DaysOfWeek -> ReminderSchedule.DaysOfWeek(this.daysOfWeek)
+        is ReminderContentDataModel.ScheduleContent.EveryDay -> ReminderSchedule.EveryDay
+        is ReminderContentDataModel.ScheduleContent.DaysOfWeek -> ReminderSchedule.DaysOfWeek(this.daysOfWeek)
     }
 
-private fun TaskContentEntity.ProgressContent.toTaskProgress(): TaskProgress? =
+private fun TaskContentDataModel.ProgressContent.toTaskProgress(): TaskProgress? =
     when (this) {
-        is TaskContentEntity.ProgressContent.Number -> TaskProgress.Number(
+        is TaskContentDataModel.ProgressContent.Number -> TaskProgress.Number(
             limitType = this.limitType,
             limitNumber = this.limitNumber,
             limitUnit = this.limitUnit
         )
 
-        is TaskContentEntity.ProgressContent.Time -> TaskProgress.Time(
+        is TaskContentDataModel.ProgressContent.Time -> TaskProgress.Time(
             limitType = this.limitType,
             limitTime = this.limitTime
         )
 
-        is TaskContentEntity.ProgressContent.YesNo -> null
+        is TaskContentDataModel.ProgressContent.YesNo -> null
     }
 
-private fun TaskContentEntity.FrequencyContent.toTaskFrequency(): TaskFrequency? =
+private fun TaskContentDataModel.FrequencyContent.toTaskFrequency(): TaskFrequency? =
     when (this) {
-        is TaskContentEntity.FrequencyContent.EveryDay -> TaskFrequency.EveryDay
-        is TaskContentEntity.FrequencyContent.DaysOfWeek -> TaskFrequency.DaysOfWeek(this.daysOfWeek)
-        is TaskContentEntity.FrequencyContent.Day -> null
+        is TaskContentDataModel.FrequencyContent.EveryDay -> TaskFrequency.EveryDay
+        is TaskContentDataModel.FrequencyContent.DaysOfWeek -> TaskFrequency.DaysOfWeek(this.daysOfWeek)
+        is TaskContentDataModel.FrequencyContent.Day -> null
     }

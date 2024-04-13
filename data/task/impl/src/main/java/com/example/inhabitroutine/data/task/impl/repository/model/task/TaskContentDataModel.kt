@@ -1,4 +1,4 @@
-package com.example.inhabitroutine.data.task.impl.repository.model
+package com.example.inhabitroutine.data.task.impl.repository.model.task
 
 import com.example.inhabitroutine.domain.model.task.type.ProgressLimitType
 import kotlinx.datetime.DayOfWeek
@@ -8,10 +8,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 @SerialName("TaskContent")
-sealed interface TaskContentEntity {
+sealed interface TaskContentDataModel {
     @Serializable
     @SerialName("ProgressContent")
-    sealed interface ProgressContent : TaskContentEntity {
+    sealed interface ProgressContent : TaskContentDataModel {
         @Serializable
         @SerialName("ProgressContent.YesNo")
         data object YesNo : ProgressContent
@@ -34,7 +34,7 @@ sealed interface TaskContentEntity {
 
     @Serializable
     @SerialName("FrequencyContent")
-    sealed interface FrequencyContent : TaskContentEntity {
+    sealed interface FrequencyContent : TaskContentDataModel {
         @Serializable
         @SerialName("FrequencyContent.Day")
         data object Day : FrequencyContent
@@ -54,5 +54,5 @@ sealed interface TaskContentEntity {
     @SerialName("ArchiveContent")
     data class ArchiveContent(
         val isArchived: Boolean
-    ) : TaskContentEntity
+    ) : TaskContentDataModel
 }

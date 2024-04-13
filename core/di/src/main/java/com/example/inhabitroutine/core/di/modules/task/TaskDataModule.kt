@@ -1,6 +1,8 @@
 package com.example.inhabitroutine.core.di.modules.task
 
-import com.example.inhabitroutine.core.database.InhabitRoutineDatabase
+import com.example.inhabitroutine.core.database.api.db.TaskDao
+import com.example.inhabitroutine.core.database.impl.InhabitRoutineDatabase
+import com.example.inhabitroutine.core.database.impl.task.DefaultTaskDao
 import com.example.inhabitroutine.core.di.qualifiers.DefaultDispatcherQualifier
 import com.example.inhabitroutine.core.di.qualifiers.IODispatcherQualifier
 import com.example.inhabitroutine.data.task.api.TaskRepository
@@ -20,12 +22,12 @@ object TaskDataModule {
 
     @Provides
     fun provideTaskDataSource(
-        db: InhabitRoutineDatabase,
+        taskDao: TaskDao,
         @IODispatcherQualifier ioDispatcher: CoroutineDispatcher,
         json: Json
     ): TaskDataSource {
         return DefaultTaskDataSource(
-            db = db,
+            taskDao = taskDao,
             ioDispatcher = ioDispatcher,
             json = json
         )

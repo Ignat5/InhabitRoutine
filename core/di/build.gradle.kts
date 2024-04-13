@@ -35,9 +35,10 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:database"))
-    implementation(project(":data:task:impl"))
+    implementation(project(":core:database:api"))
+    implementation(project(":core:database:impl"))
     implementation(project(":data:task:api"))
+    implementation(project(":data:task:impl"))
     implementation(project(":domain:task:api"))
     implementation(project(":domain:task:impl"))
 
