@@ -66,6 +66,7 @@ dependencies {
     implementation(project(":core:presentation"))
     implementation(project(":feature:view_schedule:ui"))
     implementation(project(":feature:view_schedule:vm"))
+    implementation(project(":domain:task:api"))
 
     implementation(libs.bundles.compose)
     implementation(libs.hilt.android)

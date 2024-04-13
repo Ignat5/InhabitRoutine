@@ -2,6 +2,7 @@ package com.example.inhabitroutine.presentation.view_schedule
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.example.inhabitroutine.domain.task.api.use_case.ReadTaskByIdUseCase
 import com.example.inhabitroutine.feature.view_schedule.vm.ViewScheduleViewModel
 import com.example.inhabitroutine.feature.view_schedule.vm.components.ViewScheduleScreenConfig
 import com.example.inhabitroutine.feature.view_schedule.vm.components.ViewScheduleScreenEvent
@@ -13,9 +14,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AndroidViewScheduleViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    private val readTaskByIdUseCase: ReadTaskByIdUseCase
 ) : BaseAndroidViewModel<ViewScheduleScreenEvent, ViewScheduleScreenState, ViewScheduleScreenNavigation, ViewScheduleScreenConfig>() {
 
-    override val viewModel: ViewScheduleViewModel = ViewScheduleViewModel(viewModelScope)
+    override val viewModel: ViewScheduleViewModel = ViewScheduleViewModel(
+        readTaskByIdUseCase = readTaskByIdUseCase,
+        viewModelScope = viewModelScope
+    )
 
 }

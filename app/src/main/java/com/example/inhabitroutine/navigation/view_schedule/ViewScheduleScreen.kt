@@ -10,6 +10,11 @@ import com.example.inhabitroutine.presentation.view_schedule.AndroidViewSchedule
 fun NavGraphBuilder.viewScheduleScreen() {
     composable(AppNavDest.ViewScheduleDestination.route) {
         val aViewModel: AndroidViewScheduleViewModel = hiltViewModel()
-        ViewScheduleScreen(viewModel = aViewModel.viewModel)
+        ViewScheduleScreen(
+            viewModel = aViewModel.viewModel,
+            onNavigation = { destination ->
+
+            }
+        )
     }
 }

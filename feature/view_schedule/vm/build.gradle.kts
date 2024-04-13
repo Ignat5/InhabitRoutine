@@ -10,6 +10,8 @@ java {
 
 dependencies {
     implementation(project(":core:presentation"))
+    implementation(project(":domain:model"))
+    implementation(project(":domain:task:api"))
     implementation(libs.kotlin.coroutines.core)
     implementation(libs.kotlin.datetime)
 }

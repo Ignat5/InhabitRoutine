@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.inhabitroutine.feature.view_schedule.ui"
+    namespace = "com.example.inhabitroutine.core.ui"
     compileSdk = 34
 
     defaultConfig {
@@ -23,14 +23,12 @@ android {
             )
         }
     }
-
     buildFeatures {
         compose = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -41,12 +39,8 @@ android {
 }
 
 dependencies {
-    implementation(project(":feature:view_schedule:vm"))
     implementation(project(":core:presentation"))
-    implementation(project(":core:ui"))
     implementation(libs.bundles.compose)
-    implementation(libs.kotlin.coroutines.core)
-    implementation(libs.kotlin.datetime)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

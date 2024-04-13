@@ -39,7 +39,7 @@ abstract class BaseViewModel<SE : ScreenEvent, SS : ScreenState, SN : ScreenNavi
     private val _uiScreenConfigState =
         MutableStateFlow<BaseScreenConfig<SC>>(BaseScreenConfig.Idle)
 
-    private val uiScreenConfigState: StateFlow<BaseScreenConfig<SC>> =
+    val uiScreenConfigState: StateFlow<BaseScreenConfig<SC>> =
         _uiScreenConfigState.asStateFlow()
 
     protected fun setUpConfigState(config: SC) =
