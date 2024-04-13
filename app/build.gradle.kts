@@ -63,7 +63,9 @@ android {
 dependencies {
     implementation(project(":core:util"))
     implementation(project(":core:di"))
-    implementation(project(":feature:view_schedule"))
+    implementation(project(":core:presentation"))
+    implementation(project(":feature:view_schedule:ui"))
+    implementation(project(":feature:view_schedule:vm"))
 
     implementation(libs.bundles.compose)
     implementation(libs.hilt.android)
