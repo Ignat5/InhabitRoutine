@@ -18,6 +18,7 @@ sealed interface TaskModel {
     val reminder: ReminderModel?
     val isArchived: Boolean
     val isDeleted: Boolean
+    val createdAt: Long
 
     sealed interface RecurringActivity {
         val frequency: TaskFrequency
@@ -43,7 +44,8 @@ sealed interface TaskModel {
                 override val isArchived: Boolean,
                 override val versionSinceDate: LocalDate,
                 override val reminder: ReminderModel?,
-                override val isDeleted: Boolean
+                override val isDeleted: Boolean,
+                override val createdAt: Long
             ) : HabitContinuous(TaskProgressType.Number)
 
             data class HabitTime(
@@ -56,7 +58,8 @@ sealed interface TaskModel {
                 override val isArchived: Boolean,
                 override val versionSinceDate: LocalDate,
                 override val reminder: ReminderModel?,
-                override val isDeleted: Boolean
+                override val isDeleted: Boolean,
+                override val createdAt: Long
             ) : HabitContinuous(TaskProgressType.Time)
         }
 
@@ -69,7 +72,8 @@ sealed interface TaskModel {
             override val isArchived: Boolean,
             override val versionSinceDate: LocalDate,
             override val reminder: ReminderModel?,
-            override val isDeleted: Boolean
+            override val isDeleted: Boolean,
+            override val createdAt: Long
         ) : Habit(TaskProgressType.YesNo)
     }
 
@@ -86,7 +90,8 @@ sealed interface TaskModel {
             override val frequency: TaskFrequency,
             override val isArchived: Boolean,
             override val reminder: ReminderModel?,
-            override val isDeleted: Boolean
+            override val isDeleted: Boolean,
+            override val createdAt: Long
         ) : Task(TaskType.RecurringTask), RecurringActivity
 
         data class SingleTask(
@@ -96,7 +101,8 @@ sealed interface TaskModel {
             override val date: TaskDate.Day,
             override val isArchived: Boolean,
             override val reminder: ReminderModel?,
-            override val isDeleted: Boolean
+            override val isDeleted: Boolean,
+            override val createdAt: Long
         ) : Task(TaskType.SingleTask)
     }
 }

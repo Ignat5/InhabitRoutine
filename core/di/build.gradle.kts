@@ -36,8 +36,6 @@ android {
 
 dependencies {
     implementation(project(":core:database"))
-    implementation(project(":datasource:task:api"))
-    implementation(project(":datasource:task:impl"))
     implementation(project(":data:task:impl"))
     implementation(project(":data:task:api"))
     implementation(project(":domain:task:api"))
@@ -49,6 +47,8 @@ dependencies {
 
     implementation(libs.bundles.sqldelight)
     implementation(libs.sqldelight.androidDriver)
+
+    implementation(libs.kotlin.serialization)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

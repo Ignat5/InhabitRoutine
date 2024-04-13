@@ -8,10 +8,9 @@ import kotlinx.coroutines.flow.flow
 
 class DefaultReadTaskByIdUseCase(
     private val taskRepository: TaskRepository
-): ReadTaskByIdUseCase {
+) : ReadTaskByIdUseCase {
 
-    override fun invoke(taskId: String): Flow<TaskModel?> {
-        return flow { emit(null) }
-    }
+    override fun invoke(taskId: String): Flow<TaskModel?> =
+        taskRepository.readTaskById(taskId)
 
 }
