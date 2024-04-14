@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="habit_title">Habit</string>
+    <string name="recurring_task_title">Recurring task</string>
+    <string name="single_task_title">Task</string>
+    <string name="habit_description">Activity performed over the period of time. Includes detailed progress tracking</string>
+    <string name="recurring_task_description">Activity performed over the period of time. Dose not include progress tracking.</string>
+    <string name="single_task_description">Activity performed once. Does not include progress tracking.</string>
+</resources>

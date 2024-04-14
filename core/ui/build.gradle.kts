@@ -40,6 +40,7 @@ android {
 
 dependencies {
     implementation(project(":core:presentation"))
+    implementation(project(":domain:model"))
     implementation(libs.bundles.compose)
 
     testImplementation(libs.junit)

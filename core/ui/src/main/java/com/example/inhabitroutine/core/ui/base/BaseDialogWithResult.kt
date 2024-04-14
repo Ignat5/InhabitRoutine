@@ -1,4 +1,4 @@
-package com.example.inhabitroutine.core.ui
+package com.example.inhabitroutine.core.ui.base
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
