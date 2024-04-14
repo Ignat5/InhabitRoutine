@@ -44,6 +44,7 @@ dependencies {
     implementation(project(":feature:view_schedule:vm"))
     implementation(project(":core:presentation"))
     implementation(project(":core:ui"))
+    implementation(project(":domain:model"))
     implementation(libs.bundles.compose)
     implementation(libs.kotlin.coroutines.core)
     implementation(libs.kotlin.datetime)

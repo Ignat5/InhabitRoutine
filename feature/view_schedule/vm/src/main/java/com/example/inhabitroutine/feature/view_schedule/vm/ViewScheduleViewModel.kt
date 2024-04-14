@@ -1,6 +1,7 @@
 package com.example.inhabitroutine.feature.view_schedule.vm
 
 import com.example.inhabitroutine.core.presentation.base.BaseViewModel
+import com.example.inhabitroutine.domain.model.task.type.TaskType
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTaskByIdUseCase
 import com.example.inhabitroutine.feature.view_schedule.vm.components.ViewScheduleScreenConfig
 import com.example.inhabitroutine.feature.view_schedule.vm.components.ViewScheduleScreenEvent
@@ -30,7 +31,30 @@ class ViewScheduleViewModel(
         MutableStateFlow(ViewScheduleScreenState(testString = "task: ${taskState.value?.date}"))
 
     override fun onEvent(event: ViewScheduleScreenEvent) {
+        when (event) {
+            is ViewScheduleScreenEvent.OnCreateTaskClick ->
+                onCreateTaskClick()
 
+            is ViewScheduleScreenEvent.PickTaskTypeResult ->
+                onPickTaskTypeResult(event)
+        }
+    }
+
+    private fun onPickTaskTypeResult(event: ViewScheduleScreenEvent.PickTaskTypeResult) {
+        onIdleToAction {
+            when (event) {
+                is ViewScheduleScreenEvent.PickTaskTypeResult.Confirm -> { /* TODO */
+                }
+
+                is ViewScheduleScreenEvent.PickTaskTypeResult.Dismiss -> Unit
+            }
+        }
+    }
+
+    private fun onCreateTaskClick() {
+        setUpConfigState(
+            ViewScheduleScreenConfig.PickTaskType(TaskType.entries)
+        )
     }
 
 }

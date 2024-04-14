@@ -18,7 +18,7 @@ class AndroidViewScheduleViewModel @Inject constructor(
     private val readTaskByIdUseCase: ReadTaskByIdUseCase
 ) : BaseAndroidViewModel<ViewScheduleScreenEvent, ViewScheduleScreenState, ViewScheduleScreenNavigation, ViewScheduleScreenConfig>() {
 
-    override val viewModel: ViewScheduleViewModel = ViewScheduleViewModel(
+    override val delegateViewModel: ViewScheduleViewModel = ViewScheduleViewModel(
         readTaskByIdUseCase = readTaskByIdUseCase,
         viewModelScope = viewModelScope
     )

@@ -15,41 +15,65 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import com.example.inhabitroutine.core.ui.R
 import com.example.inhabitroutine.core.ui.base.BaseScreen
+import com.example.inhabitroutine.core.ui.dialog.pick_task_type.PickTaskTypeDialog
+import com.example.inhabitroutine.core.ui.dialog.pick_task_type.PickTaskTypeScreenResult
 import com.example.inhabitroutine.core.ui.shared.CreateTaskFAB
+import com.example.inhabitroutine.domain.model.task.type.TaskType
 import com.example.inhabitroutine.feature.view_schedule.vm.ViewScheduleViewModel
+import com.example.inhabitroutine.feature.view_schedule.vm.components.ViewScheduleScreenConfig
+import com.example.inhabitroutine.feature.view_schedule.vm.components.ViewScheduleScreenEvent
 import com.example.inhabitroutine.feature.view_schedule.vm.components.ViewScheduleScreenNavigation
+import com.example.inhabitroutine.feature.view_schedule.vm.components.ViewScheduleScreenState
 
 @Composable
 fun ViewScheduleScreen(
-    viewModel: ViewScheduleViewModel,
-    onNavigation: (ViewScheduleScreenNavigation) -> Unit
+    state: ViewScheduleScreenState,
+    onEvent: (ViewScheduleScreenEvent) -> Unit,
 ) {
-    BaseScreen(
-        viewModel = viewModel,
-        onNavigation = onNavigation,
-        configContent = { config, onEvent -> }
-    ) { state, onEvent ->
-        Scaffold(
-            topBar = {
-                ScreenTopBar(
-                    onMenuClick = {},
-                    onSearchClick = {},
-                    onPickDateClick = {}
-                )
-            },
-            floatingActionButton = {
-                CreateTaskFAB(
-                    onClick = {}
-                )
-            },
-            floatingActionButtonPosition = FabPosition.End
+    Scaffold(
+        topBar = {
+            ScreenTopBar(
+                onMenuClick = {},
+                onSearchClick = {},
+                onPickDateClick = {}
+            )
+        },
+        floatingActionButton = {
+            CreateTaskFAB(
+                onClick = {
+                    onEvent(ViewScheduleScreenEvent.OnCreateTaskClick)
+                }
+            )
+        },
+        floatingActionButtonPosition = FabPosition.End
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it)
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(it)
-            ) {
 
+        }
+    }
+}
+
+@Composable
+fun ViewScheduleScreenConfig(
+    config: ViewScheduleScreenConfig,
+    onEvent: (ViewScheduleScreenEvent) -> Unit,
+) {
+    when (config) {
+        is ViewScheduleScreenConfig.PickTaskType -> {
+            PickTaskTypeDialog(allTaskTypes = config.allTaskTypes) { result ->
+                when (result) {
+                    is PickTaskTypeScreenResult.Confirm -> {
+                        onEvent(ViewScheduleScreenEvent.PickTaskTypeResult.Confirm(result.taskType))
+                    }
+
+                    is PickTaskTypeScreenResult.Dismiss -> {
+                        onEvent(ViewScheduleScreenEvent.PickTaskTypeResult.Dismiss)
+                    }
+                }
             }
         }
     }
