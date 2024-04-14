@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.example.inhabitroutine.navigation.dest.AppNavDest
-import com.example.inhabitroutine.navigation.view_schedule.viewScheduleScreen
+import com.example.inhabitroutine.navigation.view_schedule.viewScheduleDestination
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -17,7 +17,7 @@ fun RootGraph() {
             navController = navController,
             startDestination = AppNavDest.ViewScheduleDestination.route
         ) {
-            viewScheduleScreen()
+            viewScheduleDestination()
         }
     }
 }

@@ -14,9 +14,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.job
 
-abstract class BaseViewModel<SE : ScreenEvent, SS : ScreenState, SN : ScreenNavigation, SC : ScreenConfig>(
-    protected val viewModelScope: CoroutineScope
-) {
+abstract class BaseViewModel<SE : ScreenEvent, SS : ScreenState, SN : ScreenNavigation, SC : ScreenConfig> {
+
+    protected abstract val viewModelScope: CoroutineScope
 
     /* base */
     abstract val uiScreenState: StateFlow<SS>

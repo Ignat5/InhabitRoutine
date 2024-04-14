@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.inhabitroutine.core.presentation"
+    namespace = "com.example.inhabitroutine.feature.view_schedule"
     compileSdk = 34
 
     defaultConfig {
@@ -39,7 +39,10 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:presentation"))
     implementation(project(":domain:model"))
+    implementation(project(":domain:task:api"))
+
     implementation(libs.bundles.compose)
 
     testImplementation(libs.junit)
