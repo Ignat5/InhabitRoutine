@@ -5,8 +5,8 @@ import com.example.inhabitroutine.core.database.impl.task.DefaultTaskDao
 import com.example.inhabitroutine.core.database.task.api.TaskDao
 import kotlinx.coroutines.CoroutineDispatcher
 
-object DaoBuilder {
-    fun buildTaskDao(
+class TaskDaoBuilder {
+    fun build(
         db: InhabitRoutineDatabase,
         ioDispatcher: CoroutineDispatcher
     ): TaskDao {
