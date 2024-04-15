@@ -6,4 +6,10 @@
     <string name="habit_description">Activity performed over the period of time. Includes detailed progress tracking</string>
     <string name="recurring_task_description">Activity performed over the period of time. Dose not include progress tracking.</string>
     <string name="single_task_description">Activity performed once. Does not include progress tracking.</string>
+    <string name="habit_progress_type_yes_no_title">Yes or No</string>
+    <string name="habit_progress_type_number_title">Number</string>
+    <string name="habit_progress_type_time_title">Time</string>
+    <string name="habit_progress_type_yes_no_description">Daily record is either success or failure</string>
+    <string name="habit_progress_type_number_description">Daily record is a number value</string>
+    <string name="habit_progress_type_time_description">Daily record is a time value</string>
 </resources>

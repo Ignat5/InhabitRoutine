@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import com.example.inhabitroutine.core.presentation.ui.common.CreateTaskFAB
+import com.example.inhabitroutine.core.presentation.ui.dialog.pick_task_progress_type.PickTaskProgressTypeDialog
 import com.example.inhabitroutine.core.presentation.ui.dialog.pick_task_type.PickTaskTypeDialog
 import com.example.inhabitroutine.feature.view_schedule.components.ViewScheduleScreenConfig
 import com.example.inhabitroutine.feature.view_schedule.components.ViewScheduleScreenEvent
@@ -60,6 +61,12 @@ fun ViewScheduleScreenConfig(
         is ViewScheduleScreenConfig.PickTaskType -> {
             PickTaskTypeDialog(allTaskTypes = config.allTaskTypes) { result ->
                 onEvent(ViewScheduleScreenEvent.ResultEvent.PickTaskType(result))
+            }
+        }
+
+        is ViewScheduleScreenConfig.PickTaskProgressType -> {
+            PickTaskProgressTypeDialog(allTaskProgressTypes = config.allProgressTypes) { result ->
+                onEvent(ViewScheduleScreenEvent.ResultEvent.PickTaskProgressType(result))
             }
         }
     }
