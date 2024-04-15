@@ -27,8 +27,8 @@ internal fun <T : Any> Query<T>.readOneOrNull(
     .mapToOneOrNull(coroutineContext)
 
 internal suspend fun <T : Any> runQuery(
-    query: () -> T,
-    coroutineContext: CoroutineContext
+    coroutineContext: CoroutineContext,
+    query: () -> T
 ): ResultModel<T, Throwable> = try {
     withContext(coroutineContext) {
         ResultModel.success(query())

@@ -1,6 +1,5 @@
 package com.example.inhabitroutine.data.task.impl.repository.model.task
 
-import com.example.inhabitroutine.data.task.impl.repository.model.reminder.ReminderDataModel
 import com.example.inhabitroutine.domain.model.task.type.TaskProgressType
 import com.example.inhabitroutine.domain.model.task.type.TaskType
 import kotlinx.datetime.LocalDate
@@ -15,9 +14,8 @@ data class TaskDataModel(
     val endDate: LocalDate?,
     val progress: TaskContentDataModel.ProgressContent,
     val frequency: TaskContentDataModel.FrequencyContent,
-    val archive: TaskContentDataModel.ArchiveContent,
-    val reminder: ReminderDataModel?,
-    val versionSinceDate: LocalDate,
+    val isArchived: Boolean,
+    val isDraft: Boolean,
+    val versionStartDate: LocalDate,
     val createdAt: Long,
-    val deletedAt: Long?
 )

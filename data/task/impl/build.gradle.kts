@@ -12,7 +12,7 @@ java {
 
 dependencies {
     implementation(project(":data:task:api"))
-    implementation(project(":core:database:api"))
+    implementation(project(":core:database:task:api"))
     implementation(project(":core:util"))
     implementation(project(":domain:model"))
     implementation(libs.kotlin.coroutines.core)

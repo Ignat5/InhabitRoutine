@@ -2,16 +2,13 @@ package com.example.inhabitroutine.data.task.impl.repository.util
 
 import com.example.inhabitroutine.data.task.impl.repository.model.task.TaskContentDataModel
 import com.example.inhabitroutine.data.task.impl.repository.model.task.TaskDataModel
-import com.example.inhabitroutine.data.task.impl.repository.model.reminder.ReminderContentDataModel
-import com.example.inhabitroutine.data.task.impl.repository.model.reminder.ReminderDataModel
-import com.example.inhabitroutine.domain.model.reminder.ReminderModel
-import com.example.inhabitroutine.domain.model.reminder.content.ReminderSchedule
 import com.example.inhabitroutine.domain.model.task.TaskModel
 import com.example.inhabitroutine.domain.model.task.content.TaskDate
 import com.example.inhabitroutine.domain.model.task.content.TaskFrequency
 import com.example.inhabitroutine.domain.model.task.content.TaskProgress
 import com.example.inhabitroutine.domain.model.task.type.TaskProgressType
 import com.example.inhabitroutine.domain.model.task.type.TaskType
+import kotlinx.datetime.Clock
 
 internal fun TaskDataModel.toTaskModel(): TaskModel? = runCatching {
     when (this.type) {
@@ -27,10 +24,9 @@ internal fun TaskDataModel.toTaskModel(): TaskModel? = runCatching {
                             endDate = this.endDate
                         ),
                         frequency = this.frequency.toTaskFrequency() ?: return@runCatching null,
-                        isArchived = this.archive.isArchived,
-                        versionSinceDate = this.versionSinceDate,
-                        reminder = this.reminder?.toReminderModel(),
-                        isDeleted = this.deletedAt != null,
+                        isArchived = this.isArchived,
+                        versionStartDate = this.versionStartDate,
+                        isDraft = this.isDraft,
                         createdAt = this.createdAt
                     )
                 }
@@ -47,10 +43,9 @@ internal fun TaskDataModel.toTaskModel(): TaskModel? = runCatching {
                         progress = this.progress.toTaskProgress() as? TaskProgress.Number
                             ?: return@runCatching null,
                         frequency = this.frequency.toTaskFrequency() ?: return@runCatching null,
-                        isArchived = this.archive.isArchived,
-                        versionSinceDate = this.versionSinceDate,
-                        reminder = this.reminder?.toReminderModel(),
-                        isDeleted = this.deletedAt != null,
+                        isArchived = this.isArchived,
+                        versionStartDate = this.versionStartDate,
+                        isDraft = this.isDraft,
                         createdAt = this.createdAt
                     )
                 }
@@ -67,10 +62,9 @@ internal fun TaskDataModel.toTaskModel(): TaskModel? = runCatching {
                         progress = this.progress.toTaskProgress() as? TaskProgress.Time
                             ?: return@runCatching null,
                         frequency = this.frequency.toTaskFrequency() ?: return@runCatching null,
-                        isArchived = this.archive.isArchived,
-                        versionSinceDate = this.versionSinceDate,
-                        reminder = this.reminder?.toReminderModel(),
-                        isDeleted = this.deletedAt != null,
+                        isArchived = this.isArchived,
+                        versionStartDate = this.versionStartDate,
+                        isDraft = this.isDraft,
                         createdAt = this.createdAt
                     )
                 }
@@ -87,9 +81,9 @@ internal fun TaskDataModel.toTaskModel(): TaskModel? = runCatching {
                     endDate = this.endDate
                 ),
                 frequency = this.frequency.toTaskFrequency() ?: return@runCatching null,
-                isArchived = this.archive.isArchived,
-                reminder = this.reminder?.toReminderModel(),
-                isDeleted = this.deletedAt != null,
+                isArchived = this.isArchived,
+                versionStartDate = this.versionStartDate,
+                isDraft = this.isDraft,
                 createdAt = this.createdAt
             )
         }
@@ -102,31 +96,53 @@ internal fun TaskDataModel.toTaskModel(): TaskModel? = runCatching {
                 date = TaskDate.Day(
                     date = this.startDate,
                 ),
-                isArchived = this.archive.isArchived,
-                reminder = this.reminder?.toReminderModel(),
-                isDeleted = this.deletedAt != null,
+                isArchived = this.isArchived,
+                versionStartDate = this.versionStartDate,
+                isDraft = this.isDraft,
                 createdAt = this.createdAt
             )
         }
     }
 }.getOrNull()
 
-private fun ReminderDataModel.toReminderModel(): ReminderModel {
-    return ReminderModel(
-        id = this.id,
-        taskId = this.taskId,
-        time = this.time,
-        type = this.reminderType,
-        schedule = this.reminderSchedule.toReminderSchedule()
+internal fun TaskModel.toTaskDataModel(): TaskDataModel {
+    val startDate = when (this) {
+        is TaskModel.Habit -> this.date.startDate
+        is TaskModel.Task.RecurringTask -> this.date.startDate
+        is TaskModel.Task.SingleTask -> this.date.date
+    }
+    val endDate = when (this) {
+        is TaskModel.Habit -> this.date.endDate
+        is TaskModel.Task.RecurringTask -> this.date.endDate
+        is TaskModel.Task.SingleTask -> this.date.date
+    }
+    val progress = when (this) {
+        is TaskModel.Habit.HabitContinuous -> this.progress.toTaskProgressContent()
+        else -> TaskContentDataModel.ProgressContent.YesNo
+    }
+    val frequency = when (this) {
+        is TaskModel.Habit -> this.frequency.toTaskFrequencyContent()
+        is TaskModel.Task.RecurringTask -> this.frequency.toTaskFrequencyContent()
+        is TaskModel.Task.SingleTask -> TaskContentDataModel.FrequencyContent.Day
+    }
+    return TaskDataModel(
+        id = id,
+        type = type,
+        progressType = progressType,
+        title = title,
+        description = description,
+        startDate = startDate,
+        endDate = endDate,
+        progress = progress,
+        frequency = frequency,
+        isArchived = isArchived,
+        versionStartDate = versionStartDate,
+        createdAt = createdAt,
+        isDraft = isDraft
     )
 }
 
-private fun ReminderContentDataModel.ScheduleContent.toReminderSchedule() =
-    when (this) {
-        is ReminderContentDataModel.ScheduleContent.EveryDay -> ReminderSchedule.EveryDay
-        is ReminderContentDataModel.ScheduleContent.DaysOfWeek -> ReminderSchedule.DaysOfWeek(this.daysOfWeek)
-    }
-
+/* progress */
 private fun TaskContentDataModel.ProgressContent.toTaskProgress(): TaskProgress? =
     when (this) {
         is TaskContentDataModel.ProgressContent.Number -> TaskProgress.Number(
@@ -143,9 +159,33 @@ private fun TaskContentDataModel.ProgressContent.toTaskProgress(): TaskProgress?
         is TaskContentDataModel.ProgressContent.YesNo -> null
     }
 
+private fun TaskProgress.toTaskProgressContent(): TaskContentDataModel.ProgressContent =
+    when (this) {
+        is TaskProgress.Number -> TaskContentDataModel.ProgressContent.Number(
+            limitType = limitType,
+            limitNumber = limitNumber,
+            limitUnit = limitUnit
+        )
+
+        is TaskProgress.Time -> TaskContentDataModel.ProgressContent.Time(
+            limitType = limitType,
+            limitTime = limitTime
+        )
+    }
+
+/* frequency */
+
 private fun TaskContentDataModel.FrequencyContent.toTaskFrequency(): TaskFrequency? =
     when (this) {
         is TaskContentDataModel.FrequencyContent.EveryDay -> TaskFrequency.EveryDay
         is TaskContentDataModel.FrequencyContent.DaysOfWeek -> TaskFrequency.DaysOfWeek(this.daysOfWeek)
         is TaskContentDataModel.FrequencyContent.Day -> null
+    }
+
+private fun TaskFrequency.toTaskFrequencyContent(): TaskContentDataModel.FrequencyContent =
+    when (this) {
+        is TaskFrequency.EveryDay -> TaskContentDataModel.FrequencyContent.EveryDay
+        is TaskFrequency.DaysOfWeek -> TaskContentDataModel.FrequencyContent.DaysOfWeek(
+            this.daysOfWeek
+        )
     }

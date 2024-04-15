@@ -1,24 +1,18 @@
 CREATE TABLE IF NOT EXISTS TaskTable(
-    id TEXT NOT NULL PRIMARY KEY,
+    taskId TEXT NOT NULL,
+    versionStartEpochDay INTEGER NOT NULL,
     type TEXT NOT NULL,
     progressType TEXT NOT NULL,
     title TEXT NOT NULL,
     description TEXT NOT NULL,
     startEpochDay INTEGER NOT NULL,
     endEpochDay INTEGER NOT NULL,
+    progressContent TEXT NOT NULL,
+    frequencyContent TEXT NOT NULL,
+    isArchived TEXT NOT NULL,
+    isDraft TEXT NOT NULL,
     createdAt INTEGER NOT NULL,
-    deletedAt INTEGER
-);
-
-CREATE TABLE IF NOT EXISTS TaskContentTable(
-    id TEXT NOT NULL PRIMARY KEY,
-    taskId TEXT NOT NULL,
-    progress TEXT NOT NULL,
-    frequency TEXT NOT NULL,
-    archive TEXT NOT NULL,
-    startEpochDay INTEGER NOT NULL,
-    createdAt INTEGER NOT NULL,
-    FOREIGN KEY (taskId) REFERENCES TaskTable(id) ON DELETE CASCADE
+    PRIMARY KEY (taskId, versionStartEpochDay)
 );
 
 CREATE TABLE IF NOT EXISTS ReminderTable(
@@ -28,7 +22,7 @@ CREATE TABLE IF NOT EXISTS ReminderTable(
     type TEXT NOT NULL,
     schedule TEXT NOT NULL,
     createdAt INTEGER NOT NULL,
-    FOREIGN KEY (taskId) REFERENCES TaskTable(id) ON DELETE CASCADE
+    FOREIGN KEY (taskId) REFERENCES TaskTable(taskId) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS RecordTable(
@@ -37,7 +31,7 @@ CREATE TABLE IF NOT EXISTS RecordTable(
     entry TEXT NOT NULL,
     entryEpochDay INTEGER NOT NULL,
     createdAt INTEGER NOT NULL,
-    FOREIGN KEY (taskId) REFERENCES TaskTable(id) ON DELETE CASCADE
+    FOREIGN KEY (taskId) REFERENCES TaskTable(taskId) ON DELETE CASCADE
 );
 
 CREATE INDEX IF NOT EXISTS TaskStartEndDateIndex
@@ -49,103 +43,42 @@ ON TaskTable(type);
 CREATE INDEX IF NOT EXISTS TaskTitleIndex
 ON TaskTable(title);
 
-CREATE INDEX IF NOT EXISTS TaskContentStartDateIndex
-ON TaskContentTable(startEpochDay);
-
 CREATE INDEX IF NOT EXISTS RecordEntryDateIndex
 ON RecordTable(entryEpochDay);
 
-CREATE VIEW IF NOT EXISTS TaskWithContentView AS
-SELECT
-tTask.id task_id,
-tTask.type task_type,
-tTask.progressType task_progressType,
-tTask.title task_title,
-tTask.description task_description,
-tTask.startEpochDay task_startEpochDay,
-tTask.endEpochDay task_endEpochDay,
-tTask.createdAt task_createdAt,
-tTask.deletedAt task_deletedAt,
-
-tTaskContent.id taskContent_id,
-tTaskContent.taskId taskContent_taskId,
-tTaskContent.progress taskContent_progress,
-tTaskContent.frequency taskContent_frequency,
-tTaskContent.archive taskContent_archive,
-tTaskContent.startEpochDay taskContent_startEpochDay,
-tTaskContent.createdAt taskContent_createdAt,
-
-tReminder.id reminder_id,
-tReminder.taskId reminder_taskId,
-tReminder.time reminder_time,
-tReminder.type reminder_type,
-tReminder.schedule reminder_schedule,
-tReminder.createdAt reminder_createdAt
-
-FROM TaskTable tTask
-INNER JOIN TaskContentTable tTaskContent
-ON tTaskContent.taskId = tTask.id
-LEFT JOIN ReminderTable tReminder
-ON tReminder.taskId = tTask.id;
-
-selectTaskWithContentById:
-SELECT * FROM TaskWithContentView vTask
-WHERE vTask.task_id = :taskId
-GROUP BY vTask.task_id
-HAVING vTask.taskContent_startEpochDay = MAX(vTask.taskContent_startEpochDay);
+selectTaskById:
+SELECT * FROM TaskTable tTask
+WHERE tTask.taskId = :taskId
+GROUP BY tTask.taskId
+HAVING tTask.versionStartEpochDay = MAX(tTask.versionStartEpochDay);
 
 insertTask:
 INSERT OR REPLACE INTO TaskTable
 VALUES ?;
 
-insertTaskContent:
-INSERT OR REPLACE INTO TaskContentTable
-VALUES ?;
 
-insertReminder:
-INSERT OR REPLACE INTO ReminderTable
-VALUES ?;
-
--- CREATE TABLE IF NOT EXISTS TaskTableV2(
---     taskId TEXT NOT NULL,
---     versionStartEpochDay INTEGER NOT NULL,
---     type TEXT NOT NULL,
---     progressType TEXT NOT NULL,
---     title TEXT NOT NULL,
---     description TEXT NOT NULL,
---     startEpochDay INTEGER NOT NULL,
---     endEpochDay INTEGER NOT NULL,
---     progress TEXT NOT NULL,
---     frequency TEXT NOT NULL,
---     isArchived TEXT NOT NULL,
---     createdAt INTEGER NOT NULL,
---     deletedAt INTEGER,
---     PRIMARY KEY (taskId, versionStartEpochDay)
--- );
+-- CREATE VIEW IF NOT EXISTS TaskView AS
+-- SELECT
+-- tTask.taskId task_taskId,
+-- tTask.versionStartEpochDay task_versionStartEpochDay,
+-- tTask.type task_type,
+-- tTask.progressType task_progressType,
+-- tTask.title task_title,
+-- tTask.description task_description,
+-- tTask.startEpochDay task_startEpochDay,
+-- tTask.endEpochDay task_endEpochDay,
+-- tTask.progressContent task_progressContent,
+-- tTask.frequencyContent task_frequencyContent,
+-- tTask.isArchived task_isArchived,
+-- tTask.createdAt task_createdAt,
+-- tTask.deletedAt task_deletedAt,
 --
--- testByDate:
--- SELECT * FROM TaskTableV2 tTask
--- WHERE tTask.deletedAt IS NULL AND
--- tTask.isArchived = :isTaskArchived AND
--- tTask.startEpochDay <= :targetEpochDay AND
--- tTask.endEpochDay >= :targetEpochDay AND
--- tTask.versionStartEpochDay <= :targetEpochDay
--- GROUP BY tTask.taskId
--- HAVING tTask.versionStartEpochDay = MAX(tTask.versionStartEpochDay);
-
--- CREATE TABLE IF NOT EXISTS TaskTableV3(
---     id TEXT NOT NULL PRIMARY KEY,
---     taskId TEXT NOT NULL,
---     versionStartEpochDay INTEGER NOT NULL,
---     type TEXT NOT NULL,
---     progressType TEXT NOT NULL,
---     title TEXT NOT NULL,
---     description TEXT NOT NULL,
---     startEpochDay INTEGER NOT NULL,
---     endEpochDay INTEGER NOT NULL,
---     progress TEXT NOT NULL,
---     frequency TEXT NOT NULL,
---     archive TEXT NOT NULL,
---     createdAt INTEGER NOT NULL,
---     deletedAt INTEGER
--- );
+-- tReminder.id reminder_id,
+-- tReminder.taskId reminder_taskId,
+-- tReminder.time reminder_time,
+-- tReminder.type reminder_type,
+-- tReminder.schedule reminder_schedule,
+-- tReminder.createdAt reminder_createdAt
+-- FROM TaskTable tTask
+-- LEFT JOIN ReminderTable tReminder
+-- ON tReminder.taskId = tTask.taskId;

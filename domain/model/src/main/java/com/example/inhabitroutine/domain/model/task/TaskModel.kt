@@ -1,6 +1,5 @@
 package com.example.inhabitroutine.domain.model.task
 
-import com.example.inhabitroutine.domain.model.reminder.ReminderModel
 import com.example.inhabitroutine.domain.model.task.content.TaskDate
 import com.example.inhabitroutine.domain.model.task.content.TaskFrequency
 import com.example.inhabitroutine.domain.model.task.content.TaskProgress
@@ -15,9 +14,9 @@ sealed interface TaskModel {
     val title: String
     val description: String
     val date: TaskDate
-    val reminder: ReminderModel?
     val isArchived: Boolean
-    val isDeleted: Boolean
+    val versionStartDate: LocalDate
+    val isDraft: Boolean
     val createdAt: Long
 
     sealed interface RecurringActivity {
@@ -29,7 +28,6 @@ sealed interface TaskModel {
     ) : TaskModel, RecurringActivity {
         final override val type: TaskType = TaskType.Habit
         abstract override val date: TaskDate.Period
-        abstract val versionSinceDate: LocalDate
 
         sealed class HabitContinuous(progressType: TaskProgressType) : Habit(progressType) {
             abstract val progress: TaskProgress
@@ -42,9 +40,8 @@ sealed interface TaskModel {
                 override val progress: TaskProgress.Number,
                 override val frequency: TaskFrequency,
                 override val isArchived: Boolean,
-                override val versionSinceDate: LocalDate,
-                override val reminder: ReminderModel?,
-                override val isDeleted: Boolean,
+                override val versionStartDate: LocalDate,
+                override val isDraft: Boolean,
                 override val createdAt: Long
             ) : HabitContinuous(TaskProgressType.Number)
 
@@ -56,9 +53,8 @@ sealed interface TaskModel {
                 override val progress: TaskProgress.Time,
                 override val frequency: TaskFrequency,
                 override val isArchived: Boolean,
-                override val versionSinceDate: LocalDate,
-                override val reminder: ReminderModel?,
-                override val isDeleted: Boolean,
+                override val versionStartDate: LocalDate,
+                override val isDraft: Boolean,
                 override val createdAt: Long
             ) : HabitContinuous(TaskProgressType.Time)
         }
@@ -70,9 +66,8 @@ sealed interface TaskModel {
             override val date: TaskDate.Period,
             override val frequency: TaskFrequency,
             override val isArchived: Boolean,
-            override val versionSinceDate: LocalDate,
-            override val reminder: ReminderModel?,
-            override val isDeleted: Boolean,
+            override val versionStartDate: LocalDate,
+            override val isDraft: Boolean,
             override val createdAt: Long
         ) : Habit(TaskProgressType.YesNo)
     }
@@ -89,8 +84,8 @@ sealed interface TaskModel {
             override val date: TaskDate.Period,
             override val frequency: TaskFrequency,
             override val isArchived: Boolean,
-            override val reminder: ReminderModel?,
-            override val isDeleted: Boolean,
+            override val versionStartDate: LocalDate,
+            override val isDraft: Boolean,
             override val createdAt: Long
         ) : Task(TaskType.RecurringTask), RecurringActivity
 
@@ -100,8 +95,8 @@ sealed interface TaskModel {
             override val description: String,
             override val date: TaskDate.Day,
             override val isArchived: Boolean,
-            override val reminder: ReminderModel?,
-            override val isDeleted: Boolean,
+            override val versionStartDate: LocalDate,
+            override val isDraft: Boolean,
             override val createdAt: Long
         ) : Task(TaskType.SingleTask)
     }

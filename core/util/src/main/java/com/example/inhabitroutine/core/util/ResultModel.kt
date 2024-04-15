@@ -1,7 +1,5 @@
 package com.example.inhabitroutine.core.util
 
-//typealias SuccessFailureResult = ResultModel<Nothing, Nothing>
-
 sealed class ResultModel<out T, out E> {
     data class Success<out T>(val value: T) : ResultModel<T, Nothing>()
     data class Failure<out E>(val value: E) : ResultModel<Nothing, E>()

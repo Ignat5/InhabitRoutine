@@ -4,9 +4,7 @@ import android.content.Context
 import androidx.sqlite.db.SupportSQLiteDatabase
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
-import com.example.inhabitroutine.core.database.api.db.DatabaseDao
 import com.example.inhabitroutine.core.database.impl.InhabitRoutineDatabase
-import com.example.inhabitroutine.core.database.impl.task.DefaultDatabaseDao
 import com.example.inhabitroutine.core.di.qualifiers.IODispatcherQualifier
 import dagger.Module
 import dagger.Provides
@@ -47,17 +45,6 @@ object CoreDataModule {
     ): InhabitRoutineDatabase {
         return InhabitRoutineDatabase.invoke(
             driver = sqlDriver
-        )
-    }
-
-    @Provides
-    fun provideTaskDao(
-        db: InhabitRoutineDatabase,
-        @IODispatcherQualifier ioDispatcher: CoroutineDispatcher,
-    ): DatabaseDao {
-        return DefaultDatabaseDao(
-            db = db,
-            ioDispatcher = ioDispatcher
         )
     }
 

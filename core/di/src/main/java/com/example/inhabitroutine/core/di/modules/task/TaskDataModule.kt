@@ -1,12 +1,13 @@
 package com.example.inhabitroutine.core.di.modules.task
 
-import com.example.inhabitroutine.core.database.api.db.DatabaseDao
+import com.example.inhabitroutine.core.database.impl.di.DaoBuilder
+import com.example.inhabitroutine.core.database.impl.InhabitRoutineDatabase
+import com.example.inhabitroutine.core.database.task.api.TaskDao
 import com.example.inhabitroutine.core.di.qualifiers.DefaultDispatcherQualifier
 import com.example.inhabitroutine.core.di.qualifiers.IODispatcherQualifier
 import com.example.inhabitroutine.data.task.api.TaskRepository
-import com.example.inhabitroutine.data.task.impl.repository.data_source.DefaultTaskDataSource
+import com.example.inhabitroutine.data.task.impl.repository.di.TaskDataBuilder
 import com.example.inhabitroutine.data.task.impl.repository.data_source.TaskDataSource
-import com.example.inhabitroutine.data.task.impl.repository.repository.DefaultTaskRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,13 +20,24 @@ import kotlinx.serialization.json.Json
 object TaskDataModule {
 
     @Provides
+    fun provideTaskDao(
+        db: InhabitRoutineDatabase,
+        @IODispatcherQualifier ioDispatcher: CoroutineDispatcher
+    ): TaskDao {
+        return DaoBuilder.buildTaskDao(
+            db = db,
+            ioDispatcher = ioDispatcher
+        )
+    }
+
+    @Provides
     fun provideTaskDataSource(
-        databaseDao: DatabaseDao,
+        taskDao: TaskDao,
         @IODispatcherQualifier ioDispatcher: CoroutineDispatcher,
         json: Json
     ): TaskDataSource {
-        return DefaultTaskDataSource(
-            databaseDao = databaseDao,
+        return TaskDataBuilder.buildTaskDataSource(
+            taskDao = taskDao,
             ioDispatcher = ioDispatcher,
             json = json
         )
@@ -36,7 +48,7 @@ object TaskDataModule {
         taskDataSource: TaskDataSource,
         @DefaultDispatcherQualifier defaultDispatcher: CoroutineDispatcher
     ): TaskRepository {
-        return DefaultTaskRepository(
+        return TaskDataBuilder.buildTaskRepository(
             taskDataSource = taskDataSource,
             defaultDispatcher = defaultDispatcher
         )

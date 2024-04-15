@@ -49,10 +49,10 @@ sealed interface TaskContentDataModel {
             val daysOfWeek: Set<DayOfWeek>
         ) : FrequencyContent
     }
-
-    @Serializable
-    @SerialName("ArchiveContent")
-    data class ArchiveContent(
-        val isArchived: Boolean
-    ) : TaskContentDataModel
+//
+//    @Serializable
+//    @SerialName("ArchiveContent")
+//    data class ArchiveContent(
+//        val isArchived: Boolean
+//    ) : TaskContentDataModel
 }
