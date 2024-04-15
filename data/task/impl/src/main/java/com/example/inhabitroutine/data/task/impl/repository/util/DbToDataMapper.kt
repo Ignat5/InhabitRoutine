@@ -1,6 +1,8 @@
 package com.example.inhabitroutine.data.task.impl.repository.util
 
 import com.example.inhabitroutine.core.database.api.model.core.ReminderEntity
+import com.example.inhabitroutine.core.database.api.model.core.TaskContentEntity
+import com.example.inhabitroutine.core.database.api.model.core.TaskEntity
 import com.example.inhabitroutine.core.database.api.model.derived.TaskWithContentEntity
 import com.example.inhabitroutine.data.task.impl.repository.model.reminder.ReminderContentDataModel
 import com.example.inhabitroutine.data.task.impl.repository.model.reminder.ReminderDataModel
@@ -14,6 +16,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 internal fun TaskWithContentEntity.toTaskDataModel(json: Json): TaskDataModel? {
@@ -47,6 +50,32 @@ private fun ReminderEntity.toReminderDataModel(json: Json): ReminderDataModel? {
     )
 }
 
+internal fun TaskDataModel.toTaskEntity(json: Json): TaskEntity? = runCatching {
+    TaskEntity(
+        id = this.id,
+        type = this.type.encodeToString(json) ?: return@runCatching null,
+        progressType = this.progressType.encodeToString(json) ?: return@runCatching null,
+        title = this.title,
+        description = this.description,
+        startEpochDay = this.startDate.encodeToEpochDay(),
+        endEpochDay = (this.endDate ?: distantFutureDate).encodeToEpochDay(),
+        createdAt = this.createdAt,
+        deletedAt = this.deletedAt
+    )
+}.getOrNull()
+
+//internal fun TaskDataModel.toTaskContentEntity(json: Json): TaskContentEntity? = runCatching {
+//    TaskContentEntity(
+//        id = ,
+//        taskId = ,
+//        progress = ,
+//        frequency = ,
+//        archive = ,
+//        startEpochDay = ,
+//        createdAt =
+//    )
+//}.getOrNull()
+
 private fun String.decodeFromTaskProgress(json: Json): TaskContentDataModel.ProgressContent? =
     runCatching {
         json.decodeFromString<TaskContentDataModel.ProgressContent>(this)
@@ -67,6 +96,11 @@ private fun String.decodeFromReminderSchedule(json: Json): ReminderContentDataMo
         json.decodeFromString<ReminderContentDataModel.ScheduleContent>(this)
     }.getOrNull()
 
+/* time */
+
+private fun LocalDate.encodeToEpochDay(): Long =
+    this.toEpochDays().toLong()
+
 private fun String.decodeFromTime(json: Json): LocalTime? =
     runCatching {
         json.decodeFromString<LocalTime>(this)
@@ -79,9 +113,21 @@ private val distantFutureDate: LocalDate by lazy {
     Instant.DISTANT_FUTURE.toLocalDateTime(TimeZone.currentSystemDefault()).date
 }
 
+/* task type */
+private fun TaskType.encodeToString(json: Json): String? = runCatching {
+    json.encodeToString(this)
+}.getOrNull()
+
 private fun String.decodeFromTaskType(json: Json): TaskType? =
     runCatching {
         json.decodeFromString<TaskType>(this)
+    }.getOrNull()
+
+/* task progress type */
+
+private fun TaskProgressType.encodeToString(json: Json): String? =
+    runCatching {
+        json.encodeToString(this)
     }.getOrNull()
 
 private fun String.decodeFromTaskProgressType(json: Json): TaskProgressType? =

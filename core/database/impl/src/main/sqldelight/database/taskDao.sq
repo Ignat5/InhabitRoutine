@@ -101,3 +101,51 @@ VALUES ?;
 insertTaskContent:
 INSERT OR REPLACE INTO TaskContentTable
 VALUES ?;
+
+insertReminder:
+INSERT OR REPLACE INTO ReminderTable
+VALUES ?;
+
+-- CREATE TABLE IF NOT EXISTS TaskTableV2(
+--     taskId TEXT NOT NULL,
+--     versionStartEpochDay INTEGER NOT NULL,
+--     type TEXT NOT NULL,
+--     progressType TEXT NOT NULL,
+--     title TEXT NOT NULL,
+--     description TEXT NOT NULL,
+--     startEpochDay INTEGER NOT NULL,
+--     endEpochDay INTEGER NOT NULL,
+--     progress TEXT NOT NULL,
+--     frequency TEXT NOT NULL,
+--     isArchived TEXT NOT NULL,
+--     createdAt INTEGER NOT NULL,
+--     deletedAt INTEGER,
+--     PRIMARY KEY (taskId, versionStartEpochDay)
+-- );
+--
+-- testByDate:
+-- SELECT * FROM TaskTableV2 tTask
+-- WHERE tTask.deletedAt IS NULL AND
+-- tTask.isArchived = :isTaskArchived AND
+-- tTask.startEpochDay <= :targetEpochDay AND
+-- tTask.endEpochDay >= :targetEpochDay AND
+-- tTask.versionStartEpochDay <= :targetEpochDay
+-- GROUP BY tTask.taskId
+-- HAVING tTask.versionStartEpochDay = MAX(tTask.versionStartEpochDay);
+
+-- CREATE TABLE IF NOT EXISTS TaskTableV3(
+--     id TEXT NOT NULL PRIMARY KEY,
+--     taskId TEXT NOT NULL,
+--     versionStartEpochDay INTEGER NOT NULL,
+--     type TEXT NOT NULL,
+--     progressType TEXT NOT NULL,
+--     title TEXT NOT NULL,
+--     description TEXT NOT NULL,
+--     startEpochDay INTEGER NOT NULL,
+--     endEpochDay INTEGER NOT NULL,
+--     progress TEXT NOT NULL,
+--     frequency TEXT NOT NULL,
+--     archive TEXT NOT NULL,
+--     createdAt INTEGER NOT NULL,
+--     deletedAt INTEGER
+-- );

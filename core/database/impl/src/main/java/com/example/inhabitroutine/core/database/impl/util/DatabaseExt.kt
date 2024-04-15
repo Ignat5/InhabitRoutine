@@ -1,20 +1,57 @@
 package com.example.inhabitroutine.core.database.impl.util
 
 import app.cash.sqldelight.Query
+import app.cash.sqldelight.Transacter
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
+import com.example.inhabitroutine.core.util.ResultModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
-fun <T : Any> Query<T>.readQueryList(
+internal fun <T : Any> Query<T>.readQueryList(
     coroutineContext: CoroutineContext
 ): Flow<List<T>> = this
     .asFlow()
     .mapToList(coroutineContext)
 
-fun <T : Any> Query<T>.readOneOrNull(
+internal fun <T : Any> Query<T>.readOneOrNull(
     coroutineContext: CoroutineContext
 ): Flow<T?> = this
     .asFlow()
     .mapToOneOrNull(coroutineContext)
+
+internal suspend fun <T : Any> runQuery(
+    query: () -> T,
+    coroutineContext: CoroutineContext
+): ResultModel<T, Throwable> = try {
+    withContext(coroutineContext) {
+        ResultModel.success(query())
+    }
+} catch (e: Exception) {
+    ResultModel.failure(e)
+}
+
+internal suspend fun Transacter.runTransaction(
+    coroutineContext: CoroutineContext,
+    query: () -> Unit
+): ResultModel<Unit, Throwable> =
+    try {
+        withContext(coroutineContext) {
+            suspendCoroutine { cnt ->
+                this@runTransaction.transaction {
+                    this.afterCommit { cnt.resume(Unit) }
+                    this.afterRollback { cnt.resumeWithException(RuntimeException()) }
+                    query()
+                }
+            }
+            ResultModel.success(Unit)
+        }
+    } catch (e: Exception) {
+        ResultModel.failure(e)
+    }
