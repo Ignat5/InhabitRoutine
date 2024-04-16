@@ -26,7 +26,7 @@ internal class DefaultTaskRepository(
             } else null
         }
 
-    suspend fun saveTask(taskModel: TaskModel): ResultModel<Unit, Throwable> =
+    override suspend fun saveTask(taskModel: TaskModel): ResultModel<Unit, Throwable> =
         taskModel.toTaskDataModel().let { taskDataModel ->
             taskDataSource.saveTask(taskDataModel)
         }
