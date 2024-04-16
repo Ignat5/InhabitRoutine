@@ -13,11 +13,11 @@ sealed interface TaskContentDataModel {
     @SerialName("ProgressContent")
     sealed interface ProgressContent : TaskContentDataModel {
         @Serializable
-        @SerialName("ProgressContent.YesNo")
+        @SerialName("YesNo")
         data object YesNo : ProgressContent
 
         @Serializable
-        @SerialName("ProgressContent.Number")
+        @SerialName("Number")
         data class Number(
             val limitType: ProgressLimitType,
             val limitNumber: Double,
@@ -25,7 +25,7 @@ sealed interface TaskContentDataModel {
         ) : ProgressContent
 
         @Serializable
-        @SerialName("ProgressContent.Time")
+        @SerialName("Time")
         data class Time(
             val limitType: ProgressLimitType,
             val limitTime: LocalTime
@@ -36,23 +36,17 @@ sealed interface TaskContentDataModel {
     @SerialName("FrequencyContent")
     sealed interface FrequencyContent : TaskContentDataModel {
         @Serializable
-        @SerialName("FrequencyContent.Day")
+        @SerialName("Day")
         data object Day : FrequencyContent
 
         @Serializable
-        @SerialName("FrequencyContent.EveryDay")
+        @SerialName("EveryDay")
         data object EveryDay : FrequencyContent
 
         @Serializable
-        @SerialName("FrequencyContent.DaysOfWeek")
+        @SerialName("DaysOfWeek")
         data class DaysOfWeek(
             val daysOfWeek: Set<DayOfWeek>
         ) : FrequencyContent
     }
-//
-//    @Serializable
-//    @SerialName("ArchiveContent")
-//    data class ArchiveContent(
-//        val isArchived: Boolean
-//    ) : TaskContentDataModel
 }

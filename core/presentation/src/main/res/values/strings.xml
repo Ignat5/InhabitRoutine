@@ -12,4 +12,46 @@
     <string name="habit_progress_type_yes_no_description">Daily record is either success or failure</string>
     <string name="habit_progress_type_number_description">Daily record is a number value</string>
     <string name="habit_progress_type_time_description">Daily record is a time value</string>
+
+    <!-- task config (create/edit task)   -->
+    <string name="task_config_title">Activity name</string>
+    <string name="task_config_description">Description</string>
+    <string name="task_config_progress">Daily goal</string>
+    <string name="task_config_frequency">Frequency</string>
+    <string name="task_config_date">Date</string>
+    <string name="task_config_start_date">Start date</string>
+    <string name="task_config_end_date">End date</string>
+    <string name="task_config_reminders">Time and reminders</string>
+    <string name="create_task_title">Create activity</string>
+    <string name="progress_limit_type_at_least_title">At least</string>
+    <string name="progress_limit_type_exactly_title">Exactly</string>
+    <string name="progress_limit_type_no_more_than_title">No more than</string>
+    <string name="daily_goal_suffix">a day</string>
+    <string name="frequency_every_day">Every day</string>
+
+    <!-- common   -->
+    <string name="save">Save</string>
+
+    <!--  days of week  -->
+    <string name="day_of_week_monday">Monday</string>
+    <string name="day_of_week_tuesday">Tuesday</string>
+    <string name="day_of_week_wednesday">Wednesday</string>
+    <string name="day_of_week_thursday">Thursday</string>
+    <string name="day_of_week_friday">Friday</string>
+    <string name="day_of_week_saturday">Saturday</string>
+    <string name="day_of_week_sunday">Sunday</string>
+
+    <!--  months  -->
+    <string name="month_january">January</string>
+    <string name="month_february">February</string>
+    <string name="month_march">March</string>
+    <string name="month_april">April</string>
+    <string name="month_may">May</string>
+    <string name="month_june">June</string>
+    <string name="month_july">July</string>
+    <string name="month_august">August</string>
+    <string name="month_september">September</string>
+    <string name="month_october">October</string>
+    <string name="month_november">November</string>
+    <string name="month_december">December</string>
 </resources>

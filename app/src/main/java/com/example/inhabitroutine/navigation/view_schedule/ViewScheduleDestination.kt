@@ -5,6 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.example.inhabitroutine.feature.view_schedule.ViewScheduleScreen
 import com.example.inhabitroutine.feature.view_schedule.ViewScheduleScreenConfig
+import com.example.inhabitroutine.feature.view_schedule.components.ViewScheduleScreenNavigation
 import com.example.inhabitroutine.navigation.AppNavDest
 import com.example.inhabitroutine.navigation.TargetNavDest
 import com.example.inhabitroutine.presentation.base.BaseDestination
@@ -19,7 +20,15 @@ fun NavGraphBuilder.viewScheduleDestination(
         BaseDestination(
             viewModel = viewModel,
             onNavigation = { destination ->
-
+                when (destination) {
+                    is ViewScheduleScreenNavigation.CreateTask -> {
+                        onNavigate(
+                            TargetNavDest.Destination(
+                                route = AppNavDest.buildCreateTaskRoute(destination.taskId)
+                            )
+                        )
+                    }
+                }
             },
             configContent = { config, onEvent ->
                 ViewScheduleScreenConfig(config, onEvent)

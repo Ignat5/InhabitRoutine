@@ -56,7 +56,6 @@ internal class DefaultSaveTaskDraftUseCase(
                             frequency = frequency,
                             isArchived = isArchived,
                             isDraft = isDraft,
-                            versionStartDate = startDate,
                             createdAt = createdAt
                         )
                     }
@@ -75,7 +74,6 @@ internal class DefaultSaveTaskDraftUseCase(
                             frequency = frequency,
                             isArchived = isArchived,
                             isDraft = isDraft,
-                            versionStartDate = startDate,
                             createdAt = createdAt
                         )
                     }
@@ -93,7 +91,6 @@ internal class DefaultSaveTaskDraftUseCase(
                             frequency = frequency,
                             isArchived = isArchived,
                             isDraft = isDraft,
-                            versionStartDate = startDate,
                             createdAt = createdAt
                         )
                     }
@@ -112,7 +109,6 @@ internal class DefaultSaveTaskDraftUseCase(
                     frequency = DomainConst.DEFAULT_TASK_FREQUENCY,
                     isArchived = isArchived,
                     isDraft = isDraft,
-                    versionStartDate = startDate,
                     createdAt = createdAt
                 )
             }
@@ -125,7 +121,6 @@ internal class DefaultSaveTaskDraftUseCase(
                     date = TaskDate.Day(startDate),
                     isArchived = isArchived,
                     isDraft = isDraft,
-                    versionStartDate = startDate,
                     createdAt = createdAt
                 )
             }
