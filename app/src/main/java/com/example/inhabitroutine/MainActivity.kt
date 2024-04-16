@@ -3,20 +3,21 @@ package com.example.inhabitroutine
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.inhabitroutine.feature.view_schedule.TestViewScheduleScreen
-import com.example.inhabitroutine.feature.view_schedule.TestViewScheduleViewModel
-import com.example.inhabitroutine.ui.theme.InhabitRoutineTheme
+import androidx.activity.enableEdgeToEdge
+import androidx.core.view.WindowCompat
+import com.example.inhabitroutine.navigation.root.RootGraph
+import com.example.inhabitroutine.ui.theme.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        enableEdgeToEdge()
         setContent {
-            InhabitRoutineTheme {
-                val viewModel: TestViewScheduleViewModel = hiltViewModel()
-                TestViewScheduleScreen(viewModel = viewModel)
+            AppTheme {
+                RootGraph()
             }
         }
     }

@@ -1,0 +1,84 @@
+CREATE TABLE IF NOT EXISTS TaskTable(
+    taskId TEXT NOT NULL,
+    versionStartEpochDay INTEGER NOT NULL,
+    type TEXT NOT NULL,
+    progressType TEXT NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    startEpochDay INTEGER NOT NULL,
+    endEpochDay INTEGER NOT NULL,
+    progressContent TEXT NOT NULL,
+    frequencyContent TEXT NOT NULL,
+    isArchived TEXT NOT NULL,
+    isDraft TEXT NOT NULL,
+    createdAt INTEGER NOT NULL,
+    PRIMARY KEY (taskId, versionStartEpochDay)
+);
+
+CREATE TABLE IF NOT EXISTS ReminderTable(
+    id TEXT NOT NULL PRIMARY KEY,
+    taskId TEXT NOT NULL,
+    time TEXT NOT NULL,
+    type TEXT NOT NULL,
+    schedule TEXT NOT NULL,
+    createdAt INTEGER NOT NULL,
+    FOREIGN KEY (taskId) REFERENCES TaskTable(taskId) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS RecordTable(
+    id TEXT NOT NULL PRIMARY KEY,
+    taskId TEXT NOT NULL,
+    entry TEXT NOT NULL,
+    entryEpochDay INTEGER NOT NULL,
+    createdAt INTEGER NOT NULL,
+    FOREIGN KEY (taskId) REFERENCES TaskTable(taskId) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS TaskStartEndDateIndex
+ON TaskTable(startEpochDay, endEpochDay);
+
+CREATE INDEX IF NOT EXISTS TaskTypeIndex
+ON TaskTable(type);
+
+CREATE INDEX IF NOT EXISTS TaskTitleIndex
+ON TaskTable(title);
+
+CREATE INDEX IF NOT EXISTS RecordEntryDateIndex
+ON RecordTable(entryEpochDay);
+
+selectTaskById:
+SELECT * FROM TaskTable tTask
+WHERE tTask.taskId = :taskId
+GROUP BY tTask.taskId
+HAVING tTask.versionStartEpochDay = MAX(tTask.versionStartEpochDay);
+
+insertTask:
+INSERT OR REPLACE INTO TaskTable
+VALUES ?;
+
+
+-- CREATE VIEW IF NOT EXISTS TaskView AS
+-- SELECT
+-- tTask.taskId task_taskId,
+-- tTask.versionStartEpochDay task_versionStartEpochDay,
+-- tTask.type task_type,
+-- tTask.progressType task_progressType,
+-- tTask.title task_title,
+-- tTask.description task_description,
+-- tTask.startEpochDay task_startEpochDay,
+-- tTask.endEpochDay task_endEpochDay,
+-- tTask.progressContent task_progressContent,
+-- tTask.frequencyContent task_frequencyContent,
+-- tTask.isArchived task_isArchived,
+-- tTask.createdAt task_createdAt,
+-- tTask.deletedAt task_deletedAt,
+--
+-- tReminder.id reminder_id,
+-- tReminder.taskId reminder_taskId,
+-- tReminder.time reminder_time,
+-- tReminder.type reminder_type,
+-- tReminder.schedule reminder_schedule,
+-- tReminder.createdAt reminder_createdAt
+-- FROM TaskTable tTask
+-- LEFT JOIN ReminderTable tReminder
+-- ON tReminder.taskId = tTask.taskId;
