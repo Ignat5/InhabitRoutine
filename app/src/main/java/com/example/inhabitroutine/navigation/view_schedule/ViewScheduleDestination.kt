@@ -5,11 +5,15 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.example.inhabitroutine.feature.view_schedule.ViewScheduleScreen
 import com.example.inhabitroutine.feature.view_schedule.ViewScheduleScreenConfig
-import com.example.inhabitroutine.navigation.dest.AppNavDest
+import com.example.inhabitroutine.navigation.AppNavDest
+import com.example.inhabitroutine.navigation.TargetNavDest
 import com.example.inhabitroutine.presentation.base.BaseDestination
 import com.example.inhabitroutine.presentation.view_schedule.AndroidViewScheduleViewModel
 
-fun NavGraphBuilder.viewScheduleDestination() {
+fun NavGraphBuilder.viewScheduleDestination(
+    onNavigate: (TargetNavDest) -> Unit,
+    onMenuClick: () -> Unit
+) {
     composable(AppNavDest.ViewScheduleDestination.route) {
         val viewModel: AndroidViewScheduleViewModel = hiltViewModel()
         BaseDestination(

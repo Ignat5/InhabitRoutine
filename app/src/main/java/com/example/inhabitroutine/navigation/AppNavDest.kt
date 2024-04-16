@@ -1,4 +1,4 @@
-package com.example.inhabitroutine.navigation.dest
+package com.example.inhabitroutine.navigation
 
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
