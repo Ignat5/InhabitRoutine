@@ -42,4 +42,7 @@ internal class DefaultTaskRepository(
         taskId = taskId,
         title = title
     )
+
+    override suspend fun deleteTaskById(taskId: String): ResultModel<Unit, Throwable> =
+        taskDataSource.deleteTaskById(taskId)
 }

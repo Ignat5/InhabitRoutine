@@ -90,3 +90,7 @@ updateTaskTitleById:
 UPDATE TaskTable SET
 title = :title
 WHERE id = :taskId;
+
+deleteTaskById:
+DELETE FROM TaskTable
+WHERE id = :taskId;

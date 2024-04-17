@@ -6,4 +6,5 @@ import com.example.inhabitroutine.feature.create_edit_task.base.components.BaseC
 
 sealed interface CreateTaskScreenConfig : ScreenConfig {
     data class Base(val baseConfig: BaseCreateEditTaskScreenConfig) : CreateTaskScreenConfig
+    data object ConfirmLeaving : CreateTaskScreenConfig
 }

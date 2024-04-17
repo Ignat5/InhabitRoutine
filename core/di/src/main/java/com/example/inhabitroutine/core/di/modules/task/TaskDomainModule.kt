@@ -2,6 +2,7 @@ package com.example.inhabitroutine.core.di.modules.task
 
 import com.example.inhabitroutine.core.di.qualifiers.DefaultDispatcherQualifier
 import com.example.inhabitroutine.data.task.api.TaskRepository
+import com.example.inhabitroutine.domain.task.api.use_case.DeleteTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.SaveTaskDraftUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskProgressByIdUseCase
@@ -61,6 +62,15 @@ object TaskDomainModule {
     @Provides
     fun provideValidateProgressLimitNumberUseCase(): ValidateProgressLimitNumberUseCase {
         return LocalTaskDomainModule.provideValidateProgressLimitNumberUseCase()
+    }
+
+    @Provides
+    fun provideDeleteTaskByIdUseCase(
+        taskRepository: TaskRepository
+    ): DeleteTaskByIdUseCase {
+        return LocalTaskDomainModule.provideDeleteTaskByIdUseCase(
+            taskRepository = taskRepository
+        )
     }
 
 }

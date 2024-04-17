@@ -43,4 +43,9 @@ internal class DefaultTaskDao(
             title = title
         )
     }
+
+    override suspend fun deleteTaskById(taskId: String): ResultModel<Unit, Throwable> =
+        runQuery(ioDispatcher) {
+            taskDao.deleteTaskById(taskId)
+        }
 }

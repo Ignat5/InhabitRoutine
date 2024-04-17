@@ -41,6 +41,10 @@
     <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
 
+    <!-- discard activity -->
+    <string name="confirm_discard_activity_title">Discard</string>
+    <string name="confirm_discard_activity_message">Are you sure you want to discard the activity?</string>
+
     <!--  days of week  -->
     <string name="day_of_week_monday">Monday</string>
     <string name="day_of_week_tuesday">Tuesday</string>

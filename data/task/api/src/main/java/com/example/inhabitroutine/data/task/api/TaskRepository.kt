@@ -15,4 +15,5 @@ interface TaskRepository {
         taskId: String,
         title: String
     ): ResultModel<Unit, Throwable>
+    suspend fun deleteTaskById(taskId: String): ResultModel<Unit, Throwable>
 }

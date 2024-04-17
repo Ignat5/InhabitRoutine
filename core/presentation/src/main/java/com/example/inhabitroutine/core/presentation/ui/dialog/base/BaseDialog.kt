@@ -132,6 +132,33 @@ fun BaseStaticDialog(
 }
 
 @Composable
+fun BaseMessageDialog(
+    onDismissRequest: () -> Unit,
+    titleText: String,
+    messageText: String,
+    actionType: BaseDialogActionType,
+    modifier: Modifier = Modifier,
+    properties: DialogProperties = DialogProperties(),
+) {
+    BaseDialog(
+        onDismissRequest = onDismissRequest,
+        title = {
+            BaseDialogDefaults.BaseDialogTitle(titleText = titleText)
+        },
+        actionType = actionType,
+        properties = properties,
+        modifier = modifier
+    ) {
+        Text(
+            text = messageText,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Composable
 private fun AfterTitleSpacer() {
     Spacer(modifier = Modifier.height(16.dp))
 }

@@ -5,6 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.example.inhabitroutine.feature.create_edit_task.create.CreateTaskConfig
 import com.example.inhabitroutine.feature.create_edit_task.create.CreateTaskScreen
+import com.example.inhabitroutine.feature.create_edit_task.create.components.CreateTaskScreenNavigation
 import com.example.inhabitroutine.navigation.AppNavDest
 import com.example.inhabitroutine.navigation.TargetNavDest
 import com.example.inhabitroutine.presentation.base.BaseDestination
@@ -18,7 +19,16 @@ fun NavGraphBuilder.createTaskDestination(onNavigate: (TargetNavDest) -> Unit) {
         val viewModel: AndroidCreateTaskViewModel = hiltViewModel()
         BaseDestination(
             viewModel = viewModel,
-            onNavigation = {},
+            onNavigation = { destination ->
+                when (destination) {
+                    is CreateTaskScreenNavigation.Base -> {
+//                        TODO()
+                    }
+                    is CreateTaskScreenNavigation.Back -> {
+                        onNavigate(TargetNavDest.Back)
+                    }
+                }
+            },
             configContent = { config, onEvent ->
                 CreateTaskConfig(config, onEvent)
             },

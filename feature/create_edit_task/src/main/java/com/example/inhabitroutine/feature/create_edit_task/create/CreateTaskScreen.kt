@@ -1,5 +1,6 @@
 package com.example.inhabitroutine.feature.create_edit_task.create
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -27,18 +28,24 @@ import com.example.inhabitroutine.feature.create_edit_task.base.components.BaseC
 import com.example.inhabitroutine.feature.create_edit_task.create.components.CreateTaskScreenConfig
 import com.example.inhabitroutine.feature.create_edit_task.create.components.CreateTaskScreenEvent
 import com.example.inhabitroutine.feature.create_edit_task.create.components.CreateTaskScreenState
+import com.example.inhabitroutine.feature.create_edit_task.create.config.ConfirmLeavingDialog
 
 @Composable
 fun CreateTaskScreen(
     state: CreateTaskScreenState,
     onEvent: (CreateTaskScreenEvent) -> Unit
 ) {
+    BackHandler {
+        onEvent(CreateTaskScreenEvent.OnLeaveRequest)
+    }
     Scaffold(
         topBar = {
             ScreenTopBar(
                 canSave = state.canSave,
                 onSaveClick = {},
-                onCloseClick = {}
+                onCloseClick = {
+                    onEvent(CreateTaskScreenEvent.OnLeaveRequest)
+                }
             )
         }
     ) {
@@ -70,6 +77,14 @@ fun CreateTaskConfig(
                 config = config.baseConfig,
                 onEvent = {
                     onEvent(CreateTaskScreenEvent.Base(it))
+                }
+            )
+        }
+
+        is CreateTaskScreenConfig.ConfirmLeaving -> {
+            ConfirmLeavingDialog(
+                onResult = {
+                    onEvent(CreateTaskScreenEvent.ResultEvent.ConfirmLeaving(it))
                 }
             )
         }

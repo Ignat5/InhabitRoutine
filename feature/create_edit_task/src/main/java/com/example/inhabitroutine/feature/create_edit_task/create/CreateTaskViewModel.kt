@@ -1,6 +1,7 @@
 package com.example.inhabitroutine.feature.create_edit_task.create
 
 import com.example.inhabitroutine.domain.model.task.TaskModel
+import com.example.inhabitroutine.domain.task.api.use_case.DeleteTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskProgressByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskTitleByIdUseCase
@@ -12,6 +13,7 @@ import com.example.inhabitroutine.feature.create_edit_task.create.components.Cre
 import com.example.inhabitroutine.feature.create_edit_task.create.components.CreateTaskScreenEvent
 import com.example.inhabitroutine.feature.create_edit_task.create.components.CreateTaskScreenNavigation
 import com.example.inhabitroutine.feature.create_edit_task.create.components.CreateTaskScreenState
+import com.example.inhabitroutine.feature.create_edit_task.create.config.ConfirmLeavingScreenResult
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
@@ -20,11 +22,13 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class CreateTaskViewModel(
     private val taskId: String,
     private val readTaskByIdUseCase: ReadTaskByIdUseCase,
+    private val deleteTaskByIdUseCase: DeleteTaskByIdUseCase,
     updateTaskTitleByIdUseCase: UpdateTaskTitleByIdUseCase,
     updateTaskProgressByIdUseCase: UpdateTaskProgressByIdUseCase,
     validateProgressLimitNumberUseCase: ValidateProgressLimitNumberUseCase,
@@ -85,6 +89,42 @@ class CreateTaskViewModel(
     override fun onEvent(event: CreateTaskScreenEvent) {
         when (event) {
             is CreateTaskScreenEvent.Base -> onBaseEvent(event.baseEvent)
+            is CreateTaskScreenEvent.ResultEvent -> onResultEvent(event)
+            is CreateTaskScreenEvent.OnLeaveRequest -> onLeaveRequest()
+        }
+    }
+
+    private fun onResultEvent(event: CreateTaskScreenEvent.ResultEvent) {
+        when (event) {
+            is CreateTaskScreenEvent.ResultEvent.ConfirmLeaving ->
+                onConfirmLeavingResultEvent(event)
+        }
+    }
+
+    private fun onConfirmLeavingResultEvent(event: CreateTaskScreenEvent.ResultEvent.ConfirmLeaving) {
+        onIdleToAction {
+            when (event.result) {
+                is ConfirmLeavingScreenResult.Confirm -> onConfirmLeaving()
+                is ConfirmLeavingScreenResult.Dismiss -> Unit
+            }
+        }
+    }
+
+    private fun onConfirmLeaving() {
+        viewModelScope.launch {
+            deleteTaskByIdUseCase(taskId)
+            setUpNavigationState(CreateTaskScreenNavigation.Back)
+        }
+    }
+
+    private fun onLeaveRequest() {
+        if (canSaveState.value) {
+            setUpConfigState(CreateTaskScreenConfig.ConfirmLeaving)
+        } else {
+            viewModelScope.launch {
+                deleteTaskByIdUseCase(taskId)
+                setUpNavigationState(CreateTaskScreenNavigation.Back)
+            }
         }
     }
 

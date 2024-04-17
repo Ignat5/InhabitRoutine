@@ -5,4 +5,5 @@ import com.example.inhabitroutine.feature.create_edit_task.base.components.BaseC
 
 sealed interface CreateTaskScreenNavigation : ScreenNavigation {
     data class Base(val baseNavigation: BaseCreateEditTaskScreenNavigation) : CreateTaskScreenNavigation
+    data object Back : CreateTaskScreenNavigation
 }

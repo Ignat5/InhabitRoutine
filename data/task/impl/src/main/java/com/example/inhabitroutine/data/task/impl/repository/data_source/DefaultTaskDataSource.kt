@@ -38,4 +38,7 @@ internal class DefaultTaskDataSource(
         taskId = taskId,
         title = title
     )
+
+    override suspend fun deleteTaskById(taskId: String): ResultModel<Unit, Throwable> =
+        taskDao.deleteTaskById(taskId)
 }

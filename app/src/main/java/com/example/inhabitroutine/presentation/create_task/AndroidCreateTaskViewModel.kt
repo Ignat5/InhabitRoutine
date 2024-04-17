@@ -3,6 +3,7 @@ package com.example.inhabitroutine.presentation.create_task
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.example.inhabitroutine.core.di.qualifiers.DefaultDispatcherQualifier
+import com.example.inhabitroutine.domain.task.api.use_case.DeleteTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskProgressByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskTitleByIdUseCase
@@ -22,6 +23,7 @@ import javax.inject.Inject
 class AndroidCreateTaskViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     readTaskByIdUseCase: ReadTaskByIdUseCase,
+    deleteTaskByIdUseCase: DeleteTaskByIdUseCase,
     updateTaskTitleByIdUseCase: UpdateTaskTitleByIdUseCase,
     updateTaskProgressByIdUseCase: UpdateTaskProgressByIdUseCase,
     validateProgressLimitNumberUseCase: ValidateProgressLimitNumberUseCase,
@@ -31,6 +33,7 @@ class AndroidCreateTaskViewModel @Inject constructor(
     override val delegateViewModel = CreateTaskViewModel(
         taskId = checkNotNull(savedStateHandle.get<String>(AppNavDest.TASK_ID_KEY)),
         readTaskByIdUseCase = readTaskByIdUseCase,
+        deleteTaskByIdUseCase = deleteTaskByIdUseCase,
         updateTaskTitleByIdUseCase = updateTaskTitleByIdUseCase,
         updateTaskProgressByIdUseCase = updateTaskProgressByIdUseCase,
         validateProgressLimitNumberUseCase = validateProgressLimitNumberUseCase,
