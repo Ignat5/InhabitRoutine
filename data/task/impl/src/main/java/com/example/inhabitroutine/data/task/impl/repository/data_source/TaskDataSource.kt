@@ -7,4 +7,8 @@ import kotlinx.coroutines.flow.Flow
 interface TaskDataSource {
     fun readTaskById(taskId: String): Flow<TaskDataModel?>
     suspend fun saveTask(taskDataModel: TaskDataModel): ResultModel<Unit, Throwable>
+    suspend fun updateTaskTitleById(
+        taskId: String,
+        title: String
+    ): ResultModel<Unit, Throwable>
 }

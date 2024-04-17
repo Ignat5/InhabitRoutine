@@ -33,4 +33,14 @@ internal class DefaultTaskDao(
                 insertTaskContent(taskEntity.toTaskContentTable())
             }
         }
+
+    override suspend fun updateTaskTitleById(
+        taskId: String,
+        title: String
+    ): ResultModel<Unit, Throwable> = runQuery(ioDispatcher) {
+        taskDao.updateTaskTitleById(
+            taskId = taskId,
+            title = title
+        )
+    }
 }

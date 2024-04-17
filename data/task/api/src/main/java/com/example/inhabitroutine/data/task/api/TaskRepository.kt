@@ -7,4 +7,8 @@ import kotlinx.coroutines.flow.Flow
 interface TaskRepository {
     fun readTaskById(taskId: String): Flow<TaskModel?>
     suspend fun saveTask(taskModel: TaskModel): ResultModel<Unit, Throwable>
+    suspend fun updateTaskTitleById(
+        taskId: String,
+        title: String
+    ): ResultModel<Unit, Throwable>
 }

@@ -6,7 +6,7 @@ import com.example.inhabitroutine.domain.task.api.use_case.ReadTaskByIdUseCase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
-class DefaultReadTaskByIdUseCase(
+internal class DefaultReadTaskByIdUseCase(
     private val taskRepository: TaskRepository
 ) : ReadTaskByIdUseCase {
 

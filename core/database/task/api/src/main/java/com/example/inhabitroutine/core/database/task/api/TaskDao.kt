@@ -6,4 +6,8 @@ import kotlinx.coroutines.flow.Flow
 interface TaskDao {
     fun readTaskById(taskId: String): Flow<TaskEntity?>
     suspend fun saveTask(taskEntity: TaskEntity): ResultModel<Unit, Throwable>
+    suspend fun updateTaskTitleById(
+        taskId: String,
+        title: String
+    ): ResultModel<Unit, Throwable>
 }

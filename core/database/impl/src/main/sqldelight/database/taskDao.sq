@@ -85,3 +85,8 @@ VALUES ?;
 insertTaskContent:
 INSERT OR REPLACE INTO TaskContentTable
 VALUES ?;
+
+updateTaskTitleById:
+UPDATE TaskTable SET
+title = :title
+WHERE id = :taskId;

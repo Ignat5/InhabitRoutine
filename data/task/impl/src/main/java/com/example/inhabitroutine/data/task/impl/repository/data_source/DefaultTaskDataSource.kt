@@ -30,4 +30,12 @@ internal class DefaultTaskDataSource(
                 taskDao.saveTask(taskEntity)
             } ?: ResultModel.failure(IllegalStateException())
         }
+
+    override suspend fun updateTaskTitleById(
+        taskId: String,
+        title: String
+    ): ResultModel<Unit, Throwable> = taskDao.updateTaskTitleById(
+        taskId = taskId,
+        title = title
+    )
 }

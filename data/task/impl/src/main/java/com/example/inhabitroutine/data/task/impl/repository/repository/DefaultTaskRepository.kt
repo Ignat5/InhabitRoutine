@@ -30,4 +30,12 @@ internal class DefaultTaskRepository(
         taskModel.toTaskDataModel().let { taskDataModel ->
             taskDataSource.saveTask(taskDataModel)
         }
+
+    override suspend fun updateTaskTitleById(
+        taskId: String,
+        title: String
+    ): ResultModel<Unit, Throwable> = taskDataSource.updateTaskTitleById(
+        taskId = taskId,
+        title = title
+    )
 }

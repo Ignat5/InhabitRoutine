@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.example.inhabitroutine.core.di.qualifiers.DefaultDispatcherQualifier
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTaskByIdUseCase
+import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskTitleByIdUseCase
 import com.example.inhabitroutine.feature.create_edit_task.create.CreateTaskViewModel
 import com.example.inhabitroutine.feature.create_edit_task.create.components.CreateTaskScreenConfig
 import com.example.inhabitroutine.feature.create_edit_task.create.components.CreateTaskScreenEvent
@@ -19,12 +20,14 @@ import javax.inject.Inject
 class AndroidCreateTaskViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     readTaskByIdUseCase: ReadTaskByIdUseCase,
+    updateTaskTitleByIdUseCase: UpdateTaskTitleByIdUseCase,
     @DefaultDispatcherQualifier defaultDispatcher: CoroutineDispatcher
 ) : BaseAndroidViewModel<CreateTaskScreenEvent, CreateTaskScreenState, CreateTaskScreenNavigation, CreateTaskScreenConfig>() {
 
     override val delegateViewModel = CreateTaskViewModel(
         taskId = checkNotNull(savedStateHandle.get<String>(AppNavDest.TASK_ID_KEY)),
         readTaskByIdUseCase = readTaskByIdUseCase,
+        updateTaskTitleByIdUseCase = updateTaskTitleByIdUseCase,
         defaultDispatcher = defaultDispatcher,
         viewModelScope = viewModelScope
     )

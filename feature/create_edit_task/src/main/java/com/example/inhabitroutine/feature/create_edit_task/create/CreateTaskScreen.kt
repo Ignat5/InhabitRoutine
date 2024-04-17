@@ -21,7 +21,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.example.inhabitroutine.feature.create_edit_task.R
+import com.example.inhabitroutine.feature.create_edit_task.base.BaseCreateEditTaskConfig
 import com.example.inhabitroutine.feature.create_edit_task.base.baseConfigItems
+import com.example.inhabitroutine.feature.create_edit_task.base.components.BaseCreateEditTaskScreenEvent
+import com.example.inhabitroutine.feature.create_edit_task.create.components.CreateTaskScreenConfig
 import com.example.inhabitroutine.feature.create_edit_task.create.components.CreateTaskScreenEvent
 import com.example.inhabitroutine.feature.create_edit_task.create.components.CreateTaskScreenState
 
@@ -43,11 +46,32 @@ fun CreateTaskScreen(
             LazyColumn(modifier = Modifier.fillMaxWidth()) {
                 baseConfigItems(
                     allTaskConfigItems = state.allTaskConfigItems,
-                    onItemClick = {
-
+                    onItemClick = { item ->
+                        onEvent(
+                            CreateTaskScreenEvent.Base(
+                                BaseCreateEditTaskScreenEvent.OnItemConfigClick(item)
+                            )
+                        )
                     }
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun CreateTaskConfig(
+    config: CreateTaskScreenConfig,
+    onEvent: (CreateTaskScreenEvent) -> Unit
+) {
+    when (config) {
+        is CreateTaskScreenConfig.Base -> {
+            BaseCreateEditTaskConfig(
+                config = config.baseConfig,
+                onEvent = {
+                    onEvent(CreateTaskScreenEvent.Base(it))
+                }
+            )
         }
     }
 }

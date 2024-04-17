@@ -2,6 +2,7 @@ package com.example.inhabitroutine.feature.create_edit_task.create
 
 import com.example.inhabitroutine.domain.model.task.TaskModel
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTaskByIdUseCase
+import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskTitleByIdUseCase
 import com.example.inhabitroutine.feature.create_edit_task.base.BaseCreateEditTaskViewModel
 import com.example.inhabitroutine.feature.create_edit_task.base.components.BaseCreateEditTaskScreenConfig
 import com.example.inhabitroutine.feature.create_edit_task.base.components.BaseCreateEditTaskScreenNavigation
@@ -22,10 +23,11 @@ import kotlinx.coroutines.withContext
 class CreateTaskViewModel(
     private val taskId: String,
     private val readTaskByIdUseCase: ReadTaskByIdUseCase,
+    updateTaskTitleByIdUseCase: UpdateTaskTitleByIdUseCase,
     defaultDispatcher: CoroutineDispatcher,
     override val viewModelScope: CoroutineScope
 ) : BaseCreateEditTaskViewModel<CreateTaskScreenEvent, CreateTaskScreenState, CreateTaskScreenNavigation, CreateTaskScreenConfig>(
-
+    updateTaskTitleByIdUseCase = updateTaskTitleByIdUseCase
 ) {
 
     override val taskModelState: StateFlow<TaskModel?> = readTaskByIdUseCase(taskId)
@@ -35,9 +37,7 @@ class CreateTaskViewModel(
             null
         )
 
-    private val taskModelFlow = taskModelState.filterNotNull()
-
-    private val allTaskConfigItemsState = taskModelFlow.map { taskModel ->
+    private val allTaskConfigItemsState = taskModelState.filterNotNull().map { taskModel ->
         withContext(defaultDispatcher) {
             provideBaseTaskConfigItems(taskModel)
         }
@@ -47,7 +47,7 @@ class CreateTaskViewModel(
         emptyList()
     )
 
-    private val canSaveState = taskModelFlow.map { taskModel ->
+    private val canSaveState = taskModelState.filterNotNull().map { taskModel ->
         taskModel.title.isNotBlank()
     }.stateIn(
         viewModelScope,
@@ -57,7 +57,7 @@ class CreateTaskViewModel(
 
     override val uiScreenState: StateFlow<CreateTaskScreenState> =
         combine(
-            taskModelFlow,
+            taskModelState,
             allTaskConfigItemsState,
             canSaveState
         ) { taskModel, allTaskConfigItems, canSaveState ->

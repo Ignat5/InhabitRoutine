@@ -22,15 +22,20 @@
     <string name="task_config_start_date">Start date</string>
     <string name="task_config_end_date">End date</string>
     <string name="task_config_reminders">Time and reminders</string>
+    <string name="daily_goal_suffix">a day</string>
+    <string name="frequency_every_day">Every day</string>
     <string name="create_task_title">Create activity</string>
+    <string name="task_config_title_label">Name</string>
+
+    <!--  progress_limit_type  -->
     <string name="progress_limit_type_at_least_title">At least</string>
     <string name="progress_limit_type_exactly_title">Exactly</string>
     <string name="progress_limit_type_no_more_than_title">No more than</string>
-    <string name="daily_goal_suffix">a day</string>
-    <string name="frequency_every_day">Every day</string>
 
     <!-- common   -->
     <string name="save">Save</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
 
     <!--  days of week  -->
     <string name="day_of_week_monday">Monday</string>

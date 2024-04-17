@@ -3,6 +3,7 @@ package com.example.inhabitroutine.navigation.create_task
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.example.inhabitroutine.feature.create_edit_task.create.CreateTaskConfig
 import com.example.inhabitroutine.feature.create_edit_task.create.CreateTaskScreen
 import com.example.inhabitroutine.navigation.AppNavDest
 import com.example.inhabitroutine.navigation.TargetNavDest
@@ -18,7 +19,9 @@ fun NavGraphBuilder.createTaskDestination(onNavigate: (TargetNavDest) -> Unit) {
         BaseDestination(
             viewModel = viewModel,
             onNavigation = {},
-            configContent = { config, onEvent -> },
+            configContent = { config, onEvent ->
+                CreateTaskConfig(config, onEvent)
+            },
             screenContent = { state, onEvent ->
                 CreateTaskScreen(state, onEvent)
             }

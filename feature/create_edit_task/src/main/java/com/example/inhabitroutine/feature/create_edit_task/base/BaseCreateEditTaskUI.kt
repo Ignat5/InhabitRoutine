@@ -14,7 +14,6 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,8 +28,27 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.inhabitroutine.core.presentation.ui.util.toDayMonthYearDisplay
 import com.example.inhabitroutine.core.presentation.ui.util.toDisplay
-import com.example.inhabitroutine.feature.create_edit_task.R
+import com.example.inhabitroutine.feature.create_edit_task.base.components.BaseCreateEditTaskScreenConfig
+import com.example.inhabitroutine.feature.create_edit_task.base.components.BaseCreateEditTaskScreenEvent
+import com.example.inhabitroutine.feature.create_edit_task.base.config.pick_task_title.PickTaskTitleDialog
 import com.example.inhabitroutine.feature.create_edit_task.base.model.BaseItemTaskConfig
+
+@Composable
+internal fun BaseCreateEditTaskConfig(
+    config: BaseCreateEditTaskScreenConfig,
+    onEvent: (BaseCreateEditTaskScreenEvent) -> Unit
+) {
+    when (config) {
+        is BaseCreateEditTaskScreenConfig.PickTaskTitle -> {
+            PickTaskTitleDialog(
+                stateHolder = config.stateHolder,
+                onResult = {
+                    onEvent(BaseCreateEditTaskScreenEvent.ResultEvent.PickTaskTitle(it))
+                }
+            )
+        }
+    }
+}
 
 internal fun LazyListScope.baseConfigItems(
     allTaskConfigItems: List<BaseItemTaskConfig>,
@@ -81,18 +99,21 @@ internal fun LazyListScope.baseConfigItems(
                         onClick = onClick
                     )
                 }
+
                 BaseItemTaskConfig.Key.StartDate -> {
                     ItemStartDateConfig(
                         item = (item as BaseItemTaskConfig.DateConfig.StartDate),
                         onClick = onClick
                     )
                 }
+
                 BaseItemTaskConfig.Key.EndDate -> {
                     ItemEndDateConfig(
                         item = (item as BaseItemTaskConfig.DateConfig.EndDate),
                         onClick = onClick
                     )
                 }
+
                 BaseItemTaskConfig.Key.Reminders -> {
                     ItemRemindersConfig(
                         item = (item as BaseItemTaskConfig.Reminders),
@@ -139,11 +160,12 @@ internal fun ItemProgressConfig(
     onClick: () -> Unit
 ) {
     val context = LocalContext.current
-    val text = remember (item) {
+    val text = remember(item) {
         when (item) {
             is BaseItemTaskConfig.Progress.Number -> {
                 item.taskProgress.toDisplay(context)
             }
+
             is BaseItemTaskConfig.Progress.Time -> {
                 item.taskProgress.toDisplay(context)
             }
@@ -179,7 +201,7 @@ internal fun ItemDateConfig(
     item: BaseItemTaskConfig.DateConfig.Date,
     onClick: () -> Unit
 ) {
-    val text = remember (item) {
+    val text = remember(item) {
         item.date.toDayMonthYearDisplay()
     }
     BasicTextItemConfig(
@@ -195,7 +217,7 @@ internal fun ItemStartDateConfig(
     item: BaseItemTaskConfig.DateConfig.StartDate,
     onClick: () -> Unit
 ) {
-    val text = remember (item) {
+    val text = remember(item) {
         item.date.toDayMonthYearDisplay()
     }
     BasicTextItemConfig(
@@ -211,7 +233,7 @@ internal fun ItemEndDateConfig(
     item: BaseItemTaskConfig.DateConfig.EndDate,
     onClick: () -> Unit
 ) {
-    val text = remember (item) {
+    val text = remember(item) {
         item.date?.toDayMonthYearDisplay() ?: ""
     }
     BasicTextItemConfig(

@@ -4,8 +4,8 @@ import com.example.inhabitroutine.core.di.qualifiers.DefaultDispatcherQualifier
 import com.example.inhabitroutine.data.task.api.TaskRepository
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.SaveTaskDraftUseCase
+import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskTitleByIdUseCase
 import com.example.inhabitroutine.domain.task.impl.di.LocalTaskDomainModule
-import com.example.inhabitroutine.domain.task.impl.use_case.DefaultReadTaskByIdUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,7 +20,7 @@ object TaskDomainModule {
     fun provideReadTaskByIdUseCase(
         taskRepository: TaskRepository
     ): ReadTaskByIdUseCase {
-        return DefaultReadTaskByIdUseCase(
+        return LocalTaskDomainModule.provideReadTaskByIdUseCase(
             taskRepository = taskRepository
         )
     }
@@ -33,6 +33,15 @@ object TaskDomainModule {
         return LocalTaskDomainModule.provideSaveTaskDraftUseCase(
             taskRepository = taskRepository,
             defaultDispatcher = defaultDispatcher
+        )
+    }
+
+    @Provides
+    fun provideUpdateTaskTitleByIdUseCase(
+        taskRepository: TaskRepository
+    ): UpdateTaskTitleByIdUseCase {
+        return LocalTaskDomainModule.provideUpdateTaskTitleByIdUseCase(
+            taskRepository = taskRepository
         )
     }
 
