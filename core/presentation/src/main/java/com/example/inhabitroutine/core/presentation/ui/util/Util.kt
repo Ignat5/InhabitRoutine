@@ -110,7 +110,6 @@ fun TaskProgress.Number.toDisplay(context: Context): String =
             if (progress.limitUnit.isNotBlank()) {
                 append(" ")
                 append(progress.limitUnit)
-                append(" ")
             }
             append(" ")
             append(context.getString(R.string.daily_goal_suffix))

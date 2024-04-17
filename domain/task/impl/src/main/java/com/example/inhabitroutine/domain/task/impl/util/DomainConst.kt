@@ -16,4 +16,8 @@ internal object DomainConst {
     val DEFAULT_LIMIT_TYPE get() = ProgressLimitType.AtLeast
     const val DEFAULT_LIMIT_UNIT = ""
     val DEFAULT_LIMIT_TIME get() = LocalTime(hour = 0, minute = 0, second = 0)
+
+    const val MAX_LIMIT_NUMBER: Double = 1_000_000.0
+    const val MAX_LIMIT_NUMBER_LENGTH: Int = MAX_LIMIT_NUMBER.toString().length
+    const val MIN_LIMIT_NUMBER: Double = 0.0
 }

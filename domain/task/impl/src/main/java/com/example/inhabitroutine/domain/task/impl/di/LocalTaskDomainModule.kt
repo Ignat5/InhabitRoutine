@@ -3,10 +3,14 @@ package com.example.inhabitroutine.domain.task.impl.di
 import com.example.inhabitroutine.data.task.api.TaskRepository
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.SaveTaskDraftUseCase
+import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskProgressByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskTitleByIdUseCase
+import com.example.inhabitroutine.domain.task.api.use_case.ValidateProgressLimitNumberUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultReadTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultSaveTaskDraftUseCase
+import com.example.inhabitroutine.domain.task.impl.use_case.DefaultUpdateTaskProgressByIdUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultUpdateTaskTitleByIdUseCase
+import com.example.inhabitroutine.domain.task.impl.use_case.DefaultValidateProgressLimitNumberUseCase
 import kotlinx.coroutines.CoroutineDispatcher
 
 object LocalTaskDomainModule {
@@ -35,6 +39,20 @@ object LocalTaskDomainModule {
         return DefaultUpdateTaskTitleByIdUseCase(
             taskRepository = taskRepository
         )
+    }
+
+    fun provideUpdateTaskProgressByIdUseCase(
+        taskRepository: TaskRepository,
+        defaultDispatcher: CoroutineDispatcher
+    ): UpdateTaskProgressByIdUseCase {
+        return DefaultUpdateTaskProgressByIdUseCase(
+            taskRepository = taskRepository,
+            defaultDispatcher = defaultDispatcher
+        )
+    }
+
+    fun provideValidateProgressLimitNumberUseCase(): ValidateProgressLimitNumberUseCase {
+        return DefaultValidateProgressLimitNumberUseCase()
     }
 
 }

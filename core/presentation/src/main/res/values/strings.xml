@@ -27,6 +27,10 @@
     <string name="create_task_title">Create activity</string>
     <string name="task_config_title_label">Name</string>
 
+    <!--  pick task progress  -->
+    <string name="task_config_limit_number_label">Goal</string>
+    <string name="task_config_limit_unit_label">Unit</string>
+
     <!--  progress_limit_type  -->
     <string name="progress_limit_type_at_least_title">At least</string>
     <string name="progress_limit_type_exactly_title">Exactly</string>

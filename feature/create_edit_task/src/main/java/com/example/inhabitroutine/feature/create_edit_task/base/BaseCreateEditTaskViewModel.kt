@@ -7,10 +7,14 @@ import com.example.inhabitroutine.core.presentation.components.navigation.Screen
 import com.example.inhabitroutine.core.presentation.components.state.ScreenState
 import com.example.inhabitroutine.domain.model.task.TaskModel
 import com.example.inhabitroutine.domain.model.task.content.TaskDate
+import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskProgressByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskTitleByIdUseCase
+import com.example.inhabitroutine.domain.task.api.use_case.ValidateProgressLimitNumberUseCase
 import com.example.inhabitroutine.feature.create_edit_task.base.components.BaseCreateEditTaskScreenConfig
 import com.example.inhabitroutine.feature.create_edit_task.base.components.BaseCreateEditTaskScreenEvent
 import com.example.inhabitroutine.feature.create_edit_task.base.components.BaseCreateEditTaskScreenNavigation
+import com.example.inhabitroutine.feature.create_edit_task.base.config.pick_task_number_progress.PickTaskNumberProgressStateHolder
+import com.example.inhabitroutine.feature.create_edit_task.base.config.pick_task_number_progress.components.PickTaskNumberProgressScreenResult
 import com.example.inhabitroutine.feature.create_edit_task.base.config.pick_task_title.PickTaskTitleStateHolder
 import com.example.inhabitroutine.feature.create_edit_task.base.config.pick_task_title.components.PickTaskTitleScreenResult
 import com.example.inhabitroutine.feature.create_edit_task.base.model.BaseItemTaskConfig
@@ -21,7 +25,9 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
 abstract class BaseCreateEditTaskViewModel<SE : ScreenEvent, SS : ScreenState, SN : ScreenNavigation, SC : ScreenConfig>(
-    private val updateTaskTitleByIdUseCase: UpdateTaskTitleByIdUseCase
+    private val updateTaskTitleByIdUseCase: UpdateTaskTitleByIdUseCase,
+    private val updateTaskProgressByIdUseCase: UpdateTaskProgressByIdUseCase,
+    private val validateProgressLimitNumberUseCase: ValidateProgressLimitNumberUseCase
 ) : BaseViewModel<SE, SS, SN, SC>() {
     private val todayDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
     protected abstract val taskModelState: StateFlow<TaskModel?>
@@ -42,6 +48,31 @@ abstract class BaseCreateEditTaskViewModel<SE : ScreenEvent, SS : ScreenState, S
         when (event) {
             is BaseCreateEditTaskScreenEvent.ResultEvent.PickTaskTitle ->
                 onPickTaskTitleResultEvent(event)
+
+            is BaseCreateEditTaskScreenEvent.ResultEvent.PickTaskNumberProgress ->
+                onPickTaskNumberProgressResultEvent(event)
+        }
+    }
+
+    private fun onPickTaskNumberProgressResultEvent(event: BaseCreateEditTaskScreenEvent.ResultEvent.PickTaskNumberProgress) {
+        onIdleToAction {
+            when (val result = event.result) {
+                is PickTaskNumberProgressScreenResult.Confirm ->
+                    onConfirmPickTaskNumberProgress(result)
+
+                is PickTaskNumberProgressScreenResult.Dismiss -> Unit
+            }
+        }
+    }
+
+    protected open fun onConfirmPickTaskNumberProgress(result: PickTaskNumberProgressScreenResult.Confirm) {
+        taskModelState.value?.let { taskModel ->
+            viewModelScope.launch {
+                updateTaskProgressByIdUseCase(
+                    taskId = taskModel.id,
+                    taskProgress = result.taskProgress
+                )
+            }
         }
     }
 
@@ -68,11 +99,39 @@ abstract class BaseCreateEditTaskViewModel<SE : ScreenEvent, SS : ScreenState, S
     }
 
     private fun onItemConfigClick(event: BaseCreateEditTaskScreenEvent.OnItemConfigClick) {
-        when (event.itemConfig) {
+        when (val itemConfig = event.itemConfig) {
             is BaseItemTaskConfig.Title ->
                 onConfigTaskTitleClick()
 
+            is BaseItemTaskConfig.Progress ->
+                onConfigTaskProgressClick(itemConfig)
+
             else -> Unit
+        }
+    }
+
+    private fun onConfigTaskProgressClick(itemConfig: BaseItemTaskConfig.Progress) {
+        when (itemConfig) {
+            is BaseItemTaskConfig.Progress.Number ->
+                onConfigTaskNumberProgressClick()
+
+            is BaseItemTaskConfig.Progress.Time -> {
+//                TODO()
+            }
+        }
+    }
+
+    private fun onConfigTaskNumberProgressClick() {
+        (taskModelState.value as? TaskModel.Habit.HabitContinuous.HabitNumber)?.let { habitNumber ->
+            setUpBaseConfigState(
+                BaseCreateEditTaskScreenConfig.PickTaskNumberProgress(
+                    stateHolder = PickTaskNumberProgressStateHolder(
+                        initTaskProgress = habitNumber.progress,
+                        validateProgressLimitNumberUseCase = validateProgressLimitNumberUseCase,
+                        holderScope = provideChildScope()
+                    )
+                )
+            )
         }
     }
 

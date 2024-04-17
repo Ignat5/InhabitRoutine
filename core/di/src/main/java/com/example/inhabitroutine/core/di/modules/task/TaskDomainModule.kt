@@ -4,7 +4,9 @@ import com.example.inhabitroutine.core.di.qualifiers.DefaultDispatcherQualifier
 import com.example.inhabitroutine.data.task.api.TaskRepository
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.SaveTaskDraftUseCase
+import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskProgressByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskTitleByIdUseCase
+import com.example.inhabitroutine.domain.task.api.use_case.ValidateProgressLimitNumberUseCase
 import com.example.inhabitroutine.domain.task.impl.di.LocalTaskDomainModule
 import dagger.Module
 import dagger.Provides
@@ -43,6 +45,22 @@ object TaskDomainModule {
         return LocalTaskDomainModule.provideUpdateTaskTitleByIdUseCase(
             taskRepository = taskRepository
         )
+    }
+
+    @Provides
+    fun provideUpdateTaskProgressByIdUseCase(
+        taskRepository: TaskRepository,
+        @DefaultDispatcherQualifier defaultDispatcher: CoroutineDispatcher
+    ): UpdateTaskProgressByIdUseCase {
+        return LocalTaskDomainModule.provideUpdateTaskProgressByIdUseCase(
+            taskRepository = taskRepository,
+            defaultDispatcher = defaultDispatcher
+        )
+    }
+
+    @Provides
+    fun provideValidateProgressLimitNumberUseCase(): ValidateProgressLimitNumberUseCase {
+        return LocalTaskDomainModule.provideValidateProgressLimitNumberUseCase()
     }
 
 }

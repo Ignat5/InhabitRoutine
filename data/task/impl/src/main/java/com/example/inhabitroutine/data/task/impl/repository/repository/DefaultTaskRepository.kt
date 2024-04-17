@@ -11,6 +11,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.LocalDate
 
 internal class DefaultTaskRepository(
     private val taskDataSource: TaskDataSource,
@@ -26,8 +27,11 @@ internal class DefaultTaskRepository(
             } else null
         }
 
-    override suspend fun saveTask(taskModel: TaskModel): ResultModel<Unit, Throwable> =
-        taskModel.toTaskDataModel().let { taskDataModel ->
+    override suspend fun saveTask(
+        taskModel: TaskModel,
+        versionStartDate: LocalDate
+    ): ResultModel<Unit, Throwable> =
+        taskModel.toTaskDataModel(versionStartDate).let { taskDataModel ->
             taskDataSource.saveTask(taskDataModel)
         }
 

@@ -24,9 +24,16 @@ internal class DefaultSaveTaskDraftUseCase(
     override suspend operator fun invoke(requestType: SaveTaskDraftUseCase.RequestType): ResultModel<String, Throwable> =
         withContext(defaultDispatcher) {
             buildTaskModel(requestType).let { taskModel ->
-                taskRepository.saveTask(taskModel).mapSuccess {
-                    taskModel.id
-                }
+                Clock.System.now()
+                    .toLocalDateTime(TimeZone.currentSystemDefault())
+                    .date.let { todayDate ->
+                        taskRepository.saveTask(
+                            taskModel = taskModel,
+                            versionStartDate = todayDate
+                        ).mapSuccess {
+                            taskModel.id
+                        }
+                    }
             }
         }
 
