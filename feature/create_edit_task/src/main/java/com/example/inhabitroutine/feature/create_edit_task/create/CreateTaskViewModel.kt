@@ -40,7 +40,8 @@ class CreateTaskViewModel(
     updateTaskTitleByIdUseCase = updateTaskTitleByIdUseCase,
     updateTaskProgressByIdUseCase = updateTaskProgressByIdUseCase,
     updateTaskFrequencyByIdUseCase = updateTaskFrequencyByIdUseCase,
-    validateProgressLimitNumberUseCase = validateProgressLimitNumberUseCase
+    validateProgressLimitNumberUseCase = validateProgressLimitNumberUseCase,
+    defaultDispatcher = defaultDispatcher,
 ) {
 
     override val taskModelState: StateFlow<TaskModel?> = readTaskByIdUseCase(taskId)

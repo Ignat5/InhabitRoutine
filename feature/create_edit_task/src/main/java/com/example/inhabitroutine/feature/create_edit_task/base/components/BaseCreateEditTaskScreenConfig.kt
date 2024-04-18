@@ -1,6 +1,7 @@
 package com.example.inhabitroutine.feature.create_edit_task.base.components
 
 import com.example.inhabitroutine.core.presentation.components.config.ScreenConfig
+import com.example.inhabitroutine.core.presentation.ui.dialog.pick_date.PickDateStateHolder
 import com.example.inhabitroutine.feature.create_edit_task.base.config.pick_task_frequency.PickTaskFrequencyStateHolder
 import com.example.inhabitroutine.feature.create_edit_task.base.config.pick_task_number_progress.PickTaskNumberProgressStateHolder
 import com.example.inhabitroutine.feature.create_edit_task.base.config.pick_task_time_progress.PickTaskTimeProgressStateHolder
@@ -22,4 +23,12 @@ sealed interface BaseCreateEditTaskScreenConfig : ScreenConfig {
     data class PickTaskFrequency(
         val stateHolder: PickTaskFrequencyStateHolder
     ) : BaseCreateEditTaskScreenConfig
+
+    sealed interface PickDate : BaseCreateEditTaskScreenConfig {
+        val stateHolder: PickDateStateHolder
+
+        data class Date(
+            override val stateHolder: PickDateStateHolder
+        ) : PickDate
+    }
 }

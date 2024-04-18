@@ -51,6 +51,24 @@ fun LocalDate.toMonthDayYearDisplay(context: Context) = this.let { date ->
     }
 }
 
+fun LocalDate.toMonthYearDisplay(context: Context) = this.let { date ->
+    buildString {
+        append(date.month.toDisplay(context))
+        append(" ")
+        append(date.year.toString())
+    }
+}
+
+fun LocalDate.toDayOfWeekMonthMonthDayDisplay(context: Context) = this.let { date ->
+    buildString {
+        append(date.dayOfWeek.toDisplay(context))
+        append(", ")
+        append(date.month.toDisplay(context))
+        append(" ")
+        append(date.dayOfMonth.toString())
+    }
+}
+
 fun TaskFrequency.toDisplay(context: Context) = this.let { frequency ->
     when (frequency) {
         is TaskFrequency.EveryDay -> context.getString(R.string.frequency_every_day)

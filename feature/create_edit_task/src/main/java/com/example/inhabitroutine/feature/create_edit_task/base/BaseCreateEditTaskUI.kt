@@ -26,6 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.example.inhabitroutine.core.presentation.ui.dialog.pick_date.PickDateDialog
 import com.example.inhabitroutine.core.presentation.ui.util.toDayMonthYearDisplay
 import com.example.inhabitroutine.core.presentation.ui.util.toDisplay
 import com.example.inhabitroutine.feature.create_edit_task.base.components.BaseCreateEditTaskScreenConfig
@@ -49,6 +50,23 @@ internal fun BaseCreateEditTaskConfig(
                     onEvent(BaseCreateEditTaskScreenEvent.ResultEvent.PickTaskTitle(it))
                 }
             )
+        }
+
+        is BaseCreateEditTaskScreenConfig.PickDate -> {
+            when (config) {
+                is BaseCreateEditTaskScreenConfig.PickDate.Date -> {
+                    PickDateDialog(
+                        stateHolder = config.stateHolder,
+                        onResult = {
+                            onEvent(
+                                BaseCreateEditTaskScreenEvent.ResultEvent.PickDate.Date(
+                                    it
+                                )
+                            )
+                        }
+                    )
+                }
+            }
         }
 
         is BaseCreateEditTaskScreenConfig.PickTaskFrequency -> {
