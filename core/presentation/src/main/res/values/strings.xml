@@ -25,6 +25,7 @@
     <string name="task_config_reminders">Time and reminders</string>
     <string name="daily_goal_suffix">a day</string>
     <string name="frequency_every_day">Every day</string>
+    <string name="frequency_days_of_week">Days of week</string>
     <string name="create_task_title">Create activity</string>
     <string name="task_config_title_label">Name</string>
 

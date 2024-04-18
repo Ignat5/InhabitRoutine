@@ -2,6 +2,7 @@ package com.example.inhabitroutine.feature.create_edit_task.base.components
 
 import com.example.inhabitroutine.core.presentation.components.event.ScreenEvent
 import com.example.inhabitroutine.core.presentation.components.result.ScreenResult
+import com.example.inhabitroutine.feature.create_edit_task.base.config.pick_task_frequency.components.PickTaskFrequencyScreenResult
 import com.example.inhabitroutine.feature.create_edit_task.base.config.pick_task_number_progress.components.PickTaskNumberProgressScreenResult
 import com.example.inhabitroutine.feature.create_edit_task.base.config.pick_task_time_progress.components.PickTaskTimeProgressScreenResult
 import com.example.inhabitroutine.feature.create_edit_task.base.config.pick_task_title.components.PickTaskTitleScreenResult
@@ -25,6 +26,10 @@ sealed interface BaseCreateEditTaskScreenEvent : ScreenEvent {
 
         data class PickTaskTimeProgress(
             override val result: PickTaskTimeProgressScreenResult
+        ) : ResultEvent
+
+        data class PickTaskFrequency(
+            override val result: PickTaskFrequencyScreenResult
         ) : ResultEvent
     }
 }

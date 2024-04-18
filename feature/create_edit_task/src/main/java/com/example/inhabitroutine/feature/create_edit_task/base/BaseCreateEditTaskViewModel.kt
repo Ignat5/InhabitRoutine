@@ -7,12 +7,15 @@ import com.example.inhabitroutine.core.presentation.components.navigation.Screen
 import com.example.inhabitroutine.core.presentation.components.state.ScreenState
 import com.example.inhabitroutine.domain.model.task.TaskModel
 import com.example.inhabitroutine.domain.model.task.content.TaskDate
+import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskFrequencyByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskProgressByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskTitleByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ValidateProgressLimitNumberUseCase
 import com.example.inhabitroutine.feature.create_edit_task.base.components.BaseCreateEditTaskScreenConfig
 import com.example.inhabitroutine.feature.create_edit_task.base.components.BaseCreateEditTaskScreenEvent
 import com.example.inhabitroutine.feature.create_edit_task.base.components.BaseCreateEditTaskScreenNavigation
+import com.example.inhabitroutine.feature.create_edit_task.base.config.pick_task_frequency.PickTaskFrequencyStateHolder
+import com.example.inhabitroutine.feature.create_edit_task.base.config.pick_task_frequency.components.PickTaskFrequencyScreenResult
 import com.example.inhabitroutine.feature.create_edit_task.base.config.pick_task_number_progress.PickTaskNumberProgressStateHolder
 import com.example.inhabitroutine.feature.create_edit_task.base.config.pick_task_number_progress.components.PickTaskNumberProgressScreenResult
 import com.example.inhabitroutine.feature.create_edit_task.base.config.pick_task_time_progress.PickTaskTimeProgressStateHolder
@@ -29,6 +32,7 @@ import kotlinx.datetime.toLocalDateTime
 abstract class BaseCreateEditTaskViewModel<SE : ScreenEvent, SS : ScreenState, SN : ScreenNavigation, SC : ScreenConfig>(
     private val updateTaskTitleByIdUseCase: UpdateTaskTitleByIdUseCase,
     private val updateTaskProgressByIdUseCase: UpdateTaskProgressByIdUseCase,
+    private val updateTaskFrequencyByIdUseCase: UpdateTaskFrequencyByIdUseCase,
     private val validateProgressLimitNumberUseCase: ValidateProgressLimitNumberUseCase
 ) : BaseViewModel<SE, SS, SN, SC>() {
     private val todayDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
@@ -51,11 +55,34 @@ abstract class BaseCreateEditTaskViewModel<SE : ScreenEvent, SS : ScreenState, S
             is BaseCreateEditTaskScreenEvent.ResultEvent.PickTaskTitle ->
                 onPickTaskTitleResultEvent(event)
 
+            is BaseCreateEditTaskScreenEvent.ResultEvent.PickTaskFrequency ->
+                onPickTaskFrequencyResultEvent(event)
+
             is BaseCreateEditTaskScreenEvent.ResultEvent.PickTaskNumberProgress ->
                 onPickTaskNumberProgressResultEvent(event)
 
             is BaseCreateEditTaskScreenEvent.ResultEvent.PickTaskTimeProgress ->
                 onPickTaskTimeProgressResultEvent(event)
+        }
+    }
+
+    private fun onPickTaskFrequencyResultEvent(event: BaseCreateEditTaskScreenEvent.ResultEvent.PickTaskFrequency) {
+        onIdleToAction {
+            when (val result = event.result) {
+                is PickTaskFrequencyScreenResult.Confirm -> onConfirmPickTaskFrequency(result)
+                is PickTaskFrequencyScreenResult.Dismiss -> Unit
+            }
+        }
+    }
+
+    protected open fun onConfirmPickTaskFrequency(result: PickTaskFrequencyScreenResult.Confirm) {
+        taskModelState.value?.let { taskModel ->
+            viewModelScope.launch {
+                updateTaskFrequencyByIdUseCase(
+                    taskId = taskModel.id,
+                    taskFrequency = result.taskFrequency
+                )
+            }
         }
     }
 
@@ -130,10 +157,26 @@ abstract class BaseCreateEditTaskViewModel<SE : ScreenEvent, SS : ScreenState, S
             is BaseItemTaskConfig.Title ->
                 onConfigTaskTitleClick()
 
+            is BaseItemTaskConfig.Frequency ->
+                onConfigTaskFrequencyClick()
+
             is BaseItemTaskConfig.Progress ->
                 onConfigTaskProgressClick(itemConfig)
 
             else -> Unit
+        }
+    }
+
+    private fun onConfigTaskFrequencyClick() {
+        (taskModelState.value as? TaskModel.RecurringActivity)?.let { recurringActivity ->
+            setUpBaseConfigState(
+                BaseCreateEditTaskScreenConfig.PickTaskFrequency(
+                    stateHolder = PickTaskFrequencyStateHolder(
+                        initTaskFrequency = recurringActivity.frequency,
+                        holderScope = provideChildScope()
+                    )
+                )
+            )
         }
     }
 

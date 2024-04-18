@@ -72,7 +72,7 @@ private fun Collection<DayOfWeek>.toDisplay(
     }
 }
 
-private fun DayOfWeek.toDisplay(context: Context) = context.getString(
+fun DayOfWeek.toDisplay(context: Context) = context.getString(
     when (this) {
         DayOfWeek.MONDAY -> R.string.day_of_week_monday
         DayOfWeek.TUESDAY -> R.string.day_of_week_tuesday

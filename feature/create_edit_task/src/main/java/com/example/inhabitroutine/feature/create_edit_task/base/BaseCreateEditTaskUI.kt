@@ -30,6 +30,7 @@ import com.example.inhabitroutine.core.presentation.ui.util.toDayMonthYearDispla
 import com.example.inhabitroutine.core.presentation.ui.util.toDisplay
 import com.example.inhabitroutine.feature.create_edit_task.base.components.BaseCreateEditTaskScreenConfig
 import com.example.inhabitroutine.feature.create_edit_task.base.components.BaseCreateEditTaskScreenEvent
+import com.example.inhabitroutine.feature.create_edit_task.base.config.pick_task_frequency.PickTaskFrequencyDialog
 import com.example.inhabitroutine.feature.create_edit_task.base.config.pick_task_number_progress.PickTaskNumberProgressDialog
 import com.example.inhabitroutine.feature.create_edit_task.base.config.pick_task_time_progress.PickTaskTimeProgressDialog
 import com.example.inhabitroutine.feature.create_edit_task.base.config.pick_task_title.PickTaskTitleDialog
@@ -48,6 +49,12 @@ internal fun BaseCreateEditTaskConfig(
                     onEvent(BaseCreateEditTaskScreenEvent.ResultEvent.PickTaskTitle(it))
                 }
             )
+        }
+
+        is BaseCreateEditTaskScreenConfig.PickTaskFrequency -> {
+            PickTaskFrequencyDialog(stateHolder = config.stateHolder) {
+                onEvent(BaseCreateEditTaskScreenEvent.ResultEvent.PickTaskFrequency(it))
+            }
         }
 
         is BaseCreateEditTaskScreenConfig.PickTaskNumberProgress -> {

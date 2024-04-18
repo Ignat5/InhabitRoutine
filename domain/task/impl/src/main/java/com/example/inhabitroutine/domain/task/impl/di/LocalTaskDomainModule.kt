@@ -4,12 +4,14 @@ import com.example.inhabitroutine.data.task.api.TaskRepository
 import com.example.inhabitroutine.domain.task.api.use_case.DeleteTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.SaveTaskDraftUseCase
+import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskFrequencyByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskProgressByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskTitleByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ValidateProgressLimitNumberUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultDeleteTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultReadTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultSaveTaskDraftUseCase
+import com.example.inhabitroutine.domain.task.impl.use_case.DefaultUpdateTaskFrequencyByIdUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultUpdateTaskProgressByIdUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultUpdateTaskTitleByIdUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultValidateProgressLimitNumberUseCase
@@ -48,6 +50,16 @@ object LocalTaskDomainModule {
         defaultDispatcher: CoroutineDispatcher
     ): UpdateTaskProgressByIdUseCase {
         return DefaultUpdateTaskProgressByIdUseCase(
+            taskRepository = taskRepository,
+            defaultDispatcher = defaultDispatcher
+        )
+    }
+
+    fun provideUpdateTaskFrequencyByIdUseCase(
+        taskRepository: TaskRepository,
+        defaultDispatcher: CoroutineDispatcher
+    ): UpdateTaskFrequencyByIdUseCase {
+        return DefaultUpdateTaskFrequencyByIdUseCase(
             taskRepository = taskRepository,
             defaultDispatcher = defaultDispatcher
         )
