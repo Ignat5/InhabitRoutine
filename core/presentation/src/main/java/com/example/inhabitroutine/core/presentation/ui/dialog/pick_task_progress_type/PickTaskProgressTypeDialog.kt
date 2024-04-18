@@ -14,48 +14,36 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.inhabitroutine.core.presentation.R
-import com.example.inhabitroutine.core.presentation.ui.dialog.base.BaseModalBottomSheetDialog
-import com.example.inhabitroutine.core.presentation.ui.dialog.pick_task_type.PickTaskTypeScreenResult
+import com.example.inhabitroutine.core.presentation.ui.dialog.base.BaseDialog
+import com.example.inhabitroutine.core.presentation.ui.dialog.base.BaseDialogDefaults
 import com.example.inhabitroutine.core.presentation.ui.util.toIconId
-import com.example.inhabitroutine.core.presentation.ui.util.toTitleStringId
 import com.example.inhabitroutine.domain.model.task.type.TaskProgressType
-import com.example.inhabitroutine.domain.model.task.type.TaskType
-import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PickTaskProgressTypeDialog(
     allTaskProgressTypes: List<TaskProgressType>,
     onResult: (PickTaskProgressTypeScreenResult) -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState()
-    val scope = rememberCoroutineScope()
-    BaseModalBottomSheetDialog(
-        sheetState = sheetState,
-        dragHandle = null,
-        onDismissRequest = { onResult(PickTaskProgressTypeScreenResult.Dismiss) }
+    BaseDialog(
+        onDismissRequest = { onResult(PickTaskProgressTypeScreenResult.Dismiss) },
+        title = {
+            BaseDialogDefaults.BaseDialogTitle(titleText = stringResource(id = R.string.habit_progress_type_title))
+        }
     ) {
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth()
-        ) {
+        LazyColumn(modifier = Modifier.fillMaxWidth()) {
             items(allTaskProgressTypes) { item ->
-                ItemTaskType(
+                ItemTaskProgressType(
                     taskType = item,
                     onClick = {
-                        scope.launch {
-                            sheetState.hide()
-                            onResult(PickTaskProgressTypeScreenResult.Confirm(item))
-                        }
+                        onResult(PickTaskProgressTypeScreenResult.Confirm(item))
                     }
                 )
             }
@@ -64,7 +52,7 @@ fun PickTaskProgressTypeDialog(
 }
 
 @Composable
-private fun ItemTaskType(
+private fun ItemTaskProgressType(
     taskType: TaskProgressType,
     onClick: () -> Unit
 ) {

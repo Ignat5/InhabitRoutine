@@ -31,6 +31,7 @@ import com.example.inhabitroutine.core.presentation.ui.util.toDisplay
 import com.example.inhabitroutine.feature.create_edit_task.base.components.BaseCreateEditTaskScreenConfig
 import com.example.inhabitroutine.feature.create_edit_task.base.components.BaseCreateEditTaskScreenEvent
 import com.example.inhabitroutine.feature.create_edit_task.base.config.pick_task_number_progress.PickTaskNumberProgressDialog
+import com.example.inhabitroutine.feature.create_edit_task.base.config.pick_task_time_progress.PickTaskTimeProgressDialog
 import com.example.inhabitroutine.feature.create_edit_task.base.config.pick_task_title.PickTaskTitleDialog
 import com.example.inhabitroutine.feature.create_edit_task.base.model.BaseItemTaskConfig
 
@@ -54,6 +55,15 @@ internal fun BaseCreateEditTaskConfig(
                 stateHolder = config.stateHolder,
                 onResult = {
                     onEvent(BaseCreateEditTaskScreenEvent.ResultEvent.PickTaskNumberProgress(it))
+                }
+            )
+        }
+
+        is BaseCreateEditTaskScreenConfig.PickTaskTimeProgress -> {
+            PickTaskTimeProgressDialog(
+                stateHolder = config.stateHolder,
+                onResult = {
+                    onEvent(BaseCreateEditTaskScreenEvent.ResultEvent.PickTaskTimeProgress(it))
                 }
             )
         }

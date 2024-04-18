@@ -77,8 +77,9 @@ private fun PickTaskNumberProgressDialogStateless(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            val allOptions = remember { ProgressLimitType.entries }
             BaseOutlinedDropdown(
-                allOptions = ProgressLimitType.entries,
+                allOptions = allOptions,
                 currentOption = state.inputLimitType,
                 optionText = { limitType ->
                     context.getString(limitType.toTitleStringId())

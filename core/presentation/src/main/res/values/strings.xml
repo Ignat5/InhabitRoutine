@@ -9,6 +9,7 @@
     <string name="habit_progress_type_yes_no_title">Yes or No</string>
     <string name="habit_progress_type_number_title">Number</string>
     <string name="habit_progress_type_time_title">Time</string>
+    <string name="habit_progress_type_title">Pick progress type</string>
     <string name="habit_progress_type_yes_no_description">Daily record is either success or failure</string>
     <string name="habit_progress_type_number_description">Daily record is a number value</string>
     <string name="habit_progress_type_time_description">Daily record is a time value</string>
