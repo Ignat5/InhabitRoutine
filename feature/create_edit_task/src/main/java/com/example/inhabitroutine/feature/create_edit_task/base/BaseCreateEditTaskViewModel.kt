@@ -78,23 +78,25 @@ abstract class BaseCreateEditTaskViewModel<SE : ScreenEvent, SS : ScreenState, S
     }
 
     private fun onPickDateResultEvent(event: BaseCreateEditTaskScreenEvent.ResultEvent.PickDate) {
+        when (event) {
+            is BaseCreateEditTaskScreenEvent.ResultEvent.PickDate.Date ->
+                onPickTaskDateResultEvent(event)
+        }
+    }
+
+    private fun onPickTaskDateResultEvent(event: BaseCreateEditTaskScreenEvent.ResultEvent.PickDate.Date) {
         onIdleToAction {
             when (val result = event.result) {
-                is PickDateScreenResult.Confirm -> {
-                    when (event) {
-                        is BaseCreateEditTaskScreenEvent.ResultEvent.PickDate.Date -> {
-                            onConfirmPickTaskDate(result)
-                        }
-                    }
-                }
+                is PickDateScreenResult.Confirm ->
+                    onConfirmPickTaskDate(result)
 
                 is PickDateScreenResult.Dismiss -> Unit
             }
         }
     }
 
-    protected open fun onConfirmPickTaskDate(result: PickDateScreenResult.Confirm) {
-//        TODO()
+    private fun onConfirmPickTaskDate(result: PickDateScreenResult.Confirm) {
+
     }
 
     private fun onPickTaskFrequencyResultEvent(event: BaseCreateEditTaskScreenEvent.ResultEvent.PickTaskFrequency) {

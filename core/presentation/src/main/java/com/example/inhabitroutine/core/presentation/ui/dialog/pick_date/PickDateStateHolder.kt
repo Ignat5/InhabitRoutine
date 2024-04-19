@@ -5,8 +5,12 @@ import com.example.inhabitroutine.core.presentation.ui.dialog.pick_date.componen
 import com.example.inhabitroutine.core.presentation.ui.dialog.pick_date.components.PickDateScreenResult
 import com.example.inhabitroutine.core.presentation.ui.dialog.pick_date.components.PickDateScreenState
 import com.example.inhabitroutine.core.presentation.ui.dialog.pick_date.model.PickDateRequestModel
+import com.example.inhabitroutine.core.presentation.ui.dialog.pick_date.model.UIDateItem
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -14,8 +18,10 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.daysUntil
@@ -31,30 +37,37 @@ class PickDateStateHolder(
     private val todayDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
     private val currentStartOfMonthDateState =
         MutableStateFlow(requestModel.initDate.firstDayOfMonth)
+
     private val currentPickedDateState = MutableStateFlow(requestModel.initDate)
 
-    private val daysInMonthState = currentStartOfMonthDateState.map { startOfMonthDate ->
-        calculateDaysInMonth(startOfMonthDate)
+    private val allDateItemsState = combine(
+        currentStartOfMonthDateState,
+        currentPickedDateState
+    ) { currentStartOfMonthDate, currentPickedDate ->
+        withContext(defaultDispatcher) {
+            currentStartOfMonthDate.provideDateItems(
+                currentPickedDate = currentPickedDate,
+                todayDate = todayDate,
+                maxDate = requestModel.maxDate,
+                minDate = requestModel.minDate
+            )
+        }
     }.stateIn(
         holderScope,
         SharingStarted.Eagerly,
-        calculateDaysInMonth(currentStartOfMonthDateState.value)
+        emptyList()
     )
-
-    private val availableDateRange = requestModel.minDate..requestModel.maxDate
 
     override val uiScreenState: StateFlow<PickDateScreenState> =
         combine(
             currentStartOfMonthDateState,
             currentPickedDateState,
-            daysInMonthState
-        ) { currentStartOfMonthDate, currentPickedDate, daysInMonth ->
+            allDateItemsState
+        ) { currentStartOfMonthDate, currentPickedDate, allDateItems ->
             PickDateScreenState(
                 startOfMonthDate = currentStartOfMonthDate,
                 currentPickedDate = currentPickedDate,
-                daysInMonth = daysInMonth,
-                todayDate = todayDate,
-                availableDateRange = availableDateRange
+                allDateItems = allDateItems
             )
         }.stateIn(
             holderScope,
@@ -62,9 +75,7 @@ class PickDateStateHolder(
             PickDateScreenState(
                 startOfMonthDate = currentStartOfMonthDateState.value,
                 currentPickedDate = currentPickedDateState.value,
-                daysInMonth = daysInMonthState.value,
-                todayDate = todayDate,
-                availableDateRange = availableDateRange
+                allDateItems = allDateItemsState.value
             )
         )
 
@@ -111,6 +122,43 @@ class PickDateStateHolder(
         setUpResult(
             PickDateScreenResult.Confirm(date = currentPickedDateState.value)
         )
+    }
+
+    private suspend fun LocalDate.provideDateItems(
+        currentPickedDate: LocalDate,
+        todayDate: LocalDate,
+        maxDate: LocalDate,
+        minDate: LocalDate
+    ): List<UIDateItem> = this.firstDayOfMonth.let { startOfMonth ->
+        startOfMonth.minus(startOfMonth.dayOfWeek.ordinal, DateTimeUnit.DAY)
+            .let { startOfCalendar ->
+                startOfMonth.plus(1, DateTimeUnit.MONTH).let { startOfNextMonth ->
+                    startOfNextMonth.minus(1, DateTimeUnit.DAY).let { endOfCalendar ->
+                        val currentMonthRange =
+                            startOfMonth.toEpochDays() until startOfNextMonth.toEpochDays()
+                        val availableDatesRange = minDate.toEpochDays()..maxDate.toEpochDays()
+                        val currentDateEpochDay = currentPickedDate.toEpochDays()
+                        val todayDateEpochDay = todayDate.toEpochDays()
+                        coroutineScope {
+                            (startOfCalendar.toEpochDays()..endOfCalendar.toEpochDays()).map { nextEpochDay ->
+                                async {
+                                    UIDateItem(
+                                        dayOfMonth = (nextEpochDay - currentMonthRange.first) + 1,
+                                        epochDay = nextEpochDay,
+                                        status = when (nextEpochDay) {
+                                            !in currentMonthRange -> UIDateItem.Status.OtherMonth
+                                            !in availableDatesRange -> UIDateItem.Status.Locked
+                                            currentDateEpochDay -> UIDateItem.Status.Current
+                                            todayDateEpochDay -> UIDateItem.Status.Today
+                                            else -> UIDateItem.Status.Day
+                                        }
+                                    )
+                                }
+                            }.awaitAll()
+                        }
+                    }
+                }
+            }
     }
 
     private fun calculateDaysInMonth(date: LocalDate) =

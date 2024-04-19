@@ -9,7 +9,5 @@ import kotlinx.datetime.LocalDate
 data class PickDateScreenState(
     val startOfMonthDate: LocalDate,
     val currentPickedDate: LocalDate,
-    val daysInMonth: Int,
-    val todayDate: LocalDate,
-    val availableDateRange: ClosedRange<LocalDate>,
+    val allDateItems: List<UIDateItem>
 ) : ScreenState

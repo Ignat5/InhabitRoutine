@@ -55,7 +55,9 @@ fun PickDateDialog(
     onResult: (PickDateScreenResult) -> Unit
 ) {
     BaseDialogWithResult(stateHolder = stateHolder, onResult = onResult) { state, onEvent ->
-        PickDateDialogStateless(state, onEvent)
+        if (state.allDateItems.isNotEmpty()) {
+            PickDateDialogStateless(state, onEvent)
+        }
     }
 }
 
@@ -97,11 +99,7 @@ private fun PickDateDialogStateless(
                 onNextClick = { onEvent(PickDateScreenEvent.OnNextMonthClick) }
             )
             MonthGrid(
-                daysInMonth = state.daysInMonth,
-                startOfMonthDate = state.startOfMonthDate,
-                currentDate = state.currentPickedDate,
-                todayDate = state.todayDate,
-                availableDateRange = state.availableDateRange,
+                allDateItems = state.allDateItems,
                 onDateClick = { onEvent(PickDateScreenEvent.OnDateClick(it)) }
             )
         }
@@ -147,25 +145,9 @@ private fun MonthController(
 
 @Composable
 private fun MonthGrid(
-    daysInMonth: Int,
-    startOfMonthDate: LocalDate,
-    currentDate: LocalDate,
-    todayDate: LocalDate,
-    availableDateRange: ClosedRange<LocalDate>,
+    allDateItems: List<UIDateItem>,
     onDateClick: (LocalDate) -> Unit
 ) {
-    val startOfMonthEpochDay = remember(startOfMonthDate) {
-        startOfMonthDate.toEpochDays()
-    }
-    val currentDateEpochDay = remember(currentDate) {
-        currentDate.toEpochDays()
-    }
-    val todayEpochDay = remember(todayDate) {
-        todayDate.toEpochDays()
-    }
-    val availableEpochDaysRange = remember {
-        availableDateRange.start.toEpochDays()..availableDateRange.endInclusive.toEpochDays()
-    }
     val allDaysOfWeek = remember { DayOfWeek.entries }
     LazyVerticalGrid(
         columns = GridCells.Fixed(allDaysOfWeek.size),
@@ -177,39 +159,15 @@ private fun MonthGrid(
         ) { item ->
             ItemDayOfWeek(item)
         }
-        if (startOfMonthDate.dayOfWeek.ordinal != 0) {
-            item(
-                span = { GridItemSpan(startOfMonthDate.dayOfWeek.ordinal) },
-                contentType = { ItemContentType.OtherMonth }
-            ) { Unit }
-        }
         items(
-            count = daysInMonth,
-            key = { item -> startOfMonthEpochDay + item },
+            items = allDateItems,
+            key = { item -> item.dayOfMonth },
             contentType = { ItemContentType.DayOfMonth }
-        ) { offset ->
-            val itemEpochDay = remember {
-                startOfMonthEpochDay + offset
-            }
-            val isCurrent = remember(currentDate) {
-                itemEpochDay == currentDateEpochDay
-            }
-            val isToday = remember(todayDate) {
-                itemEpochDay == todayEpochDay
-            }
-            val isLocked = remember {
-                itemEpochDay !in availableEpochDaysRange
-            }
-            val dayOfMonth = remember {
-                offset + 1
-            }
+        ) { item ->
             ItemDayOfMonth(
-                dayOfMonth = dayOfMonth,
-                isCurrent = isCurrent,
-                isToday = isToday,
-                isLocked = isLocked,
+                item = item,
                 onClick = {
-                    onDateClick(LocalDate.fromEpochDays(itemEpochDay))
+                    onDateClick(LocalDate.fromEpochDays(item.epochDay))
                 }
             )
         }
@@ -218,58 +176,57 @@ private fun MonthGrid(
 
 @Composable
 private fun ItemDayOfMonth(
-    dayOfMonth: Int,
-    isCurrent: Boolean,
-    isToday: Boolean,
-    isLocked: Boolean,
+    item: UIDateItem,
     onClick: () -> Unit
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .clip(MaterialTheme.shapes.extraLarge)
-            .then(
-                when {
-                    isCurrent -> {
-                        Modifier.background(
-                            color = MaterialTheme.colorScheme.primary,
-                            shape = MaterialTheme.shapes.extraLarge
-                        )
-                    }
-
-                    isToday -> {
-                        Modifier.border(
-                            width = 1.dp,
-                            color = MaterialTheme.colorScheme.primary,
-                            shape = MaterialTheme.shapes.extraLarge
-                        )
-                    }
-
-                    else -> Modifier
-                }
-            )
-            .clickable(
-                enabled = !isLocked,
-                onClick = onClick
-            )
-    ) {
-        val label = remember(dayOfMonth) {
-            "${dayOfMonth}"
-        }
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyLarge,
-            color = when {
-                isCurrent -> MaterialTheme.colorScheme.onPrimary
-                isToday -> MaterialTheme.colorScheme.primary
-                isLocked -> MaterialTheme.colorScheme.outline
-                else -> MaterialTheme.colorScheme.onSurface
-            },
+    if (item.status != UIDateItem.Status.OtherMonth) {
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            textAlign = TextAlign.Center
-        )
+                .fillMaxSize()
+                .clip(MaterialTheme.shapes.extraLarge)
+                .then(
+                    when (item.status) {
+                        UIDateItem.Status.Current -> {
+                            Modifier.background(
+                                color = MaterialTheme.colorScheme.primary,
+                                shape = MaterialTheme.shapes.extraLarge
+                            )
+                        }
+
+                        UIDateItem.Status.Today -> {
+                            Modifier.border(
+                                width = 1.dp,
+                                color = MaterialTheme.colorScheme.primary,
+                                shape = MaterialTheme.shapes.extraLarge
+                            )
+                        }
+
+                        else -> Modifier
+                    }
+                )
+                .clickable(
+                    enabled = item.status != UIDateItem.Status.Locked,
+                    onClick = onClick
+                )
+        ) {
+            val label = remember(item) {
+                "${item.dayOfMonth}"
+            }
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodyLarge,
+                color = when (item.status) {
+                    UIDateItem.Status.Current -> MaterialTheme.colorScheme.onPrimary
+                    UIDateItem.Status.Today -> MaterialTheme.colorScheme.primary
+                    UIDateItem.Status.Locked -> MaterialTheme.colorScheme.outline
+                    else -> MaterialTheme.colorScheme.onSurface
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
 
@@ -297,6 +254,5 @@ private fun ItemDayOfWeek(
 
 private enum class ItemContentType {
     DayOfWeekLabel,
-    OtherMonth,
     DayOfMonth
 }
