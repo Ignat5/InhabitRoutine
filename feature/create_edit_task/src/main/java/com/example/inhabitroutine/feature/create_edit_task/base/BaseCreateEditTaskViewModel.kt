@@ -10,6 +10,7 @@ import com.example.inhabitroutine.core.presentation.ui.dialog.pick_date.componen
 import com.example.inhabitroutine.core.presentation.ui.dialog.pick_date.model.PickDateRequestModel
 import com.example.inhabitroutine.domain.model.task.TaskModel
 import com.example.inhabitroutine.domain.model.task.content.TaskDate
+import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskDateByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskFrequencyByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskProgressByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskTitleByIdUseCase
@@ -40,6 +41,7 @@ abstract class BaseCreateEditTaskViewModel<SE : ScreenEvent, SS : ScreenState, S
     private val updateTaskTitleByIdUseCase: UpdateTaskTitleByIdUseCase,
     private val updateTaskProgressByIdUseCase: UpdateTaskProgressByIdUseCase,
     private val updateTaskFrequencyByIdUseCase: UpdateTaskFrequencyByIdUseCase,
+    private val updateTaskDateByIdUseCase: UpdateTaskDateByIdUseCase,
     private val validateProgressLimitNumberUseCase: ValidateProgressLimitNumberUseCase,
     private val defaultDispatcher: CoroutineDispatcher
 ) : BaseViewModel<SE, SS, SN, SC>() {
@@ -96,7 +98,16 @@ abstract class BaseCreateEditTaskViewModel<SE : ScreenEvent, SS : ScreenState, S
     }
 
     private fun onConfirmPickTaskDate(result: PickDateScreenResult.Confirm) {
-
+        taskModelState.value?.let { taskModel ->
+            (taskModel.date as? TaskDate.Day)?.copy(date = result.date)?.let { date ->
+                viewModelScope.launch {
+                    updateTaskDateByIdUseCase(
+                        taskId = taskModel.id,
+                        taskDate = date,
+                    )
+                }
+            }
+        }
     }
 
     private fun onPickTaskFrequencyResultEvent(event: BaseCreateEditTaskScreenEvent.ResultEvent.PickTaskFrequency) {

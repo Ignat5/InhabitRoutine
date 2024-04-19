@@ -5,6 +5,7 @@ import com.example.inhabitroutine.data.task.api.TaskRepository
 import com.example.inhabitroutine.domain.task.api.use_case.DeleteTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.SaveTaskDraftUseCase
+import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskDateByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskFrequencyByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskProgressByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskTitleByIdUseCase
@@ -45,6 +46,15 @@ object TaskDomainModule {
         taskRepository: TaskRepository
     ): UpdateTaskTitleByIdUseCase {
         return LocalTaskDomainModule.provideUpdateTaskTitleByIdUseCase(
+            taskRepository = taskRepository
+        )
+    }
+
+    @Provides
+    fun provideUpdateTaskDateByIdUseCase(
+        taskRepository: TaskRepository
+    ): UpdateTaskDateByIdUseCase {
+        return LocalTaskDomainModule.provideUpdateTaskDateByIdUseCase(
             taskRepository = taskRepository
         )
     }

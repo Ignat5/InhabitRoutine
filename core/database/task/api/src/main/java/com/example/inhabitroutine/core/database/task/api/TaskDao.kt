@@ -10,5 +10,12 @@ interface TaskDao {
         taskId: String,
         title: String
     ): ResultModel<Unit, Throwable>
+
+    suspend fun updateTaskStartEndDateById(
+        taskId: String,
+        startEpochDay: Long,
+        endEpochDay: Long
+    ): ResultModel<Unit, Throwable>
+
     suspend fun deleteTaskById(taskId: String): ResultModel<Unit, Throwable>
 }

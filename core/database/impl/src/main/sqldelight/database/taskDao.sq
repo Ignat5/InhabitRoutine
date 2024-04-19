@@ -91,6 +91,12 @@ UPDATE TaskTable SET
 title = :title
 WHERE id = :taskId;
 
+updateTaskStartEndDateById:
+UPDATE TaskTable SET
+startEpochDay = :startEpochDay,
+endEpochDay = :endEpochDay
+WHERE id = :taskId;
+
 deleteTaskById:
 DELETE FROM TaskTable
 WHERE id = :taskId;

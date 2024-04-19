@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.inhabitroutine.core.di.qualifiers.DefaultDispatcherQualifier
 import com.example.inhabitroutine.domain.task.api.use_case.DeleteTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTaskByIdUseCase
+import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskDateByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskFrequencyByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskProgressByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskTitleByIdUseCase
@@ -28,6 +29,7 @@ class AndroidCreateTaskViewModel @Inject constructor(
     updateTaskTitleByIdUseCase: UpdateTaskTitleByIdUseCase,
     updateTaskProgressByIdUseCase: UpdateTaskProgressByIdUseCase,
     updateTaskFrequencyByIdUseCase: UpdateTaskFrequencyByIdUseCase,
+    updateTaskDateByIdUseCase: UpdateTaskDateByIdUseCase,
     validateProgressLimitNumberUseCase: ValidateProgressLimitNumberUseCase,
     @DefaultDispatcherQualifier defaultDispatcher: CoroutineDispatcher
 ) : BaseAndroidViewModel<CreateTaskScreenEvent, CreateTaskScreenState, CreateTaskScreenNavigation, CreateTaskScreenConfig>() {
@@ -39,6 +41,7 @@ class AndroidCreateTaskViewModel @Inject constructor(
         updateTaskTitleByIdUseCase = updateTaskTitleByIdUseCase,
         updateTaskProgressByIdUseCase = updateTaskProgressByIdUseCase,
         updateTaskFrequencyByIdUseCase = updateTaskFrequencyByIdUseCase,
+        updateTaskDateByIdUseCase = updateTaskDateByIdUseCase,
         validateProgressLimitNumberUseCase = validateProgressLimitNumberUseCase,
         defaultDispatcher = defaultDispatcher,
         viewModelScope = viewModelScope

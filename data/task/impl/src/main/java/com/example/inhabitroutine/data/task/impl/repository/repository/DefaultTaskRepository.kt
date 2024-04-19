@@ -7,6 +7,7 @@ import com.example.inhabitroutine.data.task.impl.repository.model.task.TaskDataM
 import com.example.inhabitroutine.data.task.impl.repository.util.toTaskDataModel
 import com.example.inhabitroutine.data.task.impl.repository.util.toTaskModel
 import com.example.inhabitroutine.domain.model.task.TaskModel
+import com.example.inhabitroutine.domain.model.task.content.TaskDate
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -42,6 +43,26 @@ internal class DefaultTaskRepository(
         taskId = taskId,
         title = title
     )
+
+    override suspend fun updateTaskDateById(
+        taskId: String,
+        taskDate: TaskDate
+    ): ResultModel<Unit, Throwable> {
+        val startDate = when (taskDate) {
+            is TaskDate.Day -> taskDate.date
+            is TaskDate.Period -> taskDate.startDate
+        }
+        val endDate = when (taskDate) {
+            is TaskDate.Day -> taskDate.date
+            is TaskDate.Period -> taskDate.endDate
+        }
+
+        return taskDataSource.updateTaskStartEndDateById(
+            taskId = taskId,
+            startDate = startDate,
+            endDate = endDate
+        )
+    }
 
     override suspend fun deleteTaskById(taskId: String): ResultModel<Unit, Throwable> =
         taskDataSource.deleteTaskById(taskId)

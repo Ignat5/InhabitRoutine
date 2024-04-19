@@ -12,4 +12,5 @@ dependencies {
     implementation(project(":domain:model"))
     implementation(project(":core:util"))
     implementation(libs.kotlin.coroutines.core)
+    implementation(libs.kotlin.datetime)
 }

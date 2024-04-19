@@ -44,6 +44,18 @@ internal class DefaultTaskDao(
         )
     }
 
+    override suspend fun updateTaskStartEndDateById(
+        taskId: String,
+        startEpochDay: Long,
+        endEpochDay: Long
+    ): ResultModel<Unit, Throwable> = db.runTransaction(ioDispatcher) {
+        taskDao.updateTaskStartEndDateById(
+            taskId = taskId,
+            startEpochDay = startEpochDay,
+            endEpochDay = endEpochDay,
+        )
+    }
+
     override suspend fun deleteTaskById(taskId: String): ResultModel<Unit, Throwable> =
         runQuery(ioDispatcher) {
             taskDao.deleteTaskById(taskId)
