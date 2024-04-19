@@ -3,6 +3,7 @@ package com.example.inhabitroutine.navigation.create_task
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.example.inhabitroutine.feature.create_edit_task.base.components.BaseCreateEditTaskScreenNavigation
 import com.example.inhabitroutine.feature.create_edit_task.create.CreateTaskConfig
 import com.example.inhabitroutine.feature.create_edit_task.create.CreateTaskScreen
 import com.example.inhabitroutine.feature.create_edit_task.create.components.CreateTaskScreenNavigation
@@ -22,7 +23,15 @@ fun NavGraphBuilder.createTaskDestination(onNavigate: (TargetNavDest) -> Unit) {
             onNavigation = { destination ->
                 when (destination) {
                     is CreateTaskScreenNavigation.Base -> {
-//                        TODO()
+                        when (val baseSN = destination.baseNavigation) {
+                            is BaseCreateEditTaskScreenNavigation.ViewReminders -> {
+                                onNavigate(
+                                    TargetNavDest.Destination(
+                                        route = AppNavDest.buildViewRemindersRoute(baseSN.taskId)
+                                    )
+                                )
+                            }
+                        }
                     }
                     is CreateTaskScreenNavigation.Back -> {
                         onNavigate(TargetNavDest.Back)

@@ -6,7 +6,8 @@ import kotlinx.datetime.LocalTime
 data class ReminderDataModel(
     val id: String,
     val taskId: String,
-    val reminderType: ReminderType,
-    val reminderTime: LocalTime,
-    val reminderSchedule: ReminderContentDataModel.ScheduleContent
+    val type: ReminderType,
+    val time: LocalTime,
+    val schedule: ReminderContentDataModel.ScheduleContent,
+    val createdAt: Long
 )

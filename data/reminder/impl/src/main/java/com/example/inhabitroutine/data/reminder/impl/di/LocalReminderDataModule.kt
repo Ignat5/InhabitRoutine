@@ -6,23 +6,28 @@ import com.example.inhabitroutine.data.reminder.impl.data_source.DefaultReminder
 import com.example.inhabitroutine.data.reminder.impl.data_source.ReminderDataSource
 import com.example.inhabitroutine.data.reminder.impl.repository.DefaultReminderRepository
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.serialization.json.Json
 
 object LocalReminderDataModule {
     fun provideReminderDataSource(
         reminderDao: ReminderDao,
-        ioDispatcher: CoroutineDispatcher
+        ioDispatcher: CoroutineDispatcher,
+        json: Json
     ): ReminderDataSource {
         return DefaultReminderDataSource(
             reminderDao = reminderDao,
-            ioDispatcher = ioDispatcher
+            ioDispatcher = ioDispatcher,
+            json = json
         )
     }
 
     fun provideReminderRepository(
-        reminderDataSource: ReminderDataSource
+        reminderDataSource: ReminderDataSource,
+        defaultDispatcher: CoroutineDispatcher
     ): ReminderRepository {
         return DefaultReminderRepository(
-            reminderDataSource = reminderDataSource
+            reminderDataSource = reminderDataSource,
+            defaultDispatcher = defaultDispatcher
         )
     }
 }

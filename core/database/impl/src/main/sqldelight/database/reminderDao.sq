@@ -2,6 +2,10 @@ insertReminder:
 INSERT OR REPLACE INTO ReminderTable
 VALUES ?;
 
+selectRemindersByTaskId:
+SELECT * FROM ReminderTable tReminder
+WHERE tReminder.taskId = :taskId;
+
 selectReminderCountByTaskId:
 SELECT COUNT(*) FROM ReminderTable tReminder
 WHERE tReminder.taskId = :taskId;

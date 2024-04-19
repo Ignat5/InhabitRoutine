@@ -256,16 +256,29 @@ abstract class BaseCreateEditTaskViewModel<SE : ScreenEvent, SS : ScreenState, S
                 onConfigTaskFrequencyClick()
 
             is BaseItemTaskConfig.DateConfig ->
-                onDateConfigClick(itemConfig)
+                onConfigDateClick(itemConfig)
 
             is BaseItemTaskConfig.Progress ->
                 onConfigTaskProgressClick(itemConfig)
+
+            is BaseItemTaskConfig.Reminders ->
+                onConfigRemindersClick()
 
             else -> Unit
         }
     }
 
-    private fun onDateConfigClick(itemConfig: BaseItemTaskConfig.DateConfig) {
+    private fun onConfigRemindersClick() {
+        taskModelState.value?.let { taskModel ->
+            setUpBaseNavigationState(
+                BaseCreateEditTaskScreenNavigation.ViewReminders(
+                    taskModel.id
+                )
+            )
+        }
+    }
+
+    private fun onConfigDateClick(itemConfig: BaseItemTaskConfig.DateConfig) {
         when (itemConfig) {
             is BaseItemTaskConfig.DateConfig.Date ->
                 onConfigDateClick()

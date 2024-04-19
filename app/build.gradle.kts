@@ -61,9 +61,11 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:presentation"))
     implementation(project(":feature:view_schedule"))
     implementation(project(":feature:create_edit_task"))
+    implementation(project(":feature:view_reminders"))
+
+    implementation(project(":core:presentation"))
     implementation(project(":core:util"))
     implementation(project(":core:di"))
     implementation(project(":domain:task:api"))

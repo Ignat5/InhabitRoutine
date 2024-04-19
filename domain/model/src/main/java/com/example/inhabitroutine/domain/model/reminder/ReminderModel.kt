@@ -9,5 +9,6 @@ data class ReminderModel(
     val taskId: String,
     val time: LocalTime,
     val type: ReminderType,
-    val schedule: ReminderSchedule
+    val schedule: ReminderSchedule,
+    val createdAt: Long
 )

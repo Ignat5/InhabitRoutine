@@ -47,6 +47,9 @@
     <string name="confirm_discard_activity_title">Discard</string>
     <string name="confirm_discard_activity_message">Are you sure you want to discard the activity?</string>
 
+    <!--  reminders  -->
+    <string name="view_reminders_screen_title">Reminders</string>
+
     <!--  days of week  -->
     <string name="day_of_week_monday">Monday</string>
     <string name="day_of_week_tuesday">Tuesday</string>
