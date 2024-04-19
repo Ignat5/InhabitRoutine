@@ -31,7 +31,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
-import kotlinx.datetime.DateTimePeriod
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
@@ -83,6 +82,58 @@ abstract class BaseCreateEditTaskViewModel<SE : ScreenEvent, SS : ScreenState, S
         when (event) {
             is BaseCreateEditTaskScreenEvent.ResultEvent.PickDate.Date ->
                 onPickTaskDateResultEvent(event)
+
+            is BaseCreateEditTaskScreenEvent.ResultEvent.PickDate.StartDate ->
+                onPickStartDateResultEvent(event)
+
+            is BaseCreateEditTaskScreenEvent.ResultEvent.PickDate.EndDate ->
+                onPickEndDateResultEvent(event)
+        }
+    }
+
+    private fun onPickEndDateResultEvent(event: BaseCreateEditTaskScreenEvent.ResultEvent.PickDate.EndDate) {
+        onIdleToAction {
+            when (val result = event.result) {
+                is PickDateScreenResult.Confirm -> onConfirmPickEndDate(result)
+                is PickDateScreenResult.Dismiss -> Unit
+            }
+        }
+    }
+
+    private fun onConfirmPickEndDate(result: PickDateScreenResult.Confirm) {
+        taskModelState.value?.let { taskModel ->
+            (taskModel.date as? TaskDate.Period)?.let { datePeriod ->
+                viewModelScope.launch {
+                    updateTaskDateByIdUseCase(
+                        taskId = taskModel.id,
+                        taskDate = datePeriod.copy(endDate = result.date)
+                    )
+                }
+            }
+        }
+    }
+
+    private fun onPickStartDateResultEvent(event: BaseCreateEditTaskScreenEvent.ResultEvent.PickDate.StartDate) {
+        onIdleToAction {
+            when (val result = event.result) {
+                is PickDateScreenResult.Confirm ->
+                    onConfirmPickStartDate(result)
+
+                is PickDateScreenResult.Dismiss -> Unit
+            }
+        }
+    }
+
+    private fun onConfirmPickStartDate(result: PickDateScreenResult.Confirm) {
+        taskModelState.value?.let { taskModel ->
+            (taskModel.date as? TaskDate.Period)?.copy(startDate = result.date)?.let { datePeriod ->
+                viewModelScope.launch {
+                    updateTaskDateByIdUseCase(
+                        taskId = taskModel.id,
+                        taskDate = datePeriod
+                    )
+                }
+            }
         }
     }
 
@@ -219,8 +270,61 @@ abstract class BaseCreateEditTaskViewModel<SE : ScreenEvent, SS : ScreenState, S
             is BaseItemTaskConfig.DateConfig.Date ->
                 onConfigDateClick()
 
-            is BaseItemTaskConfig.DateConfig.StartDate -> Unit
-            is BaseItemTaskConfig.DateConfig.EndDate -> Unit
+            is BaseItemTaskConfig.DateConfig.StartDate ->
+                onConfigStartDateClick()
+
+            is BaseItemTaskConfig.DateConfig.EndDate ->
+                onConfigEndDateClick()
+        }
+    }
+
+    private fun onConfigEndDateClick() {
+        taskModelState.value?.let { taskModel ->
+            (taskModel.date as? TaskDate.Period)?.let { datePeriod ->
+                if (datePeriod.endDate != null) {
+                    viewModelScope.launch {
+                        updateTaskDateByIdUseCase(
+                            taskId = taskModel.id,
+                            taskDate = datePeriod.copy(endDate = null)
+                        )
+                    }
+                } else {
+                    setUpBaseConfigState(
+                        BaseCreateEditTaskScreenConfig.PickDate.EndDate(
+                            stateHolder = PickDateStateHolder(
+                                requestModel = PickDateRequestModel(
+                                    initDate = datePeriod.startDate,
+                                    minDate = datePeriod.startDate,
+                                    maxDate = maxOf(datePeriod.startDate, todayDate).plus(
+                                        1,
+                                        DateTimeUnit.YEAR
+                                    )
+                                ),
+                                defaultDispatcher = defaultDispatcher,
+                                holderScope = provideChildScope()
+                            )
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    private fun onConfigStartDateClick() {
+        (taskModelState.value?.date as? TaskDate.Period)?.let { period ->
+            setUpBaseConfigState(
+                BaseCreateEditTaskScreenConfig.PickDate.StartDate(
+                    stateHolder = PickDateStateHolder(
+                        requestModel = PickDateRequestModel(
+                            initDate = period.startDate,
+                            minDate = minOf(period.startDate, todayDate),
+                            maxDate = period.endDate ?: todayDate.plus(1, DateTimeUnit.YEAR)
+                        ),
+                        defaultDispatcher = defaultDispatcher,
+                        holderScope = provideChildScope()
+                    )
+                )
+            )
         }
     }
 

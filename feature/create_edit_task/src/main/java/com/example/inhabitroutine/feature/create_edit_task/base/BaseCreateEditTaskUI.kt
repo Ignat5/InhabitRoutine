@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -27,6 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.inhabitroutine.core.presentation.ui.dialog.pick_date.PickDateDialog
+import com.example.inhabitroutine.core.presentation.ui.dialog.pick_date.components.PickDateScreenResult
 import com.example.inhabitroutine.core.presentation.ui.util.toDayMonthYearDisplay
 import com.example.inhabitroutine.core.presentation.ui.util.toDisplay
 import com.example.inhabitroutine.feature.create_edit_task.base.components.BaseCreateEditTaskScreenConfig
@@ -55,16 +57,27 @@ internal fun BaseCreateEditTaskConfig(
         is BaseCreateEditTaskScreenConfig.PickDate -> {
             when (config) {
                 is BaseCreateEditTaskScreenConfig.PickDate.Date -> {
-                    PickDateDialog(
-                        stateHolder = config.stateHolder,
-                        onResult = {
-                            onEvent(
-                                BaseCreateEditTaskScreenEvent.ResultEvent.PickDate.Date(
-                                    it
-                                )
-                            )
-                        }
-                    )
+                    PickDateDialog(stateHolder = config.stateHolder) {
+                        onEvent(
+                            BaseCreateEditTaskScreenEvent.ResultEvent.PickDate.Date(it)
+                        )
+                    }
+                }
+
+                is BaseCreateEditTaskScreenConfig.PickDate.StartDate -> {
+                    PickDateDialog(stateHolder = config.stateHolder) {
+                        onEvent(
+                            BaseCreateEditTaskScreenEvent.ResultEvent.PickDate.StartDate(it)
+                        )
+                    }
+                }
+
+                is BaseCreateEditTaskScreenConfig.PickDate.EndDate -> {
+                    PickDateDialog(stateHolder = config.stateHolder) {
+                        onEvent(
+                            BaseCreateEditTaskScreenEvent.ResultEvent.PickDate.EndDate(it)
+                        )
+                    }
                 }
             }
         }
@@ -278,13 +291,17 @@ internal fun ItemEndDateConfig(
     item: BaseItemTaskConfig.DateConfig.EndDate,
     onClick: () -> Unit
 ) {
+    val isChecked = remember (item) {
+        item.date != null
+    }
     val text = remember(item) {
         item.date?.toDayMonthYearDisplay() ?: ""
     }
-    BasicTextItemConfig(
+    BasicSwitchItemConfig(
         iconResId = com.example.inhabitroutine.core.presentation.R.drawable.ic_end_date,
         titleResId = com.example.inhabitroutine.core.presentation.R.string.task_config_end_date,
         text = text,
+        isChecked = isChecked,
         onClick = onClick
     )
 }
@@ -300,6 +317,41 @@ internal fun ItemRemindersConfig(
         text = "${item.count}",
         onClick = onClick
     )
+}
+
+@Composable
+internal fun BasicSwitchItemConfig(
+    @DrawableRes iconResId: Int,
+    @StringRes titleResId: Int,
+    text: String,
+    isChecked: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    BaseItemConfigContainer(
+        iconResId = iconResId,
+        titleResId = titleResId,
+        onClick = onClick,
+        modifier = modifier
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier.padding(vertical = 12.dp)
+        ) {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                modifier = Modifier
+                    .weight(1f),
+                textAlign = TextAlign.End,
+                overflow = TextOverflow.Ellipsis
+            )
+            Switch(checked = isChecked, onCheckedChange = null)
+        }
+    }
 }
 
 @Composable
@@ -321,7 +373,9 @@ internal fun BasicTextItemConfig(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 1,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp),
             textAlign = TextAlign.End,
             overflow = TextOverflow.Ellipsis
         )
@@ -340,7 +394,7 @@ internal fun BaseItemConfigContainer(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 16.dp),
+                .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
