@@ -1,7 +1,7 @@
 package com.example.inhabitroutine.core.di.modules.task
 
 import com.example.inhabitroutine.core.database.impl.InhabitRoutineDatabase
-import com.example.inhabitroutine.core.database.impl.di.TaskDaoBuilder
+import com.example.inhabitroutine.core.database.impl.di.LocalDatabaseModule
 import com.example.inhabitroutine.core.database.task.api.TaskDao
 import com.example.inhabitroutine.core.di.qualifiers.DefaultDispatcherQualifier
 import com.example.inhabitroutine.core.di.qualifiers.IODispatcherQualifier
@@ -25,7 +25,7 @@ object TaskDataModule {
         db: InhabitRoutineDatabase,
         @IODispatcherQualifier ioDispatcher: CoroutineDispatcher
     ): TaskDao {
-        return TaskDaoBuilder().build(
+        return LocalDatabaseModule.provideTaskDao(
             db = db,
             ioDispatcher = ioDispatcher
         )

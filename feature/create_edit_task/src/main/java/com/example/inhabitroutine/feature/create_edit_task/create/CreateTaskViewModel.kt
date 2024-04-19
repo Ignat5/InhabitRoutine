@@ -1,6 +1,7 @@
 package com.example.inhabitroutine.feature.create_edit_task.create
 
 import com.example.inhabitroutine.domain.model.task.TaskModel
+import com.example.inhabitroutine.domain.reminder.api.ReadReminderCountByTaskIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.DeleteTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskDateByIdUseCase
@@ -30,6 +31,7 @@ import kotlinx.coroutines.withContext
 class CreateTaskViewModel(
     private val taskId: String,
     private val readTaskByIdUseCase: ReadTaskByIdUseCase,
+    private val readReminderCountByTaskIdUseCase: ReadReminderCountByTaskIdUseCase,
     private val deleteTaskByIdUseCase: DeleteTaskByIdUseCase,
     updateTaskTitleByIdUseCase: UpdateTaskTitleByIdUseCase,
     updateTaskProgressByIdUseCase: UpdateTaskProgressByIdUseCase,
@@ -54,9 +56,15 @@ class CreateTaskViewModel(
             null
         )
 
-    private val allTaskConfigItemsState = taskModelState.filterNotNull().map { taskModel ->
+    private val allTaskConfigItemsState = combine(
+        taskModelState.filterNotNull(),
+        readReminderCountByTaskIdUseCase(taskId)
+    ) { taskModel, reminderCount ->
         withContext(defaultDispatcher) {
-            provideBaseTaskConfigItems(taskModel)
+            provideBaseTaskConfigItems(
+                taskModel = taskModel,
+                reminderCount = reminderCount
+            )
         }
     }.stateIn(
         viewModelScope,

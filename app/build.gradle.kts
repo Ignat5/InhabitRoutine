@@ -67,6 +67,7 @@ dependencies {
     implementation(project(":core:util"))
     implementation(project(":core:di"))
     implementation(project(":domain:task:api"))
+    implementation(project(":domain:reminder:api"))
 
     implementation(libs.bundles.compose)
     implementation(libs.hilt.android)

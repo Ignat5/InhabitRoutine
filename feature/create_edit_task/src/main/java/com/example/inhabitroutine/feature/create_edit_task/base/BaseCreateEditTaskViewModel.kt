@@ -410,7 +410,10 @@ abstract class BaseCreateEditTaskViewModel<SE : ScreenEvent, SS : ScreenState, S
         }
     }
 
-    protected fun provideBaseTaskConfigItems(taskModel: TaskModel): List<BaseItemTaskConfig> {
+    protected fun provideBaseTaskConfigItems(
+        taskModel: TaskModel,
+        reminderCount: Int
+    ): List<BaseItemTaskConfig> {
         return buildList<BaseItemTaskConfig> {
             add(BaseItemTaskConfig.Title(taskModel.title))
             add(BaseItemTaskConfig.Description(taskModel.description))
@@ -438,7 +441,7 @@ abstract class BaseCreateEditTaskViewModel<SE : ScreenEvent, SS : ScreenState, S
                     add(BaseItemTaskConfig.DateConfig.EndDate(taskDate.endDate))
                 }
             }
-            add(BaseItemTaskConfig.Reminders(0))
+            add(BaseItemTaskConfig.Reminders(reminderCount))
         }.sortedBy { it.key.ordinal }
     }
 

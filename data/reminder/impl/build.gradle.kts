@@ -2,7 +2,7 @@ plugins {
     id("java-library")
     alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.sqlDelight)
+    alias(libs.plugins.serialization)
 }
 
 java {
@@ -10,18 +10,12 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
-sqldelight {
-    databases {
-        create("InhabitRoutineDatabase") {
-            packageName.set("com.example.inhabitroutine.core.database.impl")
-        }
-    }
-}
-
 dependencies {
-    implementation(project(":core:database:task:api"))
+    implementation(project(":data:reminder:api"))
     implementation(project(":core:database:reminder:api"))
     implementation(project(":core:util"))
+    implementation(project(":domain:model"))
     implementation(libs.kotlin.coroutines.core)
-    implementation(libs.bundles.sqldelight)
+    implementation(libs.kotlin.serialization)
+    implementation(libs.kotlin.datetime)
 }

@@ -36,11 +36,21 @@ android {
 
 dependencies {
     implementation(project(":core:database:task:api"))
+    implementation(project(":core:database:reminder:api"))
+
     implementation(project(":core:database:impl"))
+
     implementation(project(":data:task:api"))
     implementation(project(":data:task:impl"))
+
+    implementation(project(":data:reminder:api"))
+    implementation(project(":data:reminder:impl"))
+    
     implementation(project(":domain:task:api"))
     implementation(project(":domain:task:impl"))
+
+    implementation(project(":domain:reminder:api"))
+    implementation(project(":domain:reminder:impl"))
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)

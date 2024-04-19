@@ -4,6 +4,7 @@ import app.cash.sqldelight.Query
 import app.cash.sqldelight.Transacter
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
+import app.cash.sqldelight.coroutines.mapToOne
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import com.example.inhabitroutine.core.util.ResultModel
 import kotlinx.coroutines.async
@@ -25,6 +26,12 @@ internal fun <T : Any> Query<T>.readOneOrNull(
 ): Flow<T?> = this
     .asFlow()
     .mapToOneOrNull(coroutineContext)
+
+internal fun <T : Any> Query<T>.readOne(
+    coroutineContext: CoroutineContext
+): Flow<T> = this
+    .asFlow()
+    .mapToOne(coroutineContext)
 
 internal suspend fun <T : Any> runQuery(
     coroutineContext: CoroutineContext,
