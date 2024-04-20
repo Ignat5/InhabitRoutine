@@ -10,9 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-abstract class BaseResultStateHolder<SE : ScreenEvent, SS : ScreenState, SR : ScreenResult>(
-    holderScope: CoroutineScope
-) : BaseStateHolder<SE, SS>(holderScope) {
+abstract class BaseResultStateHolder<SE : ScreenEvent, SS : ScreenState, SR : ScreenResult> : BaseStateHolder<SE, SS>() {
     private val _uiScreenResult = MutableStateFlow<BaseScreenResult<SR>>(BaseScreenResult.Idle)
     val uiScreenResult: StateFlow<BaseScreenResult<SR>> = _uiScreenResult.asStateFlow()
 

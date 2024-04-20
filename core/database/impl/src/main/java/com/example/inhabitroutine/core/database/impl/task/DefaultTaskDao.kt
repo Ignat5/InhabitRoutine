@@ -3,6 +3,8 @@ package com.example.inhabitroutine.core.database.impl.task
 import com.example.inhabitroutine.core.database.impl.InhabitRoutineDatabase
 import com.example.inhabitroutine.core.database.impl.util.readOneOrNull
 import com.example.inhabitroutine.core.database.impl.util.runQuery
+import com.example.inhabitroutine.core.database.impl.util.runTransaction
+import com.example.inhabitroutine.core.database.impl.util.toTaskContentTable
 import com.example.inhabitroutine.core.database.impl.util.toTaskEntity
 import com.example.inhabitroutine.core.database.impl.util.toTaskTable
 import com.example.inhabitroutine.core.database.task.api.TaskDao
@@ -25,7 +27,47 @@ internal class DefaultTaskDao(
         }
 
     override suspend fun saveTask(taskEntity: TaskEntity): ResultModel<Unit, Throwable> =
+        db.runTransaction(ioDispatcher) {
+            taskDao.apply {
+                insertTask(taskEntity.toTaskTable())
+                insertTaskContent(taskEntity.toTaskContentTable())
+            }
+        }
+
+    override suspend fun updateTaskTitleById(
+        taskId: String,
+        title: String
+    ): ResultModel<Unit, Throwable> = runQuery(ioDispatcher) {
+        taskDao.updateTaskTitleById(
+            taskId = taskId,
+            title = title
+        )
+    }
+
+    override suspend fun updateTaskStartEndDateById(
+        taskId: String,
+        startEpochDay: Long,
+        endEpochDay: Long
+    ): ResultModel<Unit, Throwable> = db.runTransaction(ioDispatcher) {
+        taskDao.updateTaskStartEndDateById(
+            taskId = taskId,
+            startEpochDay = startEpochDay,
+            endEpochDay = endEpochDay,
+        )
+    }
+
+    override suspend fun updateTaskDescriptionById(
+        taskId: String,
+        description: String
+    ): ResultModel<Unit, Throwable> = runQuery(ioDispatcher) {
+        taskDao.updateTaskDescriptionById(
+            taskId = taskId,
+            description = description
+        )
+    }
+
+    override suspend fun deleteTaskById(taskId: String): ResultModel<Unit, Throwable> =
         runQuery(ioDispatcher) {
-            taskDao.insertTask(taskEntity.toTaskTable())
+            taskDao.deleteTaskById(taskId)
         }
 }

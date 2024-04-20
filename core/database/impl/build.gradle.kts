@@ -20,6 +20,7 @@ sqldelight {
 
 dependencies {
     implementation(project(":core:database:task:api"))
+    implementation(project(":core:database:reminder:api"))
     implementation(project(":core:util"))
     implementation(libs.kotlin.coroutines.core)
     implementation(libs.bundles.sqldelight)

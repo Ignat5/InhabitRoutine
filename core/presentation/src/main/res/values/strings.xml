@@ -9,7 +9,83 @@
     <string name="habit_progress_type_yes_no_title">Yes or No</string>
     <string name="habit_progress_type_number_title">Number</string>
     <string name="habit_progress_type_time_title">Time</string>
+    <string name="habit_progress_type_title">Pick progress type</string>
     <string name="habit_progress_type_yes_no_description">Daily record is either success or failure</string>
     <string name="habit_progress_type_number_description">Daily record is a number value</string>
     <string name="habit_progress_type_time_description">Daily record is a time value</string>
+
+    <!-- task config (create/edit task)   -->
+    <string name="task_config_title">Activity name</string>
+    <string name="task_config_description">Description</string>
+    <string name="task_config_progress">Daily goal</string>
+    <string name="task_config_frequency">Frequency</string>
+    <string name="task_config_date">Date</string>
+    <string name="task_config_start_date">Start date</string>
+    <string name="task_config_end_date">End date</string>
+    <string name="task_config_reminders">Time and reminders</string>
+    <string name="daily_goal_suffix">a day</string>
+    <string name="frequency_every_day">Every day</string>
+    <string name="frequency_days_of_week">Days of week</string>
+    <string name="create_task_title">Create activity</string>
+    <string name="task_config_title_label">Name</string>
+
+    <!--  pick task progress  -->
+    <string name="task_config_limit_number_label">Goal</string>
+    <string name="task_config_limit_unit_label">Unit</string>
+
+    <!--  progress_limit_type  -->
+    <string name="progress_limit_type_at_least_title">At least</string>
+    <string name="progress_limit_type_exactly_title">Exactly</string>
+    <string name="progress_limit_type_no_more_than_title">No more than</string>
+
+    <!-- common   -->
+    <string name="save">Save</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
+
+    <!-- discard activity -->
+    <string name="confirm_discard_activity_title">Discard</string>
+    <string name="confirm_discard_activity_message">Are you sure you want to discard the activity?</string>
+
+    <!--  reminders  -->
+    <string name="view_reminders_screen_title">Reminders</string>
+    <string name="reminder_schedule_always_enabled_title">Always enabled</string>
+    <string name="reminder_schedule_days_of_week">Days of week</string>
+    <string name="new_reminder_title">New reminder</string>
+    <string name="reminder_time_title">Reminder time</string>
+    <string name="reminder_type_title">Reminder type</string>
+    <string name="reminder_schedule_title">Reminder schedule</string>
+    <string name="reminder_type_no_reminder">No reminder</string>
+    <string name="reminder_type_notification">Notification</string>
+    <string name="create_reminder_title">Create reminder</string>
+    <string name="edit_reminder_title">Edit reminder</string>
+    <string name="reminder_create_success_message">Reminder created</string>
+    <string name="reminder_edit_success_message">Reminder updated</string>
+    <string name="reminder_delete_success_message">Reminder deleted</string>
+    <string name="reminder_failure_overlap_message">Reminder at that time already exists</string>
+    <string name="reminder_confirm_delete_title">Delete reminder</string>
+    <string name="reminder_confirm_delete_message">Are you sure you want to delete the reminder?</string>
+
+    <!--  days of week  -->
+    <string name="day_of_week_monday">Monday</string>
+    <string name="day_of_week_tuesday">Tuesday</string>
+    <string name="day_of_week_wednesday">Wednesday</string>
+    <string name="day_of_week_thursday">Thursday</string>
+    <string name="day_of_week_friday">Friday</string>
+    <string name="day_of_week_saturday">Saturday</string>
+    <string name="day_of_week_sunday">Sunday</string>
+
+    <!--  months  -->
+    <string name="month_january">January</string>
+    <string name="month_february">February</string>
+    <string name="month_march">March</string>
+    <string name="month_april">April</string>
+    <string name="month_may">May</string>
+    <string name="month_june">June</string>
+    <string name="month_july">July</string>
+    <string name="month_august">August</string>
+    <string name="month_september">September</string>
+    <string name="month_october">October</string>
+    <string name="month_november">November</string>
+    <string name="month_december">December</string>
 </resources>

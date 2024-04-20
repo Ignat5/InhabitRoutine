@@ -16,7 +16,6 @@ sealed interface TaskModel {
     val date: TaskDate
     val isArchived: Boolean
     val isDraft: Boolean
-    val versionStartDate: LocalDate
     val createdAt: Long
 
     sealed interface RecurringActivity {
@@ -41,7 +40,6 @@ sealed interface TaskModel {
                 override val frequency: TaskFrequency,
                 override val isArchived: Boolean,
                 override val isDraft: Boolean,
-                override val versionStartDate: LocalDate,
                 override val createdAt: Long
             ) : HabitContinuous(TaskProgressType.Number)
 
@@ -54,7 +52,6 @@ sealed interface TaskModel {
                 override val frequency: TaskFrequency,
                 override val isArchived: Boolean,
                 override val isDraft: Boolean,
-                override val versionStartDate: LocalDate,
                 override val createdAt: Long
             ) : HabitContinuous(TaskProgressType.Time)
         }
@@ -67,7 +64,6 @@ sealed interface TaskModel {
             override val frequency: TaskFrequency,
             override val isArchived: Boolean,
             override val isDraft: Boolean,
-            override val versionStartDate: LocalDate,
             override val createdAt: Long
         ) : Habit(TaskProgressType.YesNo)
     }
@@ -85,7 +81,6 @@ sealed interface TaskModel {
             override val frequency: TaskFrequency,
             override val isArchived: Boolean,
             override val isDraft: Boolean,
-            override val versionStartDate: LocalDate,
             override val createdAt: Long
         ) : Task(TaskType.RecurringTask), RecurringActivity
 
@@ -96,7 +91,6 @@ sealed interface TaskModel {
             override val date: TaskDate.Day,
             override val isArchived: Boolean,
             override val isDraft: Boolean,
-            override val versionStartDate: LocalDate,
             override val createdAt: Long
         ) : Task(TaskType.SingleTask)
     }

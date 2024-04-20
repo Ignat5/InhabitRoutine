@@ -41,6 +41,7 @@ android {
 dependencies {
     implementation(project(":core:presentation"))
     implementation(project(":domain:model"))
+    implementation(project(":core:util"))
     implementation(project(":domain:task:api"))
 
     implementation(libs.bundles.compose)

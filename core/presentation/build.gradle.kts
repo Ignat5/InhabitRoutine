@@ -41,6 +41,7 @@ android {
 dependencies {
     implementation(project(":domain:model"))
     implementation(libs.bundles.compose)
+    implementation(libs.kotlin.datetime)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

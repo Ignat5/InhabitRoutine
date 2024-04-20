@@ -42,7 +42,7 @@ internal fun TaskDataModel.toTaskEntity(json: Json): TaskEntity? {
         title = title,
         description = description,
         startEpochDay = startDate.encodeToEpochDay(),
-        endEpochDay = (endDate ?: distantFutureDate).encodeToEpochDay(),
+        endEpochDay = endDate.encodeToEpochDay(),
         progressContent = progress.encodeToString(json) ?: return null,
         frequencyContent = frequency.encodeToString(json) ?: return null,
         isArchived = isArchived.encodeToString(json) ?: return null,
@@ -87,15 +87,15 @@ private fun String.decodeFromBoolean(json: Json): Boolean? =
 
 /* time */
 
-private fun LocalDate.encodeToEpochDay(): Long =
-    this.toEpochDays().toLong()
+internal fun LocalDate?.encodeToEpochDay(): Long =
+    (this ?: distantFutureDate).toEpochDays().toLong()
 
 private fun String.decodeFromTime(json: Json): LocalTime? =
     runCatching {
         json.decodeFromString<LocalTime>(this)
     }.getOrNull()
 
-private fun Long.toDateFromEpochDay(): LocalDate =
+internal fun Long.toDateFromEpochDay(): LocalDate =
     LocalDate.fromEpochDays(this.toInt())
 
 private val distantFutureDate: LocalDate by lazy {

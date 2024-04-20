@@ -7,10 +7,12 @@ import com.example.inhabitroutine.data.task.impl.repository.model.task.TaskDataM
 import com.example.inhabitroutine.data.task.impl.repository.util.toTaskDataModel
 import com.example.inhabitroutine.data.task.impl.repository.util.toTaskModel
 import com.example.inhabitroutine.domain.model.task.TaskModel
+import com.example.inhabitroutine.domain.model.task.content.TaskDate
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.LocalDate
 
 internal class DefaultTaskRepository(
     private val taskDataSource: TaskDataSource,
@@ -26,8 +28,50 @@ internal class DefaultTaskRepository(
             } else null
         }
 
-    suspend fun saveTask(taskModel: TaskModel): ResultModel<Unit, Throwable> =
-        taskModel.toTaskDataModel().let { taskDataModel ->
+    override suspend fun saveTask(
+        taskModel: TaskModel,
+        versionStartDate: LocalDate
+    ): ResultModel<Unit, Throwable> =
+        taskModel.toTaskDataModel(versionStartDate).let { taskDataModel ->
             taskDataSource.saveTask(taskDataModel)
         }
+
+    override suspend fun updateTaskTitleById(
+        taskId: String,
+        title: String
+    ): ResultModel<Unit, Throwable> = taskDataSource.updateTaskTitleById(
+        taskId = taskId,
+        title = title
+    )
+
+    override suspend fun updateTaskDateById(
+        taskId: String,
+        taskDate: TaskDate
+    ): ResultModel<Unit, Throwable> {
+        val startDate = when (taskDate) {
+            is TaskDate.Day -> taskDate.date
+            is TaskDate.Period -> taskDate.startDate
+        }
+        val endDate = when (taskDate) {
+            is TaskDate.Day -> taskDate.date
+            is TaskDate.Period -> taskDate.endDate
+        }
+
+        return taskDataSource.updateTaskStartEndDateById(
+            taskId = taskId,
+            startDate = startDate,
+            endDate = endDate
+        )
+    }
+
+    override suspend fun updateTaskDescriptionById(
+        taskId: String,
+        description: String
+    ): ResultModel<Unit, Throwable> = taskDataSource.updateTaskDescriptionById(
+        taskId = taskId,
+        description = description
+    )
+
+    override suspend fun deleteTaskById(taskId: String): ResultModel<Unit, Throwable> =
+        taskDataSource.deleteTaskById(taskId)
 }

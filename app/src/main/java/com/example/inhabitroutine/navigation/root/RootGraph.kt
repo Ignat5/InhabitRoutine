@@ -11,6 +11,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.example.inhabitroutine.navigation.AppNavDest
 import com.example.inhabitroutine.navigation.TargetNavDest
+import com.example.inhabitroutine.navigation.create_task.createTaskDestination
+import com.example.inhabitroutine.navigation.view_reminders.viewRemindersDestination
 import com.example.inhabitroutine.navigation.view_schedule.viewScheduleDestination
 import kotlinx.coroutines.launch
 
@@ -54,6 +56,8 @@ fun RootGraph() {
                 onNavigate = onNavigate,
                 onMenuClick = onMenuClick
             )
+            createTaskDestination(onNavigate)
+            viewRemindersDestination(onNavigate)
         }
     }
 }
