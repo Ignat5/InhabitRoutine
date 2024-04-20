@@ -49,10 +49,12 @@ object ReminderDomainModule {
 
     @Provides
     fun provideUpdateReminderUseCase(
-        reminderRepository: ReminderRepository
+        reminderRepository: ReminderRepository,
+        @DefaultDispatcherQualifier defaultDispatcher: CoroutineDispatcher
     ): UpdateReminderUseCase {
         return LocalReminderDomainModule.provideUpdateReminderUseCase(
-            reminderRepository = reminderRepository
+            reminderRepository = reminderRepository,
+            defaultDispatcher = defaultDispatcher
         )
     }
 

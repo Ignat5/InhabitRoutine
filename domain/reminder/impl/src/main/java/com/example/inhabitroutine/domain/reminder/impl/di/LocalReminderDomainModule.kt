@@ -42,10 +42,12 @@ object LocalReminderDomainModule {
     }
 
     fun provideUpdateReminderUseCase(
-        reminderRepository: ReminderRepository
+        reminderRepository: ReminderRepository,
+        defaultDispatcher: CoroutineDispatcher
     ): UpdateReminderUseCase {
         return DefaultUpdateReminderUseCase(
-            reminderRepository = reminderRepository
+            reminderRepository = reminderRepository,
+            defaultDispatcher = defaultDispatcher
         )
     }
 

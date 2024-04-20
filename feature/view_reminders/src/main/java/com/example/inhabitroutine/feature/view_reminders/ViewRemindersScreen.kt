@@ -25,7 +25,6 @@ import androidx.compose.material3.SnackbarData
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarVisuals
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -49,6 +48,8 @@ import com.example.inhabitroutine.feature.view_reminders.components.ViewReminder
 import com.example.inhabitroutine.feature.view_reminders.components.ViewRemindersScreenEvent
 import com.example.inhabitroutine.feature.view_reminders.components.ViewRemindersScreenState
 import com.example.inhabitroutine.feature.view_reminders.config.create_edit_reminder.create.CreateReminderDialog
+import com.example.inhabitroutine.feature.view_reminders.config.create_edit_reminder.edit.EditReminderDialog
+import com.example.inhabitroutine.feature.view_reminders.config.delete_reminder.ConfirmDeleteReminderDialog
 import com.example.inhabitroutine.feature.view_reminders.model.ViewRemindersMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -93,8 +94,12 @@ fun ViewRemindersScreen(
                     Column(modifier = Modifier.fillMaxWidth()) {
                         ItemReminder(
                             item = item,
-                            onClick = { /*TODO*/ },
-                            onDeleteClick = { /*TODO*/ },
+                            onClick = {
+                                onEvent(ViewRemindersScreenEvent.OnReminderClick(item.id))
+                            },
+                            onDeleteClick = {
+                                onEvent(ViewRemindersScreenEvent.OnDeleteReminderClick(item.id))
+                            },
                             modifier = Modifier.animateItemPlacement()
                         )
                         if (index != state.allReminders.lastIndex) {
@@ -148,24 +153,24 @@ private fun SnackBarMessageHandler(
         when (message) {
             is ViewRemindersMessage.Idle -> Unit
             is ViewRemindersMessage.Message -> {
-                when (message) {
-                    is ViewRemindersMessage.Message.CreateReminderSuccess -> {
-                        scope.launch {
-                            snackBarHostState.showSnackbar(
-                                message = context.getString(R.string.reminder_create_success_message),
-                                duration = SnackbarDuration.Short
-                            )
-                        }
-                    }
+                val messageTextResId = when (message) {
+                    is ViewRemindersMessage.Message.CreateReminderSuccess ->
+                        R.string.reminder_create_success_message
 
-                    is ViewRemindersMessage.Message.CreateReminderFailureDueToOverlap -> {
-                        scope.launch {
-                            snackBarHostState.showSnackbar(
-                                message = context.getString(R.string.reminder_failure_overlap_message),
-                                duration = SnackbarDuration.Short
-                            )
-                        }
-                    }
+                    is ViewRemindersMessage.Message.EditReminderSuccess ->
+                        R.string.reminder_edit_success_message
+
+                    is ViewRemindersMessage.Message.DeleteReminderSuccess ->
+                        R.string.reminder_delete_success_message
+
+                    is ViewRemindersMessage.Message.FailureDueToOverlap ->
+                        R.string.reminder_failure_overlap_message
+                }
+                scope.launch {
+                    snackBarHostState.showSnackbar(
+                        message = context.getString(messageTextResId),
+                        duration = SnackbarDuration.Short
+                    )
                 }
                 onMessageShown()
             }
@@ -182,6 +187,18 @@ fun ViewRemindersConfig(
         is ViewRemindersScreenConfig.CreateReminder -> {
             CreateReminderDialog(stateHolder = config.stateHolder) {
                 onEvent(ViewRemindersScreenEvent.ResultEvent.CreateReminder(it))
+            }
+        }
+
+        is ViewRemindersScreenConfig.EditReminder -> {
+            EditReminderDialog(stateHolder = config.stateHolder) {
+                onEvent(ViewRemindersScreenEvent.ResultEvent.EditReminder(it))
+            }
+        }
+
+        is ViewRemindersScreenConfig.DeleteReminder -> {
+            ConfirmDeleteReminderDialog(stateHolder = config.stateHolder) {
+                onEvent(ViewRemindersScreenEvent.ResultEvent.DeleteReminder(it))
             }
         }
     }

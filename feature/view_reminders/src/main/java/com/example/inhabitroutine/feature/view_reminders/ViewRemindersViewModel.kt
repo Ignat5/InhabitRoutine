@@ -12,13 +12,16 @@ import com.example.inhabitroutine.feature.view_reminders.components.ViewReminder
 import com.example.inhabitroutine.feature.view_reminders.components.ViewRemindersScreenState
 import com.example.inhabitroutine.feature.view_reminders.config.create_edit_reminder.create.CreateReminderStateHolder
 import com.example.inhabitroutine.feature.view_reminders.config.create_edit_reminder.create.components.CreateReminderScreenResult
+import com.example.inhabitroutine.feature.view_reminders.config.create_edit_reminder.edit.EditReminderStateHolder
+import com.example.inhabitroutine.feature.view_reminders.config.create_edit_reminder.edit.components.EditReminderScreenResult
+import com.example.inhabitroutine.feature.view_reminders.config.delete_reminder.DeleteReminderStateHolder
+import com.example.inhabitroutine.feature.view_reminders.config.delete_reminder.components.DeleteReminderScreenResult
 import com.example.inhabitroutine.feature.view_reminders.model.ViewRemindersMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -64,8 +67,14 @@ class ViewRemindersViewModel(
             is ViewRemindersScreenEvent.ResultEvent ->
                 onResultEvent(event)
 
+            is ViewRemindersScreenEvent.OnReminderClick ->
+                onReminderClick(event)
+
             is ViewRemindersScreenEvent.OnCreateReminderClick ->
                 onCreateReminderClick()
+
+            is ViewRemindersScreenEvent.OnDeleteReminderClick ->
+                onDeleteReminder(event)
 
             is ViewRemindersScreenEvent.OnMessageShown ->
                 onMessageShown()
@@ -79,6 +88,60 @@ class ViewRemindersViewModel(
         when (event) {
             is ViewRemindersScreenEvent.ResultEvent.CreateReminder ->
                 onCreateReminderResultEvent(event)
+
+            is ViewRemindersScreenEvent.ResultEvent.EditReminder ->
+                onEditReminderResultEvent(event)
+
+            is ViewRemindersScreenEvent.ResultEvent.DeleteReminder ->
+                onDeleteReminderResultEvent(event)
+        }
+    }
+
+    private fun onDeleteReminderResultEvent(event: ViewRemindersScreenEvent.ResultEvent.DeleteReminder) {
+        onIdleToAction {
+            when (val result = event.result) {
+                is DeleteReminderScreenResult.Confirm -> onConfirmDeleteReminder(result)
+                is DeleteReminderScreenResult.Dismiss -> Unit
+            }
+        }
+    }
+
+    private fun onConfirmDeleteReminder(result: DeleteReminderScreenResult.Confirm) {
+        viewModelScope.launch {
+            val resultModel = deleteReminderByIdUseCase(result.reminderId)
+            if (resultModel is ResultModel.Success) {
+                messageState.update { ViewRemindersMessage.Message.DeleteReminderSuccess }
+            }
+        }
+    }
+
+    private fun onEditReminderResultEvent(event: ViewRemindersScreenEvent.ResultEvent.EditReminder) {
+        onIdleToAction {
+            when (val result = event.result) {
+                is EditReminderScreenResult.Confirm ->
+                    onConfirmEditReminder(result)
+
+                is EditReminderScreenResult.Dismiss -> Unit
+            }
+        }
+    }
+
+    private fun onConfirmEditReminder(result: EditReminderScreenResult.Confirm) {
+        viewModelScope.launch {
+            val resultModel = updateReminderUseCase(
+                reminderModel = result.reminderModel
+            )
+            when (resultModel) {
+                is ResultModel.Success -> {
+                    messageState.update { ViewRemindersMessage.Message.EditReminderSuccess }
+                }
+
+                is ResultModel.Failure -> {
+                    if (resultModel.value is UpdateReminderUseCase.UpdateReminderFailure.Overlap) {
+                        messageState.update { ViewRemindersMessage.Message.FailureDueToOverlap }
+                    }
+                }
+            }
         }
     }
 
@@ -109,12 +172,36 @@ class ViewRemindersViewModel(
                 is ResultModel.Failure -> {
                     if (resultModel.value is SaveReminderUseCase.SaveReminderFailure.Overlap) {
                         messageState.update {
-                            ViewRemindersMessage.Message.CreateReminderFailureDueToOverlap
+                            ViewRemindersMessage.Message.FailureDueToOverlap
                         }
                     }
                 }
             }
         }
+    }
+
+    private fun onReminderClick(event: ViewRemindersScreenEvent.OnReminderClick) {
+        allRemindersState.value.find { it.id == event.reminderId }?.let { reminderModel ->
+            setUpConfigState(
+                ViewRemindersScreenConfig.EditReminder(
+                    stateHolder = EditReminderStateHolder(
+                        reminderModel = reminderModel,
+                        holderScope = provideChildScope()
+                    )
+                )
+            )
+        }
+    }
+
+    private fun onDeleteReminder(event: ViewRemindersScreenEvent.OnDeleteReminderClick) {
+        setUpConfigState(
+            ViewRemindersScreenConfig.DeleteReminder(
+                stateHolder = DeleteReminderStateHolder(
+                    reminderId = event.reminderId,
+                    holderScope = provideChildScope()
+                )
+            )
+        )
     }
 
     private fun onCreateReminderClick() {

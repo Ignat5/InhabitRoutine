@@ -58,9 +58,13 @@
     <string name="reminder_type_no_reminder">No reminder</string>
     <string name="reminder_type_notification">Notification</string>
     <string name="create_reminder_title">Create reminder</string>
+    <string name="edit_reminder_title">Edit reminder</string>
     <string name="reminder_create_success_message">Reminder created</string>
-    <string name="reminder_update_success_message">Reminder updated</string>
+    <string name="reminder_edit_success_message">Reminder updated</string>
+    <string name="reminder_delete_success_message">Reminder deleted</string>
     <string name="reminder_failure_overlap_message">Reminder at that time already exists</string>
+    <string name="reminder_confirm_delete_title">Delete reminder</string>
+    <string name="reminder_confirm_delete_message">Are you sure you want to delete the reminder?</string>
 
     <!--  days of week  -->
     <string name="day_of_week_monday">Monday</string>
