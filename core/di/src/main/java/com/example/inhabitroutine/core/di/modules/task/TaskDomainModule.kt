@@ -5,6 +5,7 @@ import com.example.inhabitroutine.data.task.api.TaskRepository
 import com.example.inhabitroutine.domain.task.api.use_case.DeleteTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTasksByQueryUseCase
+import com.example.inhabitroutine.domain.task.api.use_case.SaveTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.SaveTaskDraftUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskDateByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskDescriptionByIdUseCase
@@ -18,6 +19,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -100,6 +102,17 @@ object TaskDomainModule {
     ): UpdateTaskDescriptionByIdUseCase {
         return LocalTaskDomainModule.provideUpdateTaskDescriptionByIdUseCase(
             taskRepository = taskRepository
+        )
+    }
+
+    @Provides
+    fun provideSaveTaskByIdUseCase(
+        taskRepository: TaskRepository,
+        externalScope: CoroutineScope
+    ): SaveTaskByIdUseCase {
+        return LocalTaskDomainModule.provideSaveTaskByIdUseCase(
+            taskRepository = taskRepository,
+            externalScope = externalScope
         )
     }
 

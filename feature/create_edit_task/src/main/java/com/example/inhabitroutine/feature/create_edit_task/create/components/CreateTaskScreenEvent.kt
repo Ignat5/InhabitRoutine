@@ -7,6 +7,7 @@ import com.example.inhabitroutine.feature.create_edit_task.create.config.Confirm
 
 sealed interface CreateTaskScreenEvent : ScreenEvent {
     data class Base(val baseEvent: BaseCreateEditTaskScreenEvent) : CreateTaskScreenEvent
+    data object OnSaveClick : CreateTaskScreenEvent
     data object OnLeaveRequest : CreateTaskScreenEvent
 
     sealed interface ResultEvent : CreateTaskScreenEvent {

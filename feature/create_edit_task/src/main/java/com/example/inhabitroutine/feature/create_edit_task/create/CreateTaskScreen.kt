@@ -42,7 +42,9 @@ fun CreateTaskScreen(
         topBar = {
             ScreenTopBar(
                 canSave = state.canSave,
-                onSaveClick = {},
+                onSaveClick = {
+                    onEvent(CreateTaskScreenEvent.OnSaveClick)
+                },
                 onCloseClick = {
                     onEvent(CreateTaskScreenEvent.OnLeaveRequest)
                 }

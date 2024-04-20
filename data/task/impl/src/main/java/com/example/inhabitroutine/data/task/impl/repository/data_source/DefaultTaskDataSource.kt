@@ -68,6 +68,16 @@ internal class DefaultTaskDataSource(
         description = description
     )
 
+    override suspend fun updateTaskIsDraftById(
+        taskId: String,
+        isDraft: Boolean
+    ): ResultModel<Unit, Throwable> = isDraft.encodeToString(json)?.let { encodedIsDraft ->
+        taskDao.updateTaskIsDraftById(
+            taskId = taskId,
+            isDraft = encodedIsDraft
+        )
+    } ?: ResultModel.failure(IllegalStateException())
+
     override suspend fun deleteTaskById(taskId: String): ResultModel<Unit, Throwable> =
         taskDao.deleteTaskById(taskId)
 }

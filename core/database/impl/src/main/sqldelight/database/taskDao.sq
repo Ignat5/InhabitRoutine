@@ -108,6 +108,11 @@ UPDATE TaskTable SET
 description = :description
 WHERE id = :taskId;
 
+updateTaskIsDraftById:
+UPDATE TaskTable SET
+isDraft = :isDraft
+WHERE id = :taskId;
+
 deleteTaskById:
 DELETE FROM TaskTable
 WHERE id = :taskId;

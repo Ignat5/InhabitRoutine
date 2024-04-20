@@ -76,6 +76,16 @@ internal class DefaultTaskDao(
         )
     }
 
+    override suspend fun updateTaskIsDraftById(
+        taskId: String,
+        isDraft: String
+    ): ResultModel<Unit, Throwable> = runQuery(ioDispatcher) {
+        taskDao.updateTaskIsDraftById(
+            taskId = taskId,
+            isDraft = isDraft
+        )
+    }
+
     override suspend fun deleteTaskById(taskId: String): ResultModel<Unit, Throwable> =
         runQuery(ioDispatcher) {
             taskDao.deleteTaskById(taskId)

@@ -23,5 +23,10 @@ interface TaskDao {
         description: String
     ): ResultModel<Unit, Throwable>
 
+    suspend fun updateTaskIsDraftById(
+        taskId: String,
+        isDraft: String
+    ): ResultModel<Unit, Throwable>
+
     suspend fun deleteTaskById(taskId: String): ResultModel<Unit, Throwable>
 }

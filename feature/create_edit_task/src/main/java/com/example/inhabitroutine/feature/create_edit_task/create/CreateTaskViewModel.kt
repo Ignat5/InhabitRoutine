@@ -4,6 +4,7 @@ import com.example.inhabitroutine.domain.model.task.TaskModel
 import com.example.inhabitroutine.domain.reminder.api.ReadReminderCountByTaskIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.DeleteTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTaskByIdUseCase
+import com.example.inhabitroutine.domain.task.api.use_case.SaveTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskDateByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskDescriptionByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskFrequencyByIdUseCase
@@ -31,8 +32,9 @@ import kotlinx.coroutines.withContext
 
 class CreateTaskViewModel(
     private val taskId: String,
-    private val readTaskByIdUseCase: ReadTaskByIdUseCase,
-    private val readReminderCountByTaskIdUseCase: ReadReminderCountByTaskIdUseCase,
+    readTaskByIdUseCase: ReadTaskByIdUseCase,
+    readReminderCountByTaskIdUseCase: ReadReminderCountByTaskIdUseCase,
+    private val saveTaskByIdUseCase: SaveTaskByIdUseCase,
     private val deleteTaskByIdUseCase: DeleteTaskByIdUseCase,
     updateTaskTitleByIdUseCase: UpdateTaskTitleByIdUseCase,
     updateTaskProgressByIdUseCase: UpdateTaskProgressByIdUseCase,
@@ -108,6 +110,7 @@ class CreateTaskViewModel(
         when (event) {
             is CreateTaskScreenEvent.Base -> onBaseEvent(event.baseEvent)
             is CreateTaskScreenEvent.ResultEvent -> onResultEvent(event)
+            is CreateTaskScreenEvent.OnSaveClick -> onSaveClick()
             is CreateTaskScreenEvent.OnLeaveRequest -> onLeaveRequest()
         }
     }
@@ -132,6 +135,15 @@ class CreateTaskViewModel(
         viewModelScope.launch {
             deleteTaskByIdUseCase(taskId)
             setUpNavigationState(CreateTaskScreenNavigation.Back)
+        }
+    }
+
+    private fun onSaveClick() {
+        if (canSaveState.value) {
+            viewModelScope.launch {
+                saveTaskByIdUseCase(taskId)
+                setUpNavigationState(CreateTaskScreenNavigation.Back)
+            }
         }
     }
 

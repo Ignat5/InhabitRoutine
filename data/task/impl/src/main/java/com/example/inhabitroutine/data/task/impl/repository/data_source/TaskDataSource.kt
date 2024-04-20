@@ -25,5 +25,10 @@ interface TaskDataSource {
         description: String
     ): ResultModel<Unit, Throwable>
 
+    suspend fun updateTaskIsDraftById(
+        taskId: String,
+        isDraft: Boolean
+    ): ResultModel<Unit, Throwable>
+
     suspend fun deleteTaskById(taskId: String): ResultModel<Unit, Throwable>
 }
