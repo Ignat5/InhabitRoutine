@@ -97,6 +97,11 @@ startEpochDay = :startEpochDay,
 endEpochDay = :endEpochDay
 WHERE id = :taskId;
 
+updateTaskDescriptionById:
+UPDATE TaskTable SET
+description = :description
+WHERE id = :taskId;
+
 deleteTaskById:
 DELETE FROM TaskTable
 WHERE id = :taskId;

@@ -51,6 +51,14 @@ internal class DefaultTaskDataSource(
         endEpochDay = endDate.encodeToEpochDay()
     )
 
+    override suspend fun updateTaskDescriptionById(
+        taskId: String,
+        description: String
+    ): ResultModel<Unit, Throwable> = taskDao.updateTaskDescriptionById(
+        taskId = taskId,
+        description = description
+    )
+
     override suspend fun deleteTaskById(taskId: String): ResultModel<Unit, Throwable> =
         taskDao.deleteTaskById(taskId)
 }

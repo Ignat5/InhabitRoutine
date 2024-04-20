@@ -5,6 +5,7 @@ import com.example.inhabitroutine.domain.reminder.api.ReadReminderCountByTaskIdU
 import com.example.inhabitroutine.domain.task.api.use_case.DeleteTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskDateByIdUseCase
+import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskDescriptionByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskFrequencyByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskProgressByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskTitleByIdUseCase
@@ -37,6 +38,7 @@ class CreateTaskViewModel(
     updateTaskProgressByIdUseCase: UpdateTaskProgressByIdUseCase,
     updateTaskFrequencyByIdUseCase: UpdateTaskFrequencyByIdUseCase,
     updateTaskDateByIdUseCase: UpdateTaskDateByIdUseCase,
+    updateTaskDescriptionByIdUseCase: UpdateTaskDescriptionByIdUseCase,
     validateProgressLimitNumberUseCase: ValidateProgressLimitNumberUseCase,
     defaultDispatcher: CoroutineDispatcher,
     override val viewModelScope: CoroutineScope
@@ -45,6 +47,7 @@ class CreateTaskViewModel(
     updateTaskProgressByIdUseCase = updateTaskProgressByIdUseCase,
     updateTaskFrequencyByIdUseCase = updateTaskFrequencyByIdUseCase,
     updateTaskDateByIdUseCase = updateTaskDateByIdUseCase,
+    updateTaskDescriptionByIdUseCase = updateTaskDescriptionByIdUseCase,
     validateProgressLimitNumberUseCase = validateProgressLimitNumberUseCase,
     defaultDispatcher = defaultDispatcher,
 ) {

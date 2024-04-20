@@ -3,6 +3,7 @@ package com.example.inhabitroutine.feature.create_edit_task.base.components
 import com.example.inhabitroutine.core.presentation.components.event.ScreenEvent
 import com.example.inhabitroutine.core.presentation.components.result.ScreenResult
 import com.example.inhabitroutine.core.presentation.ui.dialog.pick_date.components.PickDateScreenResult
+import com.example.inhabitroutine.feature.create_edit_task.base.config.pick_task_description.components.PickTaskDescriptionScreenResult
 import com.example.inhabitroutine.feature.create_edit_task.base.config.pick_task_frequency.components.PickTaskFrequencyScreenResult
 import com.example.inhabitroutine.feature.create_edit_task.base.config.pick_task_number_progress.components.PickTaskNumberProgressScreenResult
 import com.example.inhabitroutine.feature.create_edit_task.base.config.pick_task_time_progress.components.PickTaskTimeProgressScreenResult
@@ -31,6 +32,10 @@ sealed interface BaseCreateEditTaskScreenEvent : ScreenEvent {
 
         data class PickTaskFrequency(
             override val result: PickTaskFrequencyScreenResult
+        ) : ResultEvent
+
+        data class PickTaskDescription(
+            override val result: PickTaskDescriptionScreenResult
         ) : ResultEvent
 
         sealed interface PickDate : ResultEvent {

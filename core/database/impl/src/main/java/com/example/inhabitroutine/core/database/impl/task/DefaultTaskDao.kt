@@ -56,6 +56,16 @@ internal class DefaultTaskDao(
         )
     }
 
+    override suspend fun updateTaskDescriptionById(
+        taskId: String,
+        description: String
+    ): ResultModel<Unit, Throwable> = runQuery(ioDispatcher) {
+        taskDao.updateTaskDescriptionById(
+            taskId = taskId,
+            description = description
+        )
+    }
+
     override suspend fun deleteTaskById(taskId: String): ResultModel<Unit, Throwable> =
         runQuery(ioDispatcher) {
             taskDao.deleteTaskById(taskId)

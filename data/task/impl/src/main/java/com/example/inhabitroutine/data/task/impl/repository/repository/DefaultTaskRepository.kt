@@ -64,6 +64,14 @@ internal class DefaultTaskRepository(
         )
     }
 
+    override suspend fun updateTaskDescriptionById(
+        taskId: String,
+        description: String
+    ): ResultModel<Unit, Throwable> = taskDataSource.updateTaskDescriptionById(
+        taskId = taskId,
+        description = description
+    )
+
     override suspend fun deleteTaskById(taskId: String): ResultModel<Unit, Throwable> =
         taskDataSource.deleteTaskById(taskId)
 }

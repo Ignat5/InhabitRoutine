@@ -23,5 +23,10 @@ interface TaskRepository {
         taskDate: TaskDate
     ): ResultModel<Unit, Throwable>
 
+    suspend fun updateTaskDescriptionById(
+        taskId: String,
+        description: String
+    ): ResultModel<Unit, Throwable>
+
     suspend fun deleteTaskById(taskId: String): ResultModel<Unit, Throwable>
 }

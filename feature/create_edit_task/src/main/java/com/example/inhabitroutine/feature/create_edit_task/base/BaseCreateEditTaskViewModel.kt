@@ -11,6 +11,7 @@ import com.example.inhabitroutine.core.presentation.ui.dialog.pick_date.model.Pi
 import com.example.inhabitroutine.domain.model.task.TaskModel
 import com.example.inhabitroutine.domain.model.task.content.TaskDate
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskDateByIdUseCase
+import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskDescriptionByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskFrequencyByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskProgressByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskTitleByIdUseCase
@@ -18,6 +19,8 @@ import com.example.inhabitroutine.domain.task.api.use_case.ValidateProgressLimit
 import com.example.inhabitroutine.feature.create_edit_task.base.components.BaseCreateEditTaskScreenConfig
 import com.example.inhabitroutine.feature.create_edit_task.base.components.BaseCreateEditTaskScreenEvent
 import com.example.inhabitroutine.feature.create_edit_task.base.components.BaseCreateEditTaskScreenNavigation
+import com.example.inhabitroutine.feature.create_edit_task.base.config.pick_task_description.PickTaskDescriptionStateHolder
+import com.example.inhabitroutine.feature.create_edit_task.base.config.pick_task_description.components.PickTaskDescriptionScreenResult
 import com.example.inhabitroutine.feature.create_edit_task.base.config.pick_task_frequency.PickTaskFrequencyStateHolder
 import com.example.inhabitroutine.feature.create_edit_task.base.config.pick_task_frequency.components.PickTaskFrequencyScreenResult
 import com.example.inhabitroutine.feature.create_edit_task.base.config.pick_task_number_progress.PickTaskNumberProgressStateHolder
@@ -41,6 +44,7 @@ abstract class BaseCreateEditTaskViewModel<SE : ScreenEvent, SS : ScreenState, S
     private val updateTaskProgressByIdUseCase: UpdateTaskProgressByIdUseCase,
     private val updateTaskFrequencyByIdUseCase: UpdateTaskFrequencyByIdUseCase,
     private val updateTaskDateByIdUseCase: UpdateTaskDateByIdUseCase,
+    private val updateTaskDescriptionByIdUseCase: UpdateTaskDescriptionByIdUseCase,
     private val validateProgressLimitNumberUseCase: ValidateProgressLimitNumberUseCase,
     private val defaultDispatcher: CoroutineDispatcher
 ) : BaseViewModel<SE, SS, SN, SC>() {
@@ -75,6 +79,29 @@ abstract class BaseCreateEditTaskViewModel<SE : ScreenEvent, SS : ScreenState, S
 
             is BaseCreateEditTaskScreenEvent.ResultEvent.PickTaskTimeProgress ->
                 onPickTaskTimeProgressResultEvent(event)
+
+            is BaseCreateEditTaskScreenEvent.ResultEvent.PickTaskDescription ->
+                onPickTaskDescriptionResultEvent(event)
+        }
+    }
+
+    private fun onPickTaskDescriptionResultEvent(event: BaseCreateEditTaskScreenEvent.ResultEvent.PickTaskDescription) {
+        onIdleToAction {
+            when (val result = event.result) {
+                is PickTaskDescriptionScreenResult.Confirm -> onConfirmPickTaskDescription(result)
+                is PickTaskDescriptionScreenResult.Dismiss -> Unit
+            }
+        }
+    }
+
+    private fun onConfirmPickTaskDescription(result: PickTaskDescriptionScreenResult.Confirm) {
+        taskModelState.value?.let { taskModel ->
+            viewModelScope.launch {
+                updateTaskDescriptionByIdUseCase(
+                    taskId = taskModel.id,
+                    description = result.description
+                )
+            }
         }
     }
 
@@ -264,7 +291,21 @@ abstract class BaseCreateEditTaskViewModel<SE : ScreenEvent, SS : ScreenState, S
             is BaseItemTaskConfig.Reminders ->
                 onConfigRemindersClick()
 
-            else -> Unit
+            is BaseItemTaskConfig.Description ->
+                onConfigTaskDescriptionClick()
+        }
+    }
+
+    private fun onConfigTaskDescriptionClick() {
+        taskModelState.value?.let { taskModel ->
+            setUpBaseConfigState(
+                BaseCreateEditTaskScreenConfig.PickTaskDescription(
+                    stateHolder = PickTaskDescriptionStateHolder(
+                        initDescription = taskModel.description,
+                        holderScope = provideChildScope()
+                    )
+                )
+            )
         }
     }
 
