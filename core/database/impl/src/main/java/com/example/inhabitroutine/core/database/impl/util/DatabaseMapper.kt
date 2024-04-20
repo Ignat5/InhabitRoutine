@@ -1,9 +1,13 @@
 package com.example.inhabitroutine.core.database.impl.util
 
+import com.example.inhabitroutine.core.database.reminder.api.ReminderEntity
 import com.example.inhabitroutine.core.database.task.api.TaskEntity
+import database.ReminderTable
 import database.TaskContentTable
 import database.TaskTable
 import database.TaskView
+
+/* task */
 
 internal fun TaskView.toTaskEntity() = TaskEntity(
     taskId = task_id,
@@ -41,18 +45,22 @@ internal fun TaskEntity.toTaskContentTable() = TaskContentTable(
     isArchived = isArchived
 )
 
-//fun TaskEntity.toTaskTable() = TaskTable(
-//    taskId = taskId,
-//    versionStartEpochDay = versionStartEpochDay,
-//    type = type,
-//    progressType = progressType,
-//    title = title,
-//    description = description,
-//    startEpochDay = startEpochDay,
-//    endEpochDay = endEpochDay,
-//    progressContent = progressContent,
-//    frequencyContent = frequencyContent,
-//    isArchived = isArchived,
-//    isDraft = isDraft,
-//    createdAt = createdAt,
-//)
+/* reminder */
+
+internal fun ReminderTable.toReminderEntity() = ReminderEntity(
+    id = id,
+    taskId = taskId,
+    type = type,
+    time = time,
+    schedule = schedule,
+    createdAt = createdAt
+)
+
+internal fun ReminderEntity.toReminderTable() = ReminderTable(
+    id = id,
+    taskId = taskId,
+    time = time,
+    type = type,
+    schedule = schedule,
+    createdAt = createdAt
+)

@@ -1,0 +1,15 @@
+selectRemindersByTaskId:
+SELECT * FROM ReminderTable tReminder
+WHERE tReminder.taskId = :taskId;
+
+selectReminderCountByTaskId:
+SELECT COUNT(*) FROM ReminderTable tReminder
+WHERE tReminder.taskId = :taskId;
+
+insertReminder:
+INSERT OR REPLACE INTO ReminderTable
+VALUES ?;
+
+deleteReminderById:
+DELETE FROM ReminderTable
+WHERE id = :reminderId;

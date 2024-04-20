@@ -3,6 +3,7 @@ package com.example.inhabitroutine.presentation.create_task
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.example.inhabitroutine.core.di.qualifiers.DefaultDispatcherQualifier
+import com.example.inhabitroutine.domain.reminder.api.ReadReminderCountByTaskIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.DeleteTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskDateByIdUseCase
@@ -30,6 +31,7 @@ class AndroidCreateTaskViewModel @Inject constructor(
     updateTaskProgressByIdUseCase: UpdateTaskProgressByIdUseCase,
     updateTaskFrequencyByIdUseCase: UpdateTaskFrequencyByIdUseCase,
     updateTaskDateByIdUseCase: UpdateTaskDateByIdUseCase,
+    readReminderCountByTaskIdUseCase: ReadReminderCountByTaskIdUseCase,
     validateProgressLimitNumberUseCase: ValidateProgressLimitNumberUseCase,
     @DefaultDispatcherQualifier defaultDispatcher: CoroutineDispatcher
 ) : BaseAndroidViewModel<CreateTaskScreenEvent, CreateTaskScreenState, CreateTaskScreenNavigation, CreateTaskScreenConfig>() {
@@ -37,6 +39,7 @@ class AndroidCreateTaskViewModel @Inject constructor(
     override val delegateViewModel = CreateTaskViewModel(
         taskId = checkNotNull(savedStateHandle.get<String>(AppNavDest.TASK_ID_KEY)),
         readTaskByIdUseCase = readTaskByIdUseCase,
+        readReminderCountByTaskIdUseCase = readReminderCountByTaskIdUseCase,
         deleteTaskByIdUseCase = deleteTaskByIdUseCase,
         updateTaskTitleByIdUseCase = updateTaskTitleByIdUseCase,
         updateTaskProgressByIdUseCase = updateTaskProgressByIdUseCase,
