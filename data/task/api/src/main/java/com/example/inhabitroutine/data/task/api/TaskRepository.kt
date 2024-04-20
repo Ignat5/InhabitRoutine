@@ -8,6 +8,7 @@ import kotlinx.datetime.LocalDate
 
 interface TaskRepository {
     fun readTaskById(taskId: String): Flow<TaskModel?>
+    fun readTasksByQuery(query: String): Flow<List<TaskModel>>
     suspend fun saveTask(
         taskModel: TaskModel,
         versionStartDate: LocalDate

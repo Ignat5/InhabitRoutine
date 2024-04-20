@@ -78,6 +78,12 @@ WHERE tView.task_id = :taskId
 GROUP BY tView.task_id
 HAVING tView.taskContent_versionStartEpochDay = MAX(tView.taskContent_versionStartEpochDay);
 
+selectTasksByQuery:
+SELECT * FROM TaskView tView
+WHERE tView.task_title LIKE :searchQuery
+GROUP BY tView.task_id
+HAVING tView.taskContent_versionStartEpochDay = MAX(tView.taskContent_versionStartEpochDay);
+
 insertTask:
 INSERT OR REPLACE INTO TaskTable
 VALUES ?;

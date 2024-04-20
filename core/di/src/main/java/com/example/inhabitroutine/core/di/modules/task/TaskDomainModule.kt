@@ -4,6 +4,7 @@ import com.example.inhabitroutine.core.di.qualifiers.DefaultDispatcherQualifier
 import com.example.inhabitroutine.data.task.api.TaskRepository
 import com.example.inhabitroutine.domain.task.api.use_case.DeleteTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTaskByIdUseCase
+import com.example.inhabitroutine.domain.task.api.use_case.ReadTasksByQueryUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.SaveTaskDraftUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskDateByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskDescriptionByIdUseCase
@@ -28,6 +29,17 @@ object TaskDomainModule {
     ): ReadTaskByIdUseCase {
         return LocalTaskDomainModule.provideReadTaskByIdUseCase(
             taskRepository = taskRepository
+        )
+    }
+
+    @Provides
+    fun provideReadTasksByQueryUseCase(
+        taskRepository: TaskRepository,
+        @DefaultDispatcherQualifier defaultDispatcher: CoroutineDispatcher
+    ): ReadTasksByQueryUseCase {
+        return LocalTaskDomainModule.provideReadTasksByQuery(
+            taskRepository = taskRepository,
+            defaultDispatcher = defaultDispatcher
         )
     }
 

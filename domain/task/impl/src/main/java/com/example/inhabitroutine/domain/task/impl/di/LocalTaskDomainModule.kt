@@ -3,6 +3,7 @@ package com.example.inhabitroutine.domain.task.impl.di
 import com.example.inhabitroutine.data.task.api.TaskRepository
 import com.example.inhabitroutine.domain.task.api.use_case.DeleteTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTaskByIdUseCase
+import com.example.inhabitroutine.domain.task.api.use_case.ReadTasksByQueryUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.SaveTaskDraftUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskDateByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskDescriptionByIdUseCase
@@ -12,6 +13,7 @@ import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskTitleByIdUs
 import com.example.inhabitroutine.domain.task.api.use_case.ValidateProgressLimitNumberUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultDeleteTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultReadTaskByIdUseCase
+import com.example.inhabitroutine.domain.task.impl.use_case.DefaultReadTasksByQueryUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultSaveTaskDraftUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultUpdateTaskDateByIdUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultUpdateTaskDescriptionByIdUseCase
@@ -28,6 +30,16 @@ object LocalTaskDomainModule {
     ): ReadTaskByIdUseCase {
         return DefaultReadTaskByIdUseCase(
             taskRepository = taskRepository
+        )
+    }
+
+    fun provideReadTasksByQuery(
+        taskRepository: TaskRepository,
+        defaultDispatcher: CoroutineDispatcher
+    ): ReadTasksByQueryUseCase {
+        return DefaultReadTasksByQueryUseCase(
+            taskRepository = taskRepository,
+            defaultDispatcher = defaultDispatcher
         )
     }
 

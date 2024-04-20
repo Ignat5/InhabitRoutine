@@ -4,10 +4,12 @@ import com.example.inhabitroutine.core.database.task.api.TaskDao
 import com.example.inhabitroutine.core.util.ResultModel
 import com.example.inhabitroutine.data.task.impl.repository.model.task.TaskDataModel
 import com.example.inhabitroutine.data.task.impl.repository.util.encodeToEpochDay
+import com.example.inhabitroutine.data.task.impl.repository.util.encodeToString
 import com.example.inhabitroutine.data.task.impl.repository.util.toTaskDataModel
 import com.example.inhabitroutine.data.task.impl.repository.util.toTaskEntity
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.LocalDate
@@ -23,6 +25,13 @@ internal class DefaultTaskDataSource(
         taskDao.readTaskById(taskId).map { taskEntity ->
             withContext(ioDispatcher) {
                 taskEntity?.toTaskDataModel(json)
+            }
+        }
+
+    override fun readTasksByQuery(query: String): Flow<List<TaskDataModel>> =
+        taskDao.readTasksByQuery(query).map { allTasks ->
+            withContext(ioDispatcher) {
+                allTasks.mapNotNull { it.toTaskDataModel(json) }
             }
         }
 

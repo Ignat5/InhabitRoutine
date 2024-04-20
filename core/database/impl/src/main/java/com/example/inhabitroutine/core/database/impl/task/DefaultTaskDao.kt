@@ -2,6 +2,7 @@ package com.example.inhabitroutine.core.database.impl.task
 
 import com.example.inhabitroutine.core.database.impl.InhabitRoutineDatabase
 import com.example.inhabitroutine.core.database.impl.util.readOneOrNull
+import com.example.inhabitroutine.core.database.impl.util.readQueryList
 import com.example.inhabitroutine.core.database.impl.util.runQuery
 import com.example.inhabitroutine.core.database.impl.util.runTransaction
 import com.example.inhabitroutine.core.database.impl.util.toTaskContentTable
@@ -13,6 +14,7 @@ import com.example.inhabitroutine.core.util.ResultModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 
 internal class DefaultTaskDao(
     private val db: InhabitRoutineDatabase,
@@ -25,6 +27,14 @@ internal class DefaultTaskDao(
         taskDao.selectTaskById(taskId).readOneOrNull(ioDispatcher).map { taskTable ->
             taskTable?.toTaskEntity()
         }
+
+    override fun readTasksByQuery(query: String): Flow<List<TaskEntity>> =
+        taskDao.selectTasksByQuery("%$query%").readQueryList(ioDispatcher)
+            .map { allTasks ->
+                withContext(ioDispatcher) {
+                    allTasks.map { it.toTaskEntity() }
+                }
+            }
 
     override suspend fun saveTask(taskEntity: TaskEntity): ResultModel<Unit, Throwable> =
         db.runTransaction(ioDispatcher) {

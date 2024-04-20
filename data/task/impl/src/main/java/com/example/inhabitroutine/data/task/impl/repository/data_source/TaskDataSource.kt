@@ -7,6 +7,7 @@ import kotlinx.datetime.LocalDate
 
 interface TaskDataSource {
     fun readTaskById(taskId: String): Flow<TaskDataModel?>
+    fun readTasksByQuery(query: String): Flow<List<TaskDataModel>>
     suspend fun saveTask(taskDataModel: TaskDataModel): ResultModel<Unit, Throwable>
     suspend fun updateTaskTitleById(
         taskId: String,
