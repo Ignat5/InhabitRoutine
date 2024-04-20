@@ -3,6 +3,8 @@ package com.example.inhabitroutine.core.presentation.ui.util
 import android.content.Context
 import androidx.compose.ui.text.buildAnnotatedString
 import com.example.inhabitroutine.core.presentation.R
+import com.example.inhabitroutine.domain.model.reminder.content.ReminderSchedule
+import com.example.inhabitroutine.domain.model.reminder.type.ReminderType
 import com.example.inhabitroutine.domain.model.task.content.TaskFrequency
 import com.example.inhabitroutine.domain.model.task.content.TaskProgress
 import com.example.inhabitroutine.domain.model.task.type.ProgressLimitType
@@ -29,6 +31,28 @@ fun TaskProgressType.toIconId(): Int = when (this) {
     TaskProgressType.YesNo -> R.drawable.ic_progress_yes_no
     TaskProgressType.Number -> R.drawable.ic_progress_number
     TaskProgressType.Time -> R.drawable.ic_progress_time
+}
+
+fun TaskFrequency.toDisplay(context: Context) = this.let { frequency ->
+    when (frequency) {
+        is TaskFrequency.EveryDay -> context.getString(R.string.frequency_every_day)
+        is TaskFrequency.DaysOfWeek -> frequency.daysOfWeek.toDisplay(context)
+    }
+}
+
+fun ReminderType.toIconResId() = when (this) {
+    ReminderType.NoReminder -> R.drawable.ic_notification_off
+    ReminderType.Notification -> R.drawable.ic_notification
+}
+
+fun ReminderType.toTitleResId() = when (this) {
+    ReminderType.NoReminder -> R.string.reminder_type_no_reminder
+    ReminderType.Notification -> R.string.reminder_type_notification
+}
+
+fun ReminderSchedule.toDisplay(context: Context) = when (this) {
+    is ReminderSchedule.AlwaysEnabled -> context.getString(R.string.reminder_schedule_always_enabled_title)
+    is ReminderSchedule.DaysOfWeek -> this.daysOfWeek.toDisplay(context)
 }
 
 fun LocalDate.toDayMonthYearDisplay() = this.let { date ->
@@ -66,13 +90,6 @@ fun LocalDate.toDayOfWeekMonthMonthDayDisplay(context: Context) = this.let { dat
         append(date.month.toDisplay(context))
         append(" ")
         append(date.dayOfMonth.toString())
-    }
-}
-
-fun TaskFrequency.toDisplay(context: Context) = this.let { frequency ->
-    when (frequency) {
-        is TaskFrequency.EveryDay -> context.getString(R.string.frequency_every_day)
-        is TaskFrequency.DaysOfWeek -> frequency.daysOfWeek.toDisplay(context)
     }
 }
 

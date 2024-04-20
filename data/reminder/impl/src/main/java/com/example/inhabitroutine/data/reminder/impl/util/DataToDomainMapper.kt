@@ -14,9 +14,26 @@ internal fun ReminderDataModel.toReminderModel() = ReminderModel(
     createdAt = createdAt
 )
 
+internal fun ReminderModel.toReminderDataModel() = ReminderDataModel(
+    id = id,
+    taskId = taskId,
+    time = time,
+    type = type,
+    schedule = schedule.toReminderScheduleContent(),
+    createdAt = createdAt
+)
+
 private fun ReminderContentDataModel.ScheduleContent.toReminderSchedule() =
     when (this) {
         is ReminderContentDataModel.ScheduleContent.AlwaysEnabled -> ReminderSchedule.AlwaysEnabled
         is ReminderContentDataModel.ScheduleContent.DaysOfWeek ->
             ReminderSchedule.DaysOfWeek(this.daysOfWeek)
+    }
+
+private fun ReminderSchedule.toReminderScheduleContent() =
+    when (this) {
+        is ReminderSchedule.AlwaysEnabled -> ReminderContentDataModel.ScheduleContent.AlwaysEnabled
+        is ReminderSchedule.DaysOfWeek -> ReminderContentDataModel.ScheduleContent.DaysOfWeek(
+            this.daysOfWeek
+        )
     }

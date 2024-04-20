@@ -50,8 +50,17 @@ internal fun TaskEntity.toTaskContentTable() = TaskContentTable(
 internal fun ReminderTable.toReminderEntity() = ReminderEntity(
     id = id,
     taskId = taskId,
-    reminderType = type,
-    reminderTime = time,
-    reminderSchedule = schedule,
+    type = type,
+    time = time,
+    schedule = schedule,
+    createdAt = createdAt
+)
+
+internal fun ReminderEntity.toReminderTable() = ReminderTable(
+    id = id,
+    taskId = taskId,
+    time = time,
+    type = type,
+    schedule = schedule,
     createdAt = createdAt
 )

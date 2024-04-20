@@ -15,3 +15,9 @@ inline fun <T, E, R> ResultModel<T, E>.mapSuccess(transform: (T) -> R): ResultMo
         is ResultModel.Success -> ResultModel.Success<R>(transform(this.value))
         is ResultModel.Failure -> ResultModel.Failure<E>(this.value)
     }
+
+inline fun <T, E, R> ResultModel<T, E>.mapFailure(transform: (E) -> R): ResultModel<T, R> =
+    when (this) {
+        is ResultModel.Success -> ResultModel.Success<T>(this.value)
+        is ResultModel.Failure -> ResultModel.Failure<R>(transform(this.value))
+    }

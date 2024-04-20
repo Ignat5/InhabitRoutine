@@ -49,6 +49,18 @@
 
     <!--  reminders  -->
     <string name="view_reminders_screen_title">Reminders</string>
+    <string name="reminder_schedule_always_enabled_title">Always enabled</string>
+    <string name="reminder_schedule_days_of_week">Days of week</string>
+    <string name="new_reminder_title">New reminder</string>
+    <string name="reminder_time_title">Reminder time</string>
+    <string name="reminder_type_title">Reminder type</string>
+    <string name="reminder_schedule_title">Reminder schedule</string>
+    <string name="reminder_type_no_reminder">No reminder</string>
+    <string name="reminder_type_notification">Notification</string>
+    <string name="create_reminder_title">Create reminder</string>
+    <string name="reminder_create_success_message">Reminder created</string>
+    <string name="reminder_update_success_message">Reminder updated</string>
+    <string name="reminder_failure_overlap_message">Reminder at that time already exists</string>
 
     <!--  days of week  -->
     <string name="day_of_week_monday">Monday</string>
