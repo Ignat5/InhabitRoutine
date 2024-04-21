@@ -28,12 +28,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.window.PopupProperties
 import com.example.inhabitroutine.core.presentation.R
 import com.example.inhabitroutine.core.presentation.ui.common.BaseSnackBar
 import com.example.inhabitroutine.core.presentation.ui.dialog.archive_task.ArchiveTaskDialog
 import com.example.inhabitroutine.core.presentation.ui.dialog.delete_task.DeleteTaskDialog
-import com.example.inhabitroutine.domain.model.task.TaskModel
+import com.example.inhabitroutine.core.presentation.ui.dialog.reset_task.ResetTaskDialog
 import com.example.inhabitroutine.feature.create_edit_task.base.BaseCreateEditTaskConfig
 import com.example.inhabitroutine.feature.create_edit_task.base.baseConfigItems
 import com.example.inhabitroutine.feature.create_edit_task.base.components.BaseCreateEditTaskScreenEvent
@@ -42,7 +41,6 @@ import com.example.inhabitroutine.feature.create_edit_task.edit.components.EditT
 import com.example.inhabitroutine.feature.create_edit_task.edit.components.EditTaskScreenState
 import com.example.inhabitroutine.feature.create_edit_task.edit.model.EditTaskMessage
 import com.example.inhabitroutine.feature.create_edit_task.edit.model.ItemTaskAction
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -120,6 +118,9 @@ private fun SnackBarMessageHandler(
 
                     is EditTaskMessage.Message.UnarchiveSuccess ->
                         R.string.task_action_unarchive_success_message
+
+                    is EditTaskMessage.Message.ResetSuccess ->
+                        R.string.task_action_reset_success_message
                 }
                 scope.launch {
                     snackBarHostState.showSnackbar(
@@ -154,6 +155,12 @@ fun EditTaskConfig(
         is EditTaskScreenConfig.DeleteTask -> {
             DeleteTaskDialog(stateHolder = config.stateHolder) {
                 onEvent(EditTaskScreenEvent.ResultEvent.DeleteTask(it))
+            }
+        }
+
+        is EditTaskScreenConfig.ResetTask -> {
+            ResetTaskDialog(stateHolder = config.stateHolder) {
+                onEvent(EditTaskScreenEvent.ResultEvent.ResetTask(it))
             }
         }
     }
@@ -221,7 +228,7 @@ private fun ItemTaskAction.toTitleResId() = when (this) {
     is ItemTaskAction.ViewStatistics -> R.string.task_action_view_statistics
     is ItemTaskAction.ArchiveUnarchive.Archive -> R.string.task_action_archive
     is ItemTaskAction.ArchiveUnarchive.Unarchive -> R.string.task_action_unarchive
-    is ItemTaskAction.Restart -> R.string.task_action_restart
+    is ItemTaskAction.Reset -> R.string.task_action_restart
     is ItemTaskAction.Delete -> R.string.task_action_delete
 }
 
@@ -229,6 +236,6 @@ private fun ItemTaskAction.toIconResId() = when (this) {
     is ItemTaskAction.ViewStatistics -> R.drawable.ic_statistics
     is ItemTaskAction.ArchiveUnarchive.Archive -> R.drawable.ic_archive
     is ItemTaskAction.ArchiveUnarchive.Unarchive -> R.drawable.ic_unarchive
-    is ItemTaskAction.Restart -> R.drawable.ic_reset
+    is ItemTaskAction.Reset -> R.drawable.ic_reset
     is ItemTaskAction.Delete -> R.drawable.ic_delete
 }

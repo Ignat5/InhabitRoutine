@@ -5,6 +5,7 @@ import com.example.inhabitroutine.domain.task.api.use_case.ArchiveTaskByIdUseCas
 import com.example.inhabitroutine.domain.task.api.use_case.DeleteTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTasksByQueryUseCase
+import com.example.inhabitroutine.domain.task.api.use_case.ResetTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.SaveTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.SaveTaskDraftUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskDateByIdUseCase
@@ -17,6 +18,7 @@ import com.example.inhabitroutine.domain.task.impl.use_case.DefaultArchiveTaskBy
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultDeleteTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultReadTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultReadTasksByQueryUseCase
+import com.example.inhabitroutine.domain.task.impl.use_case.DefaultResetTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultSaveTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultSaveTaskDraftUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultUpdateTaskDateByIdUseCase
@@ -121,6 +123,16 @@ object LocalTaskDomainModule {
             taskRepository = taskRepository,
             externalScope = externalScope,
             defaultDispatcher = defaultDispatcher
+        )
+    }
+
+    fun provideResetTaskByIdUseCase(
+        updateTaskDateByIdUseCase: UpdateTaskDateByIdUseCase,
+        externalScope: CoroutineScope
+    ): ResetTaskByIdUseCase {
+        return DefaultResetTaskByIdUseCase(
+            updateTaskDateByIdUseCase = updateTaskDateByIdUseCase,
+            externalScope = externalScope
         )
     }
 

@@ -5,5 +5,6 @@ sealed interface EditTaskMessage {
     sealed interface Message : EditTaskMessage {
         data object ArchiveSuccess : Message
         data object UnarchiveSuccess : Message
+        data object ResetSuccess : Message
     }
 }

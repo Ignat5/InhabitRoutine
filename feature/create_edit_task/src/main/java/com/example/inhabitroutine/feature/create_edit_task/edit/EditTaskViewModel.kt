@@ -4,13 +4,15 @@ import com.example.inhabitroutine.core.presentation.ui.dialog.archive_task.Archi
 import com.example.inhabitroutine.core.presentation.ui.dialog.archive_task.components.ArchiveTaskScreenResult
 import com.example.inhabitroutine.core.presentation.ui.dialog.delete_task.DeleteTaskStateHolder
 import com.example.inhabitroutine.core.presentation.ui.dialog.delete_task.components.DeleteTaskScreenResult
+import com.example.inhabitroutine.core.presentation.ui.dialog.reset_task.ResetTaskStateHolder
+import com.example.inhabitroutine.core.presentation.ui.dialog.reset_task.components.ResetTaskScreenResult
 import com.example.inhabitroutine.core.util.ResultModel
 import com.example.inhabitroutine.domain.model.task.TaskModel
 import com.example.inhabitroutine.domain.reminder.api.ReadReminderCountByTaskIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ArchiveTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.DeleteTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTaskByIdUseCase
-import com.example.inhabitroutine.domain.task.api.use_case.SaveTaskByIdUseCase
+import com.example.inhabitroutine.domain.task.api.use_case.ResetTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskDateByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskDescriptionByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskFrequencyByIdUseCase
@@ -45,6 +47,7 @@ class EditTaskViewModel(
     readReminderCountByTaskIdUseCase: ReadReminderCountByTaskIdUseCase,
     private val archiveTaskByIdUseCase: ArchiveTaskByIdUseCase,
     private val deleteTaskByIdUseCase: DeleteTaskByIdUseCase,
+    private val resetTaskByIdUseCase: ResetTaskByIdUseCase,
     updateTaskTitleByIdUseCase: UpdateTaskTitleByIdUseCase,
     updateTaskProgressByIdUseCase: UpdateTaskProgressByIdUseCase,
     updateTaskFrequencyByIdUseCase: UpdateTaskFrequencyByIdUseCase,
@@ -96,7 +99,7 @@ class EditTaskViewModel(
                 else ItemTaskAction.ArchiveUnarchive.Archive
             )
             if (taskModel is TaskModel.Habit) {
-                add(ItemTaskAction.Restart)
+                add(ItemTaskAction.Reset)
             }
             add(ItemTaskAction.Delete)
         }
@@ -149,6 +152,27 @@ class EditTaskViewModel(
 
             is EditTaskScreenEvent.ResultEvent.DeleteTask ->
                 onDeleteTaskResultEvent(event)
+
+            is EditTaskScreenEvent.ResultEvent.ResetTask ->
+                onResetTaskResultEvent(event)
+        }
+    }
+
+    private fun onResetTaskResultEvent(event: EditTaskScreenEvent.ResultEvent.ResetTask) {
+        onIdleToAction {
+            when (val result = event.result) {
+                is ResetTaskScreenResult.Confirm -> onConfirmResetTask(result)
+                is ResetTaskScreenResult.Dismiss -> Unit
+            }
+        }
+    }
+
+    private fun onConfirmResetTask(result: ResetTaskScreenResult.Confirm) {
+        viewModelScope.launch {
+            val resultModel = resetTaskByIdUseCase(taskId)
+            if (resultModel is ResultModel.Success) {
+                messageState.update { EditTaskMessage.Message.ResetSuccess }
+            }
         }
     }
 
@@ -195,9 +219,20 @@ class EditTaskViewModel(
             is ItemTaskAction.ArchiveUnarchive ->
                 onArchiveUnarchiveActionClick(item)
 
-            is ItemTaskAction.Restart -> {}
+            is ItemTaskAction.Reset -> onResetActionClick()
             is ItemTaskAction.Delete -> onDeleteActionClick()
         }
+    }
+
+    private fun onResetActionClick() {
+        setUpConfigState(
+            EditTaskScreenConfig.ResetTask(
+                stateHolder = ResetTaskStateHolder(
+                    taskId = taskId,
+                    holderScope = provideChildScope()
+                )
+            )
+        )
     }
 
     private fun onDeleteActionClick() {

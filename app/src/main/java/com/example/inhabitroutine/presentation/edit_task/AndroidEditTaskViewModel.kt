@@ -7,6 +7,7 @@ import com.example.inhabitroutine.domain.reminder.api.ReadReminderCountByTaskIdU
 import com.example.inhabitroutine.domain.task.api.use_case.ArchiveTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.DeleteTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTaskByIdUseCase
+import com.example.inhabitroutine.domain.task.api.use_case.ResetTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.SaveTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskDateByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskDescriptionByIdUseCase
@@ -32,6 +33,7 @@ class AndroidEditTaskViewModel @Inject constructor(
     readReminderCountByTaskIdUseCase: ReadReminderCountByTaskIdUseCase,
     archiveTaskByIdUseCase: ArchiveTaskByIdUseCase,
     deleteTaskByIdUseCase: DeleteTaskByIdUseCase,
+    resetTaskByIdUseCase: ResetTaskByIdUseCase,
     updateTaskTitleByIdUseCase: UpdateTaskTitleByIdUseCase,
     updateTaskProgressByIdUseCase: UpdateTaskProgressByIdUseCase,
     updateTaskFrequencyByIdUseCase: UpdateTaskFrequencyByIdUseCase,
@@ -47,6 +49,7 @@ class AndroidEditTaskViewModel @Inject constructor(
         readReminderCountByTaskIdUseCase = readReminderCountByTaskIdUseCase,
         archiveTaskByIdUseCase = archiveTaskByIdUseCase,
         deleteTaskByIdUseCase = deleteTaskByIdUseCase,
+        resetTaskByIdUseCase = resetTaskByIdUseCase,
         updateTaskTitleByIdUseCase = updateTaskTitleByIdUseCase,
         updateTaskProgressByIdUseCase = updateTaskProgressByIdUseCase,
         updateTaskFrequencyByIdUseCase = updateTaskFrequencyByIdUseCase,

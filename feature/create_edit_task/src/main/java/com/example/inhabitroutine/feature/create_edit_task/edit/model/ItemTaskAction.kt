@@ -6,6 +6,6 @@ sealed interface ItemTaskAction {
         data object Archive : ArchiveUnarchive
         data object Unarchive : ArchiveUnarchive
     }
-    data object Restart : ItemTaskAction
+    data object Reset : ItemTaskAction
     data object Delete : ItemTaskAction
 }
