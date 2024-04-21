@@ -29,6 +29,19 @@
     <string name="create_task_title">Create activity</string>
     <string name="task_config_title_label">Name</string>
 
+    <!--  task actions  -->
+    <string name="task_action_view_statistics">View statistics</string>
+    <string name="task_action_archive">Archive</string>
+    <string name="task_action_unarchive">Unarchive</string>
+    <string name="task_action_restart">Restart habit</string>
+    <string name="task_action_delete">Delete</string>
+    <string name="task_action_archive_confirm_title">Archive activity</string>
+    <string name="task_action_archive_confirm_message">Are you sure you want to archive the activity?</string>
+    <string name="task_action_archive_success_message">Activity archived</string>
+    <string name="task_action_unarchive_success_message">Activity unarchived</string>
+    <string name="task_action_delete_title">Delete activity</string>
+    <string name="task_action_delete_message">Are you sure you want to delete the activity?</string>
+
     <!--  pick task progress  -->
     <string name="task_config_limit_number_label">Goal</string>
     <string name="task_config_limit_unit_label">Unit</string>

@@ -2,6 +2,7 @@ package com.example.inhabitroutine.core.di.modules.task
 
 import com.example.inhabitroutine.core.di.qualifiers.DefaultDispatcherQualifier
 import com.example.inhabitroutine.data.task.api.TaskRepository
+import com.example.inhabitroutine.domain.task.api.use_case.ArchiveTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.DeleteTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTasksByQueryUseCase
@@ -113,6 +114,19 @@ object TaskDomainModule {
         return LocalTaskDomainModule.provideSaveTaskByIdUseCase(
             taskRepository = taskRepository,
             externalScope = externalScope
+        )
+    }
+
+    @Provides
+    fun provideArchiveTaskByIdUseCase(
+        taskRepository: TaskRepository,
+        externalScope: CoroutineScope,
+        @DefaultDispatcherQualifier defaultDispatcher: CoroutineDispatcher
+    ): ArchiveTaskByIdUseCase {
+        return LocalTaskDomainModule.provideArchiveTaskByIdUseCase(
+            taskRepository = taskRepository,
+            externalScope = externalScope,
+            defaultDispatcher = defaultDispatcher
         )
     }
 

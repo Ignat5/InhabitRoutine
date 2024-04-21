@@ -1,7 +1,13 @@
 package com.example.inhabitroutine.feature.create_edit_task.edit
 
+import com.example.inhabitroutine.core.presentation.ui.dialog.archive_task.ArchiveTaskStateHolder
+import com.example.inhabitroutine.core.presentation.ui.dialog.archive_task.components.ArchiveTaskScreenResult
+import com.example.inhabitroutine.core.presentation.ui.dialog.delete_task.DeleteTaskStateHolder
+import com.example.inhabitroutine.core.presentation.ui.dialog.delete_task.components.DeleteTaskScreenResult
+import com.example.inhabitroutine.core.util.ResultModel
 import com.example.inhabitroutine.domain.model.task.TaskModel
 import com.example.inhabitroutine.domain.reminder.api.ReadReminderCountByTaskIdUseCase
+import com.example.inhabitroutine.domain.task.api.use_case.ArchiveTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.DeleteTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.SaveTaskByIdUseCase
@@ -18,20 +24,26 @@ import com.example.inhabitroutine.feature.create_edit_task.edit.components.EditT
 import com.example.inhabitroutine.feature.create_edit_task.edit.components.EditTaskScreenEvent
 import com.example.inhabitroutine.feature.create_edit_task.edit.components.EditTaskScreenNavigation
 import com.example.inhabitroutine.feature.create_edit_task.edit.components.EditTaskScreenState
+import com.example.inhabitroutine.feature.create_edit_task.edit.model.EditTaskMessage
+import com.example.inhabitroutine.feature.create_edit_task.edit.model.ItemTaskAction
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class EditTaskViewModel(
     private val taskId: String,
     readTaskByIdUseCase: ReadTaskByIdUseCase,
     readReminderCountByTaskIdUseCase: ReadReminderCountByTaskIdUseCase,
+    private val archiveTaskByIdUseCase: ArchiveTaskByIdUseCase,
     private val deleteTaskByIdUseCase: DeleteTaskByIdUseCase,
     updateTaskTitleByIdUseCase: UpdateTaskTitleByIdUseCase,
     updateTaskProgressByIdUseCase: UpdateTaskProgressByIdUseCase,
@@ -74,29 +86,166 @@ class EditTaskViewModel(
         emptyList()
     )
 
+    private val allTaskActionItemsState = taskModelState.filterNotNull().map { taskModel ->
+        buildList {
+            if (taskModel is TaskModel.Habit) {
+                add(ItemTaskAction.ViewStatistics)
+            }
+            add(
+                if (taskModel.isArchived) ItemTaskAction.ArchiveUnarchive.Unarchive
+                else ItemTaskAction.ArchiveUnarchive.Archive
+            )
+            if (taskModel is TaskModel.Habit) {
+                add(ItemTaskAction.Restart)
+            }
+            add(ItemTaskAction.Delete)
+        }
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.Eagerly,
+        emptyList()
+    )
+
+    private val messageState = MutableStateFlow<EditTaskMessage>(EditTaskMessage.Idle)
+
     override val uiScreenState: StateFlow<EditTaskScreenState> =
         combine(
-            taskModelState,
-            allTaskConfigItemsState
-        ) { taskModel, allTaskConfigItems ->
+            taskModelState.filterNotNull(),
+            allTaskConfigItemsState,
+            allTaskActionItemsState,
+            messageState
+        ) { taskModel, allTaskConfigItems, allTaskActionItems, message ->
             EditTaskScreenState(
                 taskModel = taskModel,
-                allTaskConfigItems = allTaskConfigItems
+                allTaskConfigItems = allTaskConfigItems,
+                allTaskActionItems = allTaskActionItems,
+                message = message
             )
         }.stateIn(
             viewModelScope,
             SharingStarted.Eagerly,
             EditTaskScreenState(
                 taskModel = taskModelState.value,
-                allTaskConfigItems = allTaskConfigItemsState.value
+                allTaskConfigItems = allTaskConfigItemsState.value,
+                allTaskActionItems = allTaskActionItemsState.value,
+                message = messageState.value
             )
         )
 
     override fun onEvent(event: EditTaskScreenEvent) {
         when (event) {
             is EditTaskScreenEvent.Base -> onBaseEvent(event.baseEvent)
+            is EditTaskScreenEvent.OnItemActionClick -> onItemActionClick(event)
+            is EditTaskScreenEvent.ResultEvent -> onResultEvent(event)
+            is EditTaskScreenEvent.OnMessageShown -> onMessageShown()
             is EditTaskScreenEvent.OnBackRequest -> onBackRequest()
         }
+    }
+
+    private fun onResultEvent(event: EditTaskScreenEvent.ResultEvent) {
+        when (event) {
+            is EditTaskScreenEvent.ResultEvent.ArchiveTask ->
+                onArchiveResultEvent(event)
+
+            is EditTaskScreenEvent.ResultEvent.DeleteTask ->
+                onDeleteTaskResultEvent(event)
+        }
+    }
+
+    private fun onDeleteTaskResultEvent(event: EditTaskScreenEvent.ResultEvent.DeleteTask) {
+        onIdleToAction {
+            when (val result = event.result) {
+                is DeleteTaskScreenResult.Confirm -> onConfirmDeleteTask(result)
+                is DeleteTaskScreenResult.Dismiss -> Unit
+            }
+        }
+    }
+
+    private fun onConfirmDeleteTask(result: DeleteTaskScreenResult.Confirm) {
+        viewModelScope.launch {
+            deleteTaskByIdUseCase(taskId)
+            setUpNavigationState(EditTaskScreenNavigation.Back)
+        }
+    }
+
+    private fun onArchiveResultEvent(event: EditTaskScreenEvent.ResultEvent.ArchiveTask) {
+        onIdleToAction {
+            when (val result = event.result) {
+                is ArchiveTaskScreenResult.Confirm -> onConfirmArchiveTask(result)
+                is ArchiveTaskScreenResult.Dismiss -> Unit
+            }
+        }
+    }
+
+    private fun onConfirmArchiveTask(result: ArchiveTaskScreenResult.Confirm) {
+        viewModelScope.launch {
+            val resultModel = archiveTaskByIdUseCase(
+                taskId = taskId,
+                requestType = ArchiveTaskByIdUseCase.RequestType.Archive
+            )
+            if (resultModel is ResultModel.Success) {
+                messageState.update { EditTaskMessage.Message.ArchiveSuccess }
+            }
+        }
+    }
+
+    private fun onItemActionClick(event: EditTaskScreenEvent.OnItemActionClick) {
+        when (val item = event.item) {
+            is ItemTaskAction.ViewStatistics -> {}
+            is ItemTaskAction.ArchiveUnarchive ->
+                onArchiveUnarchiveActionClick(item)
+
+            is ItemTaskAction.Restart -> {}
+            is ItemTaskAction.Delete -> onDeleteActionClick()
+        }
+    }
+
+    private fun onDeleteActionClick() {
+        setUpConfigState(
+            EditTaskScreenConfig.DeleteTask(
+                stateHolder = DeleteTaskStateHolder(
+                    taskId = taskId,
+                    holderScope = provideChildScope()
+                )
+            )
+        )
+    }
+
+    private fun onArchiveUnarchiveActionClick(item: ItemTaskAction.ArchiveUnarchive) {
+        when (item) {
+            is ItemTaskAction.ArchiveUnarchive.Archive ->
+                onArchiveClick()
+
+            is ItemTaskAction.ArchiveUnarchive.Unarchive ->
+                onUnarchiveClick()
+        }
+    }
+
+    private fun onArchiveClick() {
+        setUpConfigState(
+            EditTaskScreenConfig.ArchiveTask(
+                stateHolder = ArchiveTaskStateHolder(
+                    taskId = taskId,
+                    holderScope = provideChildScope()
+                )
+            )
+        )
+    }
+
+    private fun onUnarchiveClick() {
+        viewModelScope.launch {
+            val resultModel = archiveTaskByIdUseCase(
+                taskId = taskId,
+                requestType = ArchiveTaskByIdUseCase.RequestType.Unarchive
+            )
+            if (resultModel is ResultModel.Success) {
+                messageState.update { EditTaskMessage.Message.UnarchiveSuccess }
+            }
+        }
+    }
+
+    private fun onMessageShown() {
+        messageState.update { EditTaskMessage.Idle }
     }
 
     private fun onBackRequest() {

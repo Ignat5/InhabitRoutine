@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.example.inhabitroutine.core.di.qualifiers.DefaultDispatcherQualifier
 import com.example.inhabitroutine.domain.reminder.api.ReadReminderCountByTaskIdUseCase
+import com.example.inhabitroutine.domain.task.api.use_case.ArchiveTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.DeleteTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.SaveTaskByIdUseCase
@@ -29,6 +30,7 @@ class AndroidEditTaskViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     readTaskByIdUseCase: ReadTaskByIdUseCase,
     readReminderCountByTaskIdUseCase: ReadReminderCountByTaskIdUseCase,
+    archiveTaskByIdUseCase: ArchiveTaskByIdUseCase,
     deleteTaskByIdUseCase: DeleteTaskByIdUseCase,
     updateTaskTitleByIdUseCase: UpdateTaskTitleByIdUseCase,
     updateTaskProgressByIdUseCase: UpdateTaskProgressByIdUseCase,
@@ -43,6 +45,7 @@ class AndroidEditTaskViewModel @Inject constructor(
         taskId = checkNotNull(savedStateHandle.get<String>(AppNavDest.TASK_ID_KEY)),
         readTaskByIdUseCase = readTaskByIdUseCase,
         readReminderCountByTaskIdUseCase = readReminderCountByTaskIdUseCase,
+        archiveTaskByIdUseCase = archiveTaskByIdUseCase,
         deleteTaskByIdUseCase = deleteTaskByIdUseCase,
         updateTaskTitleByIdUseCase = updateTaskTitleByIdUseCase,
         updateTaskProgressByIdUseCase = updateTaskProgressByIdUseCase,
