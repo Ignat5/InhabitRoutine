@@ -6,6 +6,7 @@ import com.example.inhabitroutine.core.di.qualifiers.DefaultDispatcherQualifier
 import com.example.inhabitroutine.domain.reminder.api.ReadReminderCountByTaskIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.DeleteTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTaskByIdUseCase
+import com.example.inhabitroutine.domain.task.api.use_case.SaveTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskDateByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskDescriptionByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskFrequencyByIdUseCase
@@ -27,6 +28,7 @@ import javax.inject.Inject
 class AndroidCreateTaskViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     readTaskByIdUseCase: ReadTaskByIdUseCase,
+    saveTaskByIdUseCase: SaveTaskByIdUseCase,
     deleteTaskByIdUseCase: DeleteTaskByIdUseCase,
     updateTaskTitleByIdUseCase: UpdateTaskTitleByIdUseCase,
     updateTaskProgressByIdUseCase: UpdateTaskProgressByIdUseCase,
@@ -42,6 +44,7 @@ class AndroidCreateTaskViewModel @Inject constructor(
         taskId = checkNotNull(savedStateHandle.get<String>(AppNavDest.TASK_ID_KEY)),
         readTaskByIdUseCase = readTaskByIdUseCase,
         readReminderCountByTaskIdUseCase = readReminderCountByTaskIdUseCase,
+        saveTaskByIdUseCase = saveTaskByIdUseCase,
         deleteTaskByIdUseCase = deleteTaskByIdUseCase,
         updateTaskTitleByIdUseCase = updateTaskTitleByIdUseCase,
         updateTaskProgressByIdUseCase = updateTaskProgressByIdUseCase,

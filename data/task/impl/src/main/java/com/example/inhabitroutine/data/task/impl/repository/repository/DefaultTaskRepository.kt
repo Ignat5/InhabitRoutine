@@ -28,6 +28,13 @@ internal class DefaultTaskRepository(
             } else null
         }
 
+    override fun readTasksByQuery(query: String): Flow<List<TaskModel>> =
+        taskDataSource.readTasksByQuery(query).map { allTasks ->
+            withContext(defaultDispatcher) {
+                allTasks.mapNotNull { it.toTaskModel() }
+            }
+        }
+
     override suspend fun saveTask(
         taskModel: TaskModel,
         versionStartDate: LocalDate
@@ -70,6 +77,14 @@ internal class DefaultTaskRepository(
     ): ResultModel<Unit, Throwable> = taskDataSource.updateTaskDescriptionById(
         taskId = taskId,
         description = description
+    )
+
+    override suspend fun updateTaskIsDraftById(
+        taskId: String,
+        isDraft: Boolean
+    ): ResultModel<Unit, Throwable> = taskDataSource.updateTaskIsDraftById(
+        taskId = taskId,
+        isDraft = isDraft
     )
 
     override suspend fun deleteTaskById(taskId: String): ResultModel<Unit, Throwable> =

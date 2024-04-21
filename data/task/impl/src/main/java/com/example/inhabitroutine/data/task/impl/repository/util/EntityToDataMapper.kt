@@ -75,12 +75,12 @@ private fun String.decodeFromTaskFrequency(json: Json): TaskContentDataModel.Fre
     }.getOrNull()
 
 /* archive */
-private fun Boolean.encodeToString(json: Json): String? =
+internal fun Boolean.encodeToString(json: Json): String? =
     runCatching {
         json.encodeToString(this)
     }.getOrNull()
 
-private fun String.decodeFromBoolean(json: Json): Boolean? =
+internal fun String.decodeFromBoolean(json: Json): Boolean? =
     runCatching {
         json.decodeFromString<Boolean>(this)
     }.getOrNull()

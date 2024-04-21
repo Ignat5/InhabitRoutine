@@ -28,6 +28,14 @@ fun NavGraphBuilder.viewScheduleDestination(
                             )
                         )
                     }
+
+                    is ViewScheduleScreenNavigation.SearchTasks -> {
+                        onNavigate(
+                            TargetNavDest.Destination(
+                                route = AppNavDest.SearchTasksDestination.route
+                            )
+                        )
+                    }
                 }
             },
             configContent = { config, onEvent ->

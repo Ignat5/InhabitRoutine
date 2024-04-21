@@ -7,6 +7,7 @@ import com.example.inhabitroutine.core.presentation.ui.dialog.pick_task_type.Pic
 
 sealed interface ViewScheduleScreenEvent : ScreenEvent {
     data object OnCreateTaskClick : ViewScheduleScreenEvent
+    data object OnSearchClick : ViewScheduleScreenEvent
 
     sealed interface ResultEvent : ViewScheduleScreenEvent {
         val result: ScreenResult

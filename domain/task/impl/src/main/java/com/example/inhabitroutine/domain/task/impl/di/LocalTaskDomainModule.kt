@@ -3,6 +3,8 @@ package com.example.inhabitroutine.domain.task.impl.di
 import com.example.inhabitroutine.data.task.api.TaskRepository
 import com.example.inhabitroutine.domain.task.api.use_case.DeleteTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTaskByIdUseCase
+import com.example.inhabitroutine.domain.task.api.use_case.ReadTasksByQueryUseCase
+import com.example.inhabitroutine.domain.task.api.use_case.SaveTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.SaveTaskDraftUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskDateByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskDescriptionByIdUseCase
@@ -12,6 +14,8 @@ import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskTitleByIdUs
 import com.example.inhabitroutine.domain.task.api.use_case.ValidateProgressLimitNumberUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultDeleteTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultReadTaskByIdUseCase
+import com.example.inhabitroutine.domain.task.impl.use_case.DefaultReadTasksByQueryUseCase
+import com.example.inhabitroutine.domain.task.impl.use_case.DefaultSaveTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultSaveTaskDraftUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultUpdateTaskDateByIdUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultUpdateTaskDescriptionByIdUseCase
@@ -20,6 +24,7 @@ import com.example.inhabitroutine.domain.task.impl.use_case.DefaultUpdateTaskPro
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultUpdateTaskTitleByIdUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultValidateProgressLimitNumberUseCase
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 
 object LocalTaskDomainModule {
 
@@ -28,6 +33,16 @@ object LocalTaskDomainModule {
     ): ReadTaskByIdUseCase {
         return DefaultReadTaskByIdUseCase(
             taskRepository = taskRepository
+        )
+    }
+
+    fun provideReadTasksByQuery(
+        taskRepository: TaskRepository,
+        defaultDispatcher: CoroutineDispatcher
+    ): ReadTasksByQueryUseCase {
+        return DefaultReadTasksByQueryUseCase(
+            taskRepository = taskRepository,
+            defaultDispatcher = defaultDispatcher
         )
     }
 
@@ -82,6 +97,16 @@ object LocalTaskDomainModule {
     ): UpdateTaskDescriptionByIdUseCase {
         return DefaultUpdateTaskDescriptionByIdUseCase(
             taskRepository = taskRepository
+        )
+    }
+
+    fun provideSaveTaskByIdUseCase(
+        taskRepository: TaskRepository,
+        externalScope: CoroutineScope
+    ): SaveTaskByIdUseCase {
+        return DefaultSaveTaskByIdUseCase(
+            taskRepository = taskRepository,
+            externalScope = externalScope
         )
     }
 
