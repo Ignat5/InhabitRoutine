@@ -29,7 +29,9 @@ fun ViewScheduleScreen(
         topBar = {
             ScreenTopBar(
                 onMenuClick = {},
-                onSearchClick = {},
+                onSearchClick = {
+                    onEvent(ViewScheduleScreenEvent.OnSearchClick)
+                },
                 onPickDateClick = {}
             )
         },

@@ -31,6 +31,9 @@ class ViewScheduleViewModel(
 
             is ViewScheduleScreenEvent.OnCreateTaskClick ->
                 onCreateTaskClick()
+
+            is ViewScheduleScreenEvent.OnSearchClick ->
+                onSearchClick()
         }
     }
 
@@ -129,6 +132,10 @@ class ViewScheduleViewModel(
 
     private fun onCreateTaskClick() {
         setUpConfigState(ViewScheduleScreenConfig.PickTaskType(TaskType.entries))
+    }
+
+    private fun onSearchClick() {
+        setUpNavigationState(ViewScheduleScreenNavigation.SearchTasks)
     }
 
 }

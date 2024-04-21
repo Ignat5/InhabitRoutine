@@ -4,4 +4,5 @@ import com.example.inhabitroutine.core.presentation.components.navigation.Screen
 
 sealed interface ViewScheduleScreenNavigation : ScreenNavigation {
     data class CreateTask(val taskId: String) : ViewScheduleScreenNavigation
+    data object SearchTasks : ViewScheduleScreenNavigation
 }

@@ -47,6 +47,9 @@
     <string name="confirm_discard_activity_title">Discard</string>
     <string name="confirm_discard_activity_message">Are you sure you want to discard the activity?</string>
 
+    <!--  search tasks  -->
+    <string name="search_label">Search</string>
+
     <!--  reminders  -->
     <string name="view_reminders_screen_title">Reminders</string>
     <string name="reminder_schedule_always_enabled_title">Always enabled</string>
