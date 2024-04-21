@@ -3,6 +3,7 @@ package com.example.inhabitroutine.navigation.search_tasks
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import androidx.navigation.navOptions
 import com.example.inhabitroutine.feature.search_tasks.SearchTasksScreen
 import com.example.inhabitroutine.feature.search_tasks.components.SearchTasksScreenNavigation
 import com.example.inhabitroutine.navigation.AppNavDest
@@ -20,7 +21,14 @@ fun NavGraphBuilder.searchTasksDestination(onNavigate: (TargetNavDest) -> Unit) 
             onNavigation = { destination ->
                 when (destination) {
                     is SearchTasksScreenNavigation.EditTask -> {
-
+                        onNavigate(TargetNavDest.Destination(
+                            route = AppNavDest.buildEditTaskRoute(destination.taskId),
+                            navOptions = navOptions {
+                                this.popUpTo(route = AppNavDest.SearchTasksDestination.route) {
+                                    this.inclusive = true
+                                }
+                            }
+                        ))
                     }
 
                     is SearchTasksScreenNavigation.Back -> {
