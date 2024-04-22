@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS TaskContentTable(
     frequencyContent TEXT NOT NULL,
     isArchived TEXT NOT NULL,
     PRIMARY KEY (taskId, versionStartEpochDay),
-    FOREIGN KEY (taskId) REFERENCES TaskTable(id) ON DELETE CASCADE
+    FOREIGN KEY (taskId) REFERENCES TaskTable(id)
 );
 
 CREATE TABLE IF NOT EXISTS ReminderTable(
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS ReminderTable(
     type TEXT NOT NULL,
     schedule TEXT NOT NULL,
     createdAt INTEGER NOT NULL,
-    FOREIGN KEY (taskId) REFERENCES TaskTable(id) ON DELETE CASCADE
+    FOREIGN KEY (taskId) REFERENCES TaskTable(id)
 );
 
 CREATE TABLE IF NOT EXISTS RecordTable(
@@ -36,8 +36,10 @@ CREATE TABLE IF NOT EXISTS RecordTable(
     entry TEXT NOT NULL,
     entryEpochDay INTEGER NOT NULL,
     createdAt INTEGER NOT NULL,
-    FOREIGN KEY (taskId) REFERENCES TaskTable(id) ON DELETE CASCADE
+    FOREIGN KEY (taskId) REFERENCES TaskTable(id)
 );
+
+-- index
 
 CREATE INDEX IF NOT EXISTS TaskStartEndDateIndex
 ON TaskTable(startEpochDay, endEpochDay);
@@ -50,6 +52,31 @@ ON TaskTable(title);
 
 CREATE INDEX IF NOT EXISTS RecordEntryDateIndex
 ON RecordTable(entryEpochDay);
+
+-- trigger
+
+CREATE TRIGGER IF NOT EXISTS OnTaskDelete_DeleteTaskContentTrigger
+AFTER DELETE ON TaskTable
+BEGIN
+DELETE FROM TaskContentTable WHERE
+TaskContentTable.taskId = old.id;
+END;
+
+CREATE TRIGGER IF NOT EXISTS OnTaskDelete_DeleteReminderTrigger
+AFTER DELETE ON TaskTable
+BEGIN
+DELETE FROM ReminderTable WHERE
+ReminderTable.taskId = old.id;
+END;
+
+CREATE TRIGGER IF NOT EXISTS OnTaskDelete_DeleteRecordTrigger
+AFTER DELETE ON TaskTable
+BEGIN
+DELETE FROM RecordTable WHERE
+RecordTable.taskId = old.id;
+END;
+
+-- views
 
 CREATE VIEW IF NOT EXISTS TaskView AS
 SELECT
@@ -71,6 +98,8 @@ tTaskContent.isArchived taskContent_isArchived
 FROM TaskTable tTask
 INNER JOIN TaskContentTable tTaskContent
 ON tTaskContent.taskId = tTask.id;
+
+-- query
 
 selectTaskById:
 SELECT * FROM TaskView tView
