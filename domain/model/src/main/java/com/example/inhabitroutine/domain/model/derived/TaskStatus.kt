@@ -1,13 +1,13 @@
 package com.example.inhabitroutine.domain.model.derived
 
 sealed interface TaskStatus {
-    sealed interface HabitStatus : TaskStatus
-    sealed interface SingleRecurringTaskStatus : TaskStatus
+    sealed interface Habit : TaskStatus
+    sealed interface Task : TaskStatus
 
-    data object Completed : HabitStatus, SingleRecurringTaskStatus
+    data object Completed : Habit, Task
     sealed interface NotCompleted : TaskStatus {
-        data object Pending : HabitStatus, SingleRecurringTaskStatus
-        data object Skipped : HabitStatus
-        data object Failed : HabitStatus
+        data object Pending : Habit, Task
+        data object Skipped : Habit
+        data object Failed : Habit
     }
 }
