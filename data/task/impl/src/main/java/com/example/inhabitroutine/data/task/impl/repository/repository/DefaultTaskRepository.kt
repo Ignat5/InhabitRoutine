@@ -35,6 +35,13 @@ internal class DefaultTaskRepository(
             }
         }
 
+    override fun readTasksByDate(targetDate: LocalDate): Flow<List<TaskModel>> =
+        taskDataSource.readTasksByDate(targetDate).map { allTasks ->
+            withContext(defaultDispatcher) {
+                allTasks.mapNotNull { it.toTaskModel() }
+            }
+        }
+
     override suspend fun saveTask(
         taskModel: TaskModel,
         versionStartDate: LocalDate
@@ -89,4 +96,5 @@ internal class DefaultTaskRepository(
 
     override suspend fun deleteTaskById(taskId: String): ResultModel<Unit, Throwable> =
         taskDataSource.deleteTaskById(taskId)
+
 }

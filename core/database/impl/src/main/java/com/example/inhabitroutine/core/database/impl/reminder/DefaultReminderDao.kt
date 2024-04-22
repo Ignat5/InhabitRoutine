@@ -36,6 +36,13 @@ internal class DefaultReminderDao(
             .readOne(ioDispatcher)
             .map { it.toInt() }
 
+    override fun readReminders(): Flow<List<ReminderEntity>> =
+        reminderDao.selectReminders().readQueryList(ioDispatcher).map { allReminders ->
+            withContext(ioDispatcher) {
+                allReminders.map { it.toReminderEntity() }
+            }
+        }
+
     override suspend fun saveReminder(reminderEntity: ReminderEntity): ResultModel<Unit, Throwable> =
         runQuery(ioDispatcher) {
             reminderDao.insertReminder(reminderEntity.toReminderTable())

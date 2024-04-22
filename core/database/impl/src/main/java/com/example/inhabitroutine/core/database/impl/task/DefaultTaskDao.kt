@@ -11,6 +11,7 @@ import com.example.inhabitroutine.core.database.impl.util.toTaskTable
 import com.example.inhabitroutine.core.database.task.api.TaskDao
 import com.example.inhabitroutine.core.database.task.api.TaskEntity
 import com.example.inhabitroutine.core.util.ResultModel
+import database.TaskView
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -30,6 +31,14 @@ internal class DefaultTaskDao(
 
     override fun readTasksByQuery(query: String): Flow<List<TaskEntity>> =
         taskDao.selectTasksByQuery("%$query%").readQueryList(ioDispatcher)
+            .map { allTasks ->
+                withContext(ioDispatcher) {
+                    allTasks.map { it.toTaskEntity() }
+                }
+            }
+
+    override fun readTasksByDate(targetEpochDay: Long): Flow<List<TaskEntity>> =
+        taskDao.selectTasksByDate(targetEpochDay = targetEpochDay).readQueryList(ioDispatcher)
             .map { allTasks ->
                 withContext(ioDispatcher) {
                     allTasks.map { it.toTaskEntity() }

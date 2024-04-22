@@ -35,6 +35,13 @@ internal class DefaultTaskDataSource(
             }
         }
 
+    override fun readTasksByDate(targetDate: LocalDate): Flow<List<TaskDataModel>> =
+        taskDao.readTasksByDate(targetEpochDay = targetDate.encodeToEpochDay()).map { allTasks ->
+            withContext(ioDispatcher) {
+                allTasks.mapNotNull { it.toTaskDataModel(json) }
+            }
+        }
+
     override suspend fun saveTask(taskDataModel: TaskDataModel): ResultModel<Unit, Throwable> =
         withContext(ioDispatcher) {
             taskDataModel.toTaskEntity(json)?.let { taskEntity ->
