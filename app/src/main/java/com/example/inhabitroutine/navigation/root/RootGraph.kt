@@ -12,6 +12,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.inhabitroutine.navigation.AppNavDest
 import com.example.inhabitroutine.navigation.TargetNavDest
 import com.example.inhabitroutine.navigation.create_task.createTaskDestination
+import com.example.inhabitroutine.navigation.edit_task.editTaskDestination
 import com.example.inhabitroutine.navigation.search_tasks.searchTasksDestination
 import com.example.inhabitroutine.navigation.view_reminders.viewRemindersDestination
 import com.example.inhabitroutine.navigation.view_schedule.viewScheduleDestination
@@ -58,6 +59,7 @@ fun RootGraph() {
                 onMenuClick = onMenuClick
             )
             createTaskDestination(onNavigate)
+            editTaskDestination(onNavigate)
             viewRemindersDestination(onNavigate)
             searchTasksDestination(onNavigate)
         }

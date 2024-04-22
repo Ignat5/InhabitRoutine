@@ -99,6 +99,7 @@ fun SearchTasksScreen(
                     item = item,
                     modifier = Modifier.animateItemPlacement(),
                     onClick = {
+                        focusManager.clearFocus(true)
                         onEvent(SearchTasksScreenEvent.OnTaskClick(item.id))
                     }
                 )

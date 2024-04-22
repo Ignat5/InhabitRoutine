@@ -40,6 +40,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.inhabitroutine.core.presentation.R
+import com.example.inhabitroutine.core.presentation.ui.common.BaseSnackBar
 import com.example.inhabitroutine.core.presentation.ui.util.toDisplay
 import com.example.inhabitroutine.core.presentation.ui.util.toHourMinute
 import com.example.inhabitroutine.core.presentation.ui.util.toIconResId
@@ -61,7 +62,6 @@ fun ViewRemindersScreen(
     onEvent: (ViewRemindersScreenEvent) -> Unit
 ) {
     val snackBarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
     BackHandler { onEvent(ViewRemindersScreenEvent.OnLeaveRequest) }
     Scaffold(
         topBar = {
@@ -75,7 +75,7 @@ fun ViewRemindersScreen(
             SnackbarHost(
                 hostState = snackBarHostState,
                 snackbar = { data ->
-                    CustomSnackBar(data)
+                    BaseSnackBar(data)
                 }
             )
         }
@@ -122,7 +122,6 @@ fun ViewRemindersScreen(
         SnackBarMessageHandler(
             message = state.message,
             snackBarHostState = snackBarHostState,
-            scope = scope,
             onMessageShown = {
                 onEvent(ViewRemindersScreenEvent.OnMessageShown)
             }
@@ -131,24 +130,13 @@ fun ViewRemindersScreen(
 }
 
 @Composable
-private fun CustomSnackBar(snackBarData: SnackbarData) {
-    val containerColor = MaterialTheme.colorScheme.surfaceContainer
-    val contentColor = MaterialTheme.colorScheme.onSurface
-    Snackbar(
-        snackbarData = snackBarData,
-        containerColor = containerColor,
-        contentColor = contentColor
-    )
-}
-
-@Composable
 private fun SnackBarMessageHandler(
     message: ViewRemindersMessage,
     snackBarHostState: SnackbarHostState,
-    scope: CoroutineScope,
     onMessageShown: () -> Unit
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     LaunchedEffect(message) {
         when (message) {
             is ViewRemindersMessage.Idle -> Unit

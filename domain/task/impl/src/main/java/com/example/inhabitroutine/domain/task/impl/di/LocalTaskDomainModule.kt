@@ -1,9 +1,11 @@
 package com.example.inhabitroutine.domain.task.impl.di
 
 import com.example.inhabitroutine.data.task.api.TaskRepository
+import com.example.inhabitroutine.domain.task.api.use_case.ArchiveTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.DeleteTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTasksByQueryUseCase
+import com.example.inhabitroutine.domain.task.api.use_case.ResetTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.SaveTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.SaveTaskDraftUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskDateByIdUseCase
@@ -12,9 +14,11 @@ import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskFrequencyBy
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskProgressByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskTitleByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ValidateProgressLimitNumberUseCase
+import com.example.inhabitroutine.domain.task.impl.use_case.DefaultArchiveTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultDeleteTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultReadTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultReadTasksByQueryUseCase
+import com.example.inhabitroutine.domain.task.impl.use_case.DefaultResetTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultSaveTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultSaveTaskDraftUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultUpdateTaskDateByIdUseCase
@@ -106,6 +110,28 @@ object LocalTaskDomainModule {
     ): SaveTaskByIdUseCase {
         return DefaultSaveTaskByIdUseCase(
             taskRepository = taskRepository,
+            externalScope = externalScope
+        )
+    }
+
+    fun provideArchiveTaskByIdUseCase(
+        taskRepository: TaskRepository,
+        externalScope: CoroutineScope,
+        defaultDispatcher: CoroutineDispatcher
+    ): ArchiveTaskByIdUseCase {
+        return DefaultArchiveTaskByIdUseCase(
+            taskRepository = taskRepository,
+            externalScope = externalScope,
+            defaultDispatcher = defaultDispatcher
+        )
+    }
+
+    fun provideResetTaskByIdUseCase(
+        updateTaskDateByIdUseCase: UpdateTaskDateByIdUseCase,
+        externalScope: CoroutineScope
+    ): ResetTaskByIdUseCase {
+        return DefaultResetTaskByIdUseCase(
+            updateTaskDateByIdUseCase = updateTaskDateByIdUseCase,
             externalScope = externalScope
         )
     }
