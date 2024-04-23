@@ -1,20 +1,28 @@
 package com.example.inhabitroutine.feature.view_schedule
 
 import android.content.Context
+import androidx.annotation.DrawableRes
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -32,6 +40,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -45,18 +54,28 @@ import com.example.inhabitroutine.core.presentation.ui.common.CreateTaskFAB
 import com.example.inhabitroutine.core.presentation.ui.dialog.pick_task_progress_type.PickTaskProgressTypeDialog
 import com.example.inhabitroutine.core.presentation.ui.dialog.pick_task_type.PickTaskTypeDialog
 import com.example.inhabitroutine.core.presentation.ui.util.limitNumberToDisplay
+import com.example.inhabitroutine.core.presentation.ui.util.toDisplay
 import com.example.inhabitroutine.core.presentation.ui.util.toHourMinute
+import com.example.inhabitroutine.core.presentation.ui.util.toMonthDayYearDisplay
 import com.example.inhabitroutine.domain.model.derived.TaskStatus
 import com.example.inhabitroutine.domain.model.derived.TaskWithExtrasAndRecordModel
 import com.example.inhabitroutine.domain.model.record.content.RecordEntry
 import com.example.inhabitroutine.feature.view_schedule.components.ViewScheduleScreenConfig
 import com.example.inhabitroutine.feature.view_schedule.components.ViewScheduleScreenEvent
 import com.example.inhabitroutine.feature.view_schedule.components.ViewScheduleScreenState
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.plus
 
 private const val PROGRESS_INDICATOR_SIZE_DP = 32
 private const val PROGRESS_INDICATOR_STROKE_WIDTH_DP = 2
+
 private const val COMPLETED_PROGRESS = 1f
 private const val NOT_COMPLETED_PROGRESS = 0f
+
+private const val WEEK_DAY_COUNT = 7
+private const val WEEK_ITEM_HEIGHT_DP = 48
+private const val WEEK_ITEM_TITLE_LENGTH = 3
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -67,6 +86,7 @@ fun ViewScheduleScreen(
     Scaffold(
         topBar = {
             ScreenTopBar(
+                currentDate = state.currentDate,
                 onMenuClick = {},
                 onSearchClick = {
                     onEvent(ViewScheduleScreenEvent.OnSearchClick)
@@ -89,23 +109,40 @@ fun ViewScheduleScreen(
                 .padding(it)
         ) {
             val context = LocalContext.current
-            LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                itemsIndexed(
-                    items = state.allTasks,
-                    key = { _, item -> item.taskWithExtrasModel.taskModel.id }
-                ) { index, item ->
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        ItemTask(
-                            item = item,
-                            context = context,
-                            onClick = { /*TODO*/ },
-                            onLongClick = { /*TODO*/ },
-                            modifier = Modifier.animateItemPlacement()
-                        )
-                        if (index != state.allTasks.lastIndex) {
-                            HorizontalDivider(
-                                modifier = Modifier.alpha(0.2f)
+            Column(modifier = Modifier.fillMaxWidth()) {
+                WeekRow(
+                    startOfWeekDate = state.startOfWeekDate,
+                    currentDate = state.currentDate,
+                    todayDate = state.todayDate,
+                    onDateClick = {
+                        onEvent(ViewScheduleScreenEvent.OnDateClick(it))
+                    },
+                    onNextClick = {
+                        onEvent(ViewScheduleScreenEvent.OnNextWeekClick)
+                    },
+                    onPrevClick = {
+                        onEvent(ViewScheduleScreenEvent.OnPrevWeekClick)
+                    },
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                    itemsIndexed(
+                        items = state.allTasks,
+                        key = { _, item -> item.taskWithExtrasModel.taskModel.id }
+                    ) { index, item ->
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            ItemTask(
+                                item = item,
+                                context = context,
+                                onClick = { /*TODO*/ },
+                                onLongClick = { /*TODO*/ },
+                                modifier = Modifier.animateItemPlacement()
                             )
+                            if (index != state.allTasks.lastIndex) {
+                                HorizontalDivider(
+                                    modifier = Modifier.alpha(0.2f)
+                                )
+                            }
                         }
                     }
                 }
@@ -337,6 +374,155 @@ private fun getTaskProgress(
 }
 
 @Composable
+private fun WeekRow(
+    startOfWeekDate: LocalDate,
+    currentDate: LocalDate,
+    todayDate: LocalDate,
+    onDateClick: (LocalDate) -> Unit,
+    onPrevClick: () -> Unit,
+    onNextClick: () -> Unit
+) {
+    val context = LocalContext.current
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        NextPrevButton(
+            iconId = R.drawable.ic_previous,
+            onClick = onPrevClick
+        )
+        DaysOfWeekRow(
+            startOfWeekDate = startOfWeekDate,
+            currentDate = currentDate,
+            todayDate = todayDate,
+            context = context,
+            onDateClick = onDateClick,
+            modifier = Modifier.weight(1f)
+        )
+        NextPrevButton(
+            iconId = R.drawable.ic_next,
+            onClick = onNextClick
+        )
+    }
+}
+
+@Composable
+private fun DaysOfWeekRow(
+    startOfWeekDate: LocalDate,
+    currentDate: LocalDate,
+    todayDate: LocalDate,
+    context: Context,
+    onDateClick: (LocalDate) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(WEEK_DAY_COUNT),
+        modifier = modifier.height(WEEK_ITEM_HEIGHT_DP.dp)
+    ) {
+        items(WEEK_DAY_COUNT) { offset ->
+            val itemDate = remember(startOfWeekDate) {
+                startOfWeekDate.plus(offset, DateTimeUnit.DAY)
+            }
+            val isCurrent = remember(startOfWeekDate, currentDate) {
+                itemDate == currentDate
+            }
+            val isToday = remember(startOfWeekDate, todayDate) {
+                itemDate == todayDate
+            }
+            ItemDayOfWeek(
+                date = itemDate,
+                isCurrent = isCurrent,
+                isToday = isToday,
+                context = context,
+                onClick = {
+                    onDateClick(itemDate)
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun ItemDayOfWeek(
+    date: LocalDate,
+    isCurrent: Boolean,
+    isToday: Boolean,
+    context: Context,
+    onClick: () -> Unit
+) {
+    val dayOfWeekText = remember(date) {
+        date.dayOfWeek.toDisplay(context).take(WEEK_ITEM_TITLE_LENGTH)
+    }
+    val dayOfMonthText = remember(date) {
+        "${date.dayOfMonth}"
+    }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .clip(MaterialTheme.shapes.small)
+            .padding(horizontal = 4.dp)
+            .clickable { onClick() }
+            .then(
+                when {
+                    isCurrent -> Modifier
+                        .background(
+                            MaterialTheme.colorScheme.primary,
+                            MaterialTheme.shapes.small
+                        )
+
+                    isToday -> Modifier
+                        .border(
+                            1.dp,
+                            MaterialTheme.colorScheme.primary,
+                            MaterialTheme.shapes.small
+                        )
+
+                    else -> Modifier
+                }
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(4.dp)
+        ) {
+            Text(
+                text = dayOfWeekText,
+                style = MaterialTheme.typography.labelSmall,
+                color = when {
+                    isCurrent -> MaterialTheme.colorScheme.onPrimary
+                    isToday -> MaterialTheme.colorScheme.primary
+                    else -> MaterialTheme.colorScheme.onSurface
+                }
+            )
+            Text(
+                text = dayOfMonthText,
+                style = MaterialTheme.typography.titleSmall,
+                color = when {
+                    isCurrent -> MaterialTheme.colorScheme.onPrimary
+                    isToday -> MaterialTheme.colorScheme.primary
+                    else -> MaterialTheme.colorScheme.onSurface
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun NextPrevButton(
+    @DrawableRes iconId: Int,
+    onClick: () -> Unit
+) {
+    IconButton(onClick = onClick) {
+        Icon(
+            painter = painterResource(id = iconId),
+            tint = MaterialTheme.colorScheme.onSurface,
+            contentDescription = null
+        )
+    }
+}
+
+@Composable
 fun ViewScheduleScreenConfig(
     config: ViewScheduleScreenConfig,
     onEvent: (ViewScheduleScreenEvent) -> Unit,
@@ -359,13 +545,18 @@ fun ViewScheduleScreenConfig(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ScreenTopBar(
+    currentDate: LocalDate,
     onMenuClick: () -> Unit,
     onSearchClick: () -> Unit,
     onPickDateClick: () -> Unit
 ) {
+    val context: Context = LocalContext.current
+    val currentDateText = remember(currentDate) {
+        currentDate.toMonthDayYearDisplay(context)
+    }
     TopAppBar(
         title = {
-            Text(text = "Apr 14, 2024")
+            Text(text = currentDateText)
         },
         navigationIcon = {
             IconButton(onClick = onMenuClick) {
@@ -382,12 +573,12 @@ private fun ScreenTopBar(
                     contentDescription = null
                 )
             }
-            IconButton(onClick = onPickDateClick) {
-                Icon(
-                    painter = painterResource(id = com.example.inhabitroutine.core.presentation.R.drawable.ic_pick_date),
-                    contentDescription = null
-                )
-            }
+//            IconButton(onClick = onPickDateClick) {
+//                Icon(
+//                    painter = painterResource(id = com.example.inhabitroutine.core.presentation.R.drawable.ic_pick_date),
+//                    contentDescription = null
+//                )
+//            }
         }
     )
 }

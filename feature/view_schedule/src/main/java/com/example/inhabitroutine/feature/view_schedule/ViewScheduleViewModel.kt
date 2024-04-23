@@ -23,13 +23,18 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
+import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.minus
+import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -40,7 +45,16 @@ class ViewScheduleViewModel(
     private val defaultDispatcher: CoroutineDispatcher
 ) : BaseViewModel<ViewScheduleScreenEvent, ViewScheduleScreenState, ViewScheduleScreenNavigation, ViewScheduleScreenConfig>() {
 
-    private val currentDateState = MutableStateFlow(todayDate)
+    private val todayDateState = flow { emit(todayDate) }
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000L),
+            todayDate
+        )
+
+    private val currentDateState = MutableStateFlow(todayDateState.value)
+
+    private val startOfWeekDateState = MutableStateFlow(todayDateState.value.firstDayOfWeek)
 
     private val allTasksState = currentDateState.flatMapLatest { date ->
         readTasksWithExtrasAndRecordByDateUseCase(date)
@@ -61,23 +75,38 @@ class ViewScheduleViewModel(
     override val uiScreenState: StateFlow<ViewScheduleScreenState> =
         combine(
             currentDateState,
-            allTasksState
-        ) { currentDate, allTasks ->
+            allTasksState,
+            startOfWeekDateState,
+            todayDateState
+        ) { currentDate, allTasks, startOfWeekDate, todayDate ->
             ViewScheduleScreenState(
                 currentDate = currentDate,
-                allTasks = allTasks
+                allTasks = allTasks,
+                startOfWeekDate = startOfWeekDate,
+                todayDate = todayDate
             )
         }.stateIn(
             viewModelScope,
             SharingStarted.Eagerly,
             ViewScheduleScreenState(
                 currentDate = currentDateState.value,
-                allTasks = allTasksState.value
+                allTasks = allTasksState.value,
+                startOfWeekDate = startOfWeekDateState.value,
+                todayDate = todayDateState.value
             )
         )
 
     override fun onEvent(event: ViewScheduleScreenEvent) {
         when (event) {
+            is ViewScheduleScreenEvent.OnDateClick ->
+                onDateClick(event)
+
+            is ViewScheduleScreenEvent.OnNextWeekClick ->
+                onNextWeekClick()
+
+            is ViewScheduleScreenEvent.OnPrevWeekClick ->
+                onPrevWeekClick()
+
             is ViewScheduleScreenEvent.ResultEvent ->
                 onResultEvent(event)
 
@@ -141,6 +170,22 @@ class ViewScheduleViewModel(
             TaskType.Habit -> onPickHabitTaskType()
             TaskType.RecurringTask -> onPickRecurringTaskType()
             TaskType.SingleTask -> onPickSingleTaskType()
+        }
+    }
+
+    private fun onDateClick(event: ViewScheduleScreenEvent.OnDateClick) {
+        currentDateState.update { event.date }
+    }
+
+    private fun onNextWeekClick() {
+        startOfWeekDateState.update { oldDate ->
+            oldDate.plus(1, DateTimeUnit.WEEK)
+        }
+    }
+
+    private fun onPrevWeekClick() {
+        startOfWeekDateState.update { oldDate ->
+            oldDate.minus(1, DateTimeUnit.WEEK)
         }
     }
 
@@ -208,5 +253,8 @@ class ViewScheduleViewModel(
 
     private val todayDate: LocalDate
         get() = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+
+    private val LocalDate.firstDayOfWeek
+        get() = this.let { date -> date.minus(date.dayOfWeek.ordinal, DateTimeUnit.DAY) }
 
 }
