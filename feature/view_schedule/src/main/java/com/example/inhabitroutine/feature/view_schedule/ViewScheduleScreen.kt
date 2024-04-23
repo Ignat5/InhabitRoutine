@@ -65,6 +65,7 @@ import com.example.inhabitroutine.feature.view_schedule.components.ViewScheduleS
 import com.example.inhabitroutine.feature.view_schedule.components.ViewScheduleScreenEvent
 import com.example.inhabitroutine.feature.view_schedule.components.ViewScheduleScreenState
 import com.example.inhabitroutine.feature.view_schedule.config.enter_number_record.EnterTaskNumberRecordDialog
+import com.example.inhabitroutine.feature.view_schedule.config.enter_time_record.EnterTaskTimeRecordDialog
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.plus
@@ -562,6 +563,12 @@ fun ViewScheduleScreenConfig(
         is ViewScheduleScreenConfig.EnterTaskNumberRecord -> {
             EnterTaskNumberRecordDialog(stateHolder = config.stateHolder) {
                 onEvent(ViewScheduleScreenEvent.ResultEvent.EnterTaskNumberRecord(it))
+            }
+        }
+
+        is ViewScheduleScreenConfig.EnterTaskTimeRecord -> {
+            EnterTaskTimeRecordDialog(stateHolder = config.stateHolder) {
+                onEvent(ViewScheduleScreenEvent.ResultEvent.EnterTaskTimeRecord(it))
             }
         }
     }

@@ -19,6 +19,8 @@ import com.example.inhabitroutine.feature.view_schedule.components.ViewScheduleS
 import com.example.inhabitroutine.feature.view_schedule.components.ViewScheduleScreenState
 import com.example.inhabitroutine.feature.view_schedule.config.enter_number_record.EnterTaskNumberRecordStateHolder
 import com.example.inhabitroutine.feature.view_schedule.config.enter_number_record.components.EnterTaskNumberRecordScreenResult
+import com.example.inhabitroutine.feature.view_schedule.config.enter_time_record.EnterTaskTimeRecordStateHolder
+import com.example.inhabitroutine.feature.view_schedule.config.enter_time_record.components.EnterTaskTimeRecordScreenResult
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -139,6 +141,9 @@ class ViewScheduleViewModel(
             is ViewScheduleScreenEvent.ResultEvent.EnterTaskNumberRecord ->
                 onEnterTaskNumberRecord(event)
 
+            is ViewScheduleScreenEvent.ResultEvent.EnterTaskTimeRecord ->
+                onEnterTaskTimeRecord(event)
+
         }
     }
 
@@ -150,6 +155,25 @@ class ViewScheduleViewModel(
 
                 is EnterTaskNumberRecordScreenResult.Dismiss -> Unit
             }
+        }
+    }
+
+    private fun onEnterTaskTimeRecord(event: ViewScheduleScreenEvent.ResultEvent.EnterTaskTimeRecord) {
+        onIdleToAction {
+            when (val result = event.result) {
+                is EnterTaskTimeRecordScreenResult.Confirm -> onConfirmEnterTaskTimeRecord(result)
+                is EnterTaskTimeRecordScreenResult.Dismiss -> Unit
+            }
+        }
+    }
+
+    private fun onConfirmEnterTaskTimeRecord(event: EnterTaskTimeRecordScreenResult.Confirm) {
+        viewModelScope.launch {
+            saveRecordUseCase(
+                taskId = event.taskId,
+                date = event.date,
+                requestType = SaveRecordUseCase.RequestType.EntryTime(event.time)
+            )
         }
     }
 
@@ -220,7 +244,9 @@ class ViewScheduleViewModel(
                                         onHabitNumberClick(taskWithExtrasAndRecord)
                                     }
 
-                                    is TaskWithExtrasAndRecordModel.Habit.HabitContinuous.HabitTime -> {}
+                                    is TaskWithExtrasAndRecordModel.Habit.HabitContinuous.HabitTime -> {
+                                        onHabitTimeClick(taskWithExtrasAndRecord)
+                                    }
                                 }
                             }
 
@@ -241,6 +267,19 @@ class ViewScheduleViewModel(
                     entry = taskWithExtrasAndRecordModel.recordEntry,
                     date = currentDateState.value,
                     validateProgressLimitNumberUseCase = validateProgressLimitNumberUseCase,
+                    holderScope = provideChildScope()
+                )
+            )
+        )
+    }
+
+    private fun onHabitTimeClick(taskWithExtrasAndRecordModel: TaskWithExtrasAndRecordModel.Habit.HabitContinuous.HabitTime) {
+        setUpConfigState(
+            ViewScheduleScreenConfig.EnterTaskTimeRecord(
+                stateHolder = EnterTaskTimeRecordStateHolder(
+                    taskModel = taskWithExtrasAndRecordModel.taskWithExtrasModel.taskModel,
+                    entry = taskWithExtrasAndRecordModel.recordEntry,
+                    date = currentDateState.value,
                     holderScope = provideChildScope()
                 )
             )
