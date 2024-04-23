@@ -6,6 +6,14 @@ selectReminderCountByTaskId:
 SELECT COUNT(*) FROM ReminderTable tReminder
 WHERE tReminder.taskId = :taskId;
 
+selectRemindersByDate:
+SELECT * FROM ReminderTable tReminder
+WHERE tReminder.taskId IN (
+SELECT tTask.id FROM TaskTable tTask
+WHERE tTask.startEpochDay <= :targetEpochDay AND
+tTask.endEpochDay >= :targetEpochDay
+);
+
 selectReminders:
 SELECT * FROM ReminderTable;
 

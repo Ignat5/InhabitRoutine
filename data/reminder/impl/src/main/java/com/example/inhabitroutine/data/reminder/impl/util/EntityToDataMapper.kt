@@ -4,6 +4,7 @@ import com.example.inhabitroutine.core.database.reminder.api.ReminderEntity
 import com.example.inhabitroutine.data.reminder.impl.model.ReminderContentDataModel
 import com.example.inhabitroutine.data.reminder.impl.model.ReminderDataModel
 import com.example.inhabitroutine.domain.model.reminder.type.ReminderType
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -47,6 +48,9 @@ private fun LocalTime.encodeToString(json: Json) = runCatching {
 private fun String.decodeFromTime(json: Json): LocalTime? = runCatching {
     json.decodeFromString<LocalTime>(this)
 }.getOrNull()
+
+/* date */
+internal fun LocalDate.encodeToEpochDay() = this.toEpochDays().toLong()
 
 /* reminder schedule */
 private fun ReminderContentDataModel.ScheduleContent.encodeToString(json: Json) = runCatching {

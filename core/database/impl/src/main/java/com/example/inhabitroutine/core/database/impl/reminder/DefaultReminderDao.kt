@@ -24,11 +24,13 @@ internal class DefaultReminderDao(
     override fun readRemindersByTaskId(taskId: String): Flow<List<ReminderEntity>> =
         reminderDao.selectRemindersByTaskId(taskId).readQueryList(ioDispatcher)
             .map { allReminders ->
-                withContext(ioDispatcher) {
-                    allReminders.map { reminderTable ->
-                        reminderTable.toReminderEntity()
+                if (allReminders.isNotEmpty()) {
+                    withContext(ioDispatcher) {
+                        allReminders.map { reminderTable ->
+                            reminderTable.toReminderEntity()
+                        }
                     }
-                }
+                } else emptyList()
             }
 
     override fun readReminderCountByTaskId(taskId: String): Flow<Int> =
@@ -36,11 +38,21 @@ internal class DefaultReminderDao(
             .readOne(ioDispatcher)
             .map { it.toInt() }
 
+    override fun readRemindersByDate(targetEpochDay: Long): Flow<List<ReminderEntity>> =
+        reminderDao.selectRemindersByDate(targetEpochDay = targetEpochDay)
+            .readQueryList(ioDispatcher).map { allReminders ->
+                if (allReminders.isNotEmpty()) {
+                    allReminders.map { it.toReminderEntity() }
+                } else emptyList()
+            }
+
     override fun readReminders(): Flow<List<ReminderEntity>> =
         reminderDao.selectReminders().readQueryList(ioDispatcher).map { allReminders ->
-            withContext(ioDispatcher) {
-                allReminders.map { it.toReminderEntity() }
-            }
+            if (allReminders.isNotEmpty()) {
+                withContext(ioDispatcher) {
+                    allReminders.map { it.toReminderEntity() }
+                }
+            } else emptyList()
         }
 
     override suspend fun saveReminder(reminderEntity: ReminderEntity): ResultModel<Unit, Throwable> =

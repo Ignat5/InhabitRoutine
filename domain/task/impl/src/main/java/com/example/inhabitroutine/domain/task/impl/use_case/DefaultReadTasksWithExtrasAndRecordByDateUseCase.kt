@@ -14,37 +14,51 @@ import com.example.inhabitroutine.domain.model.task.TaskModel
 import com.example.inhabitroutine.domain.model.task.content.TaskDate
 import com.example.inhabitroutine.domain.model.task.content.TaskFrequency
 import com.example.inhabitroutine.domain.model.task.type.ProgressLimitType
+import com.example.inhabitroutine.domain.task.api.use_case.ReadTasksWithExtrasAndRecordByDateUseCase
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.LocalDate
 
-internal class DefaultReadTasksWithRecordByDateUseCase(
+internal class DefaultReadTasksWithExtrasAndRecordByDateUseCase(
     private val taskRepository: TaskRepository,
     private val reminderRepository: ReminderRepository,
     private val defaultDispatcher: CoroutineDispatcher
-) {
+) : ReadTasksWithExtrasAndRecordByDateUseCase {
 
-    operator fun invoke(date: LocalDate) = combine(
-        readTasksByDate(date),
-        readRecordsByDate(date),
-        readRemindersByDate(date)
-    ) { allTasks, allRecords, allReminders ->
-        withContext(defaultDispatcher) {
-            allTasks.map { taskModel ->
-                async {
-                    taskModel
-                        .toTaskWithExtras(allReminders.filter { it.taskId == taskModel.id })
-                        .toTaskWithExtrasAndRecord(allRecords.find { it.taskId == taskModel.id })
-                }
-            }.awaitAll()
+    override operator fun invoke(date: LocalDate): Flow<List<TaskWithExtrasAndRecordModel>> =
+        combine(
+            readTasksWithExtrasByDate(date),
+            readRecordsByDate(date)
+        ) { allTasksWithExtras, allRecords ->
+            withContext(defaultDispatcher) {
+                allTasksWithExtras.map { taskWithExtras ->
+                    async {
+                        taskWithExtras.toTaskWithExtrasAndRecord(allRecords.find { it.taskId == taskWithExtras.taskModel.id })
+                    }
+                }.awaitAll()
+            }
         }
-    }
+
+    private fun readTasksWithExtrasByDate(date: LocalDate): Flow<List<TaskWithExtrasModel>> =
+        combine(
+            readTasksByDate(date),
+            readRemindersByDate(date)
+        ) { allTasks, allReminders ->
+            withContext(defaultDispatcher) {
+                allTasks.map { taskModel ->
+                    async {
+                        taskModel.toTaskWithExtras(allReminders.filter { it.taskId == taskModel.id })
+                    }
+                }.awaitAll()
+            }
+        }
 
     private fun TaskModel.toTaskWithExtras(
         allReminders: List<ReminderModel>
@@ -259,18 +273,23 @@ internal class DefaultReadTasksWithRecordByDateUseCase(
         flow { emit(emptyList()) }
 
     private fun readTasksByDate(date: LocalDate) =
-        taskRepository.readTasksByDate(date).map { allTasks ->
-            withContext(defaultDispatcher) {
-                allTasks.filterTasks(date)
-            }
-        }
+        taskRepository.readTasksByDate(date)
+            .map { allTasks ->
+            if (allTasks.isNotEmpty()) {
+                withContext(defaultDispatcher) {
+                    allTasks.filterTasks(date)
+                }
+            } else emptyList()
+        }.distinctUntilChanged()
 
     private fun readRemindersByDate(date: LocalDate) =
-        reminderRepository.readReminders().map { allReminders ->
-            withContext(defaultDispatcher) {
-                allReminders.filterByDate(date)
-            }
-        }
+        reminderRepository.readRemindersByDate(date).map { allReminders ->
+            if (allReminders.isNotEmpty()) {
+                withContext(defaultDispatcher) {
+                    allReminders.filterByDate(date)
+                }
+            } else emptyList()
+        }.distinctUntilChanged()
 
     private fun List<ReminderModel>.filterByDate(date: LocalDate) = this.let { allReminders ->
         allReminders.filter { reminderModel ->

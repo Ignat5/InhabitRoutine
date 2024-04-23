@@ -4,22 +4,58 @@ import com.example.inhabitroutine.core.presentation.base.BaseViewModel
 import com.example.inhabitroutine.core.presentation.ui.dialog.pick_task_progress_type.PickTaskProgressTypeScreenResult
 import com.example.inhabitroutine.core.presentation.ui.dialog.pick_task_type.PickTaskTypeScreenResult
 import com.example.inhabitroutine.core.util.ResultModel
+import com.example.inhabitroutine.domain.model.derived.TaskStatus
+import com.example.inhabitroutine.domain.model.derived.TaskWithExtrasAndRecordModel
 import com.example.inhabitroutine.domain.model.task.type.TaskProgressType
 import com.example.inhabitroutine.domain.model.task.type.TaskType
+import com.example.inhabitroutine.domain.task.api.use_case.ReadTasksWithExtrasAndRecordByDateUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.SaveTaskDraftUseCase
 import com.example.inhabitroutine.feature.view_schedule.components.ViewScheduleScreenConfig
 import com.example.inhabitroutine.feature.view_schedule.components.ViewScheduleScreenEvent
 import com.example.inhabitroutine.feature.view_schedule.components.ViewScheduleScreenNavigation
 import com.example.inhabitroutine.feature.view_schedule.components.ViewScheduleScreenState
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class ViewScheduleViewModel(
     override val viewModelScope: CoroutineScope,
-    private val saveTaskDraftUseCase: SaveTaskDraftUseCase
+    private val readTasksWithExtrasAndRecordByDateUseCase: ReadTasksWithExtrasAndRecordByDateUseCase,
+    private val saveTaskDraftUseCase: SaveTaskDraftUseCase,
+    private val defaultDispatcher: CoroutineDispatcher
 ) : BaseViewModel<ViewScheduleScreenEvent, ViewScheduleScreenState, ViewScheduleScreenNavigation, ViewScheduleScreenConfig>() {
+
+    private val currentDate = MutableStateFlow(todayDate)
+
+    private val allTasksState = currentDate.flatMapLatest { date ->
+        readTasksWithExtrasAndRecordByDateUseCase(date)
+            .distinctUntilChanged()
+            .map { allTasks ->
+            if (allTasks.isNotEmpty()) {
+                withContext(defaultDispatcher) {
+                    allTasks.sortTasks()
+                }
+            } else emptyList()
+        }
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.Eagerly,
+        emptyList()
+    )
 
     override val uiScreenState: StateFlow<ViewScheduleScreenState> =
         MutableStateFlow(ViewScheduleScreenState)
@@ -137,5 +173,24 @@ class ViewScheduleViewModel(
     private fun onSearchClick() {
         setUpNavigationState(ViewScheduleScreenNavigation.SearchTasks)
     }
+
+    private fun List<TaskWithExtrasAndRecordModel>.sortTasks() = this.let { allTasks ->
+        allTasks.sortedWith(
+            compareBy<TaskWithExtrasAndRecordModel> { taskWithExtrasAndRecord ->
+                when (taskWithExtrasAndRecord.status) {
+                    is TaskStatus.NotCompleted.Pending -> Int.MIN_VALUE
+                    else -> Int.MAX_VALUE
+                }
+            }.thenBy { taskWithExtrasAndRecord ->
+                taskWithExtrasAndRecord.taskWithExtrasModel.taskExtras.allReminders.minByOrNull { it.time }?.time?.toMillisecondOfDay()
+                    ?: Int.MAX_VALUE
+            }.thenBy { taskWithExtrasAndRecord ->
+                taskWithExtrasAndRecord.taskWithExtrasModel.taskModel.createdAt
+            }
+        )
+    }
+
+    private val todayDate: LocalDate
+        get() = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
 
 }

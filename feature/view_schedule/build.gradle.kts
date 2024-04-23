@@ -45,6 +45,8 @@ dependencies {
     implementation(project(":domain:task:api"))
 
     implementation(libs.bundles.compose)
+    implementation(libs.kotlin.coroutines.core)
+    implementation(libs.kotlin.datetime)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

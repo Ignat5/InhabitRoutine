@@ -53,6 +53,9 @@ ON TaskTable(title);
 CREATE INDEX IF NOT EXISTS RecordEntryDateIndex
 ON RecordTable(entryEpochDay);
 
+CREATE INDEX IF NOT EXISTS TaskVersionDateIndex
+ON TaskContentTable(versionStartEpochDay);
+
 -- trigger
 
 CREATE TRIGGER IF NOT EXISTS OnTaskDelete_DeleteTaskContentTrigger

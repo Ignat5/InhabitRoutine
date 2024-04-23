@@ -8,6 +8,8 @@ import com.example.inhabitroutine.data.task.impl.repository.util.encodeToString
 import com.example.inhabitroutine.data.task.impl.repository.util.toTaskDataModel
 import com.example.inhabitroutine.data.task.impl.repository.util.toTaskEntity
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.map
@@ -30,16 +32,24 @@ internal class DefaultTaskDataSource(
 
     override fun readTasksByQuery(query: String): Flow<List<TaskDataModel>> =
         taskDao.readTasksByQuery(query).map { allTasks ->
-            withContext(ioDispatcher) {
-                allTasks.mapNotNull { it.toTaskDataModel(json) }
-            }
+            if (allTasks.isNotEmpty()) {
+                withContext(ioDispatcher) {
+                    allTasks.map {
+                        async { it.toTaskDataModel(json) }
+                    }.awaitAll().filterNotNull()
+                }
+            } else emptyList()
         }
 
     override fun readTasksByDate(targetDate: LocalDate): Flow<List<TaskDataModel>> =
         taskDao.readTasksByDate(targetEpochDay = targetDate.encodeToEpochDay()).map { allTasks ->
-            withContext(ioDispatcher) {
-                allTasks.mapNotNull { it.toTaskDataModel(json) }
-            }
+            if (allTasks.isNotEmpty()) {
+                withContext(ioDispatcher) {
+                    allTasks.map {
+                        async { it.toTaskDataModel(json) }
+                    }.awaitAll().filterNotNull()
+                }
+            } else emptyList()
         }
 
     override suspend fun saveTask(taskDataModel: TaskDataModel): ResultModel<Unit, Throwable> =

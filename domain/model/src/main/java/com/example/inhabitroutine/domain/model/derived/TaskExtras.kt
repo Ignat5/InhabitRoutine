@@ -2,18 +2,10 @@ package com.example.inhabitroutine.domain.model.derived
 
 import com.example.inhabitroutine.domain.model.reminder.ReminderModel
 
-//data class TaskExtras(
-//    val allReminders: List<ReminderModel> = emptyList()
-//)
-
-
 sealed interface TaskExtras {
+    val allReminders: List<ReminderModel>
 
-    interface Reminders {
-        val allReminders: List<ReminderModel>
-    }
-
-    sealed interface Habit : TaskExtras, Reminders {
+    sealed interface Habit : TaskExtras {
         sealed interface HabitContinuous : Habit {
             data class HabitNumber(
                 override val allReminders: List<ReminderModel>
@@ -30,7 +22,7 @@ sealed interface TaskExtras {
 
     }
 
-    sealed interface Task : TaskExtras, Reminders {
+    sealed interface Task : TaskExtras {
         data class RecurringTask(
             override val allReminders: List<ReminderModel>
         ) : Task
@@ -41,18 +33,3 @@ sealed interface TaskExtras {
     }
 
 }
-
-//sealed interface TaskExtras {
-////    data class Reminders(
-////        val allReminders: List<ReminderModel>
-////    ) : TaskExtras
-//
-//
-//    interface Reminders : TaskExtras {
-//        val allReminders: List<ReminderModel>
-//    }
-//
-////    data class OnlyReminders(
-////        override val allReminders: List<ReminderModel>
-////    ) : Reminders
-//}
