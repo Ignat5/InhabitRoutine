@@ -36,7 +36,8 @@ CREATE TABLE IF NOT EXISTS RecordTable(
     entry TEXT NOT NULL,
     entryEpochDay INTEGER NOT NULL,
     createdAt INTEGER NOT NULL,
-    FOREIGN KEY (taskId) REFERENCES TaskTable(id)
+    FOREIGN KEY (taskId) REFERENCES TaskTable(id),
+    UNIQUE(taskId, entryEpochDay) ON CONFLICT REPLACE
 );
 
 -- index

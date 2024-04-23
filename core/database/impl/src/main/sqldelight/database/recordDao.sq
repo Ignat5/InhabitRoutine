@@ -1,0 +1,7 @@
+selectRecordsByDate:
+SELECT * FROM RecordTable tRecord
+WHERE tRecord.entryEpochDay = :targetEpochDay;
+
+insertRecord:
+INSERT OR REPLACE INTO RecordTable
+VALUES ?;

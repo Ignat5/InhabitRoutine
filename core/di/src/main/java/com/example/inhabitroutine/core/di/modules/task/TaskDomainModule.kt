@@ -1,6 +1,7 @@
 package com.example.inhabitroutine.core.di.modules.task
 
 import com.example.inhabitroutine.core.di.qualifiers.DefaultDispatcherQualifier
+import com.example.inhabitroutine.data.record.api.RecordRepository
 import com.example.inhabitroutine.data.reminder.api.ReminderRepository
 import com.example.inhabitroutine.data.task.api.TaskRepository
 import com.example.inhabitroutine.domain.task.api.use_case.ArchiveTaskByIdUseCase
@@ -53,11 +54,13 @@ object TaskDomainModule {
     fun provideReadTasksWithExtrasAndRecordByDateUseCase(
         taskRepository: TaskRepository,
         reminderRepository: ReminderRepository,
+        recordRepository: RecordRepository,
         @DefaultDispatcherQualifier defaultDispatcher: CoroutineDispatcher
     ): ReadTasksWithExtrasAndRecordByDateUseCase {
         return LocalTaskDomainModule.provideReadTasksWithExtrasAndRecordByDateUseCase(
             taskRepository = taskRepository,
             reminderRepository = reminderRepository,
+            recordRepository = recordRepository,
             defaultDispatcher = defaultDispatcher
         )
     }

@@ -37,6 +37,7 @@ android {
 dependencies {
     implementation(project(":core:database:task:api"))
     implementation(project(":core:database:reminder:api"))
+    implementation(project(":core:database:record:api"))
 
     implementation(project(":core:database:impl"))
 
@@ -45,6 +46,9 @@ dependencies {
 
     implementation(project(":data:reminder:api"))
     implementation(project(":data:reminder:impl"))
+
+    implementation(project(":data:record:api"))
+    implementation(project(":data:record:impl"))
     
     implementation(project(":domain:task:api"))
     implementation(project(":domain:task:impl"))

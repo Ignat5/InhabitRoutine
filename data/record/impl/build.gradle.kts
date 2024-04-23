@@ -1,6 +1,8 @@
 plugins {
     id("java-library")
     alias(libs.plugins.kotlinJvm)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.serialization)
 }
 
 java {
@@ -9,12 +11,11 @@ java {
 }
 
 dependencies {
-    implementation(project(":domain:model"))
-    implementation(project(":domain:task:api"))
-    implementation(project(":data:task:api"))
-    implementation(project(":data:reminder:api"))
     implementation(project(":data:record:api"))
+    implementation(project(":core:database:record:api"))
     implementation(project(":core:util"))
+    implementation(project(":domain:model"))
     implementation(libs.kotlin.coroutines.core)
+    implementation(libs.kotlin.serialization)
     implementation(libs.kotlin.datetime)
 }

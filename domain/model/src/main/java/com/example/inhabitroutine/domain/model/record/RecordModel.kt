@@ -7,7 +7,8 @@ data class RecordModel(
     val id: String,
     val taskId: String,
     val entry: RecordEntry,
-    val entryDate: LocalDate
+    val date: LocalDate,
+    val createdAt: Long
 )
 
 //sealed interface RecordModel {

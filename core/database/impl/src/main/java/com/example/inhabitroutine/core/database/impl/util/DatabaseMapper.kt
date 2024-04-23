@@ -1,7 +1,9 @@
 package com.example.inhabitroutine.core.database.impl.util
 
+import com.example.inhabitroutine.core.database.record.api.RecordEntity
 import com.example.inhabitroutine.core.database.reminder.api.ReminderEntity
 import com.example.inhabitroutine.core.database.task.api.TaskEntity
+import database.RecordTable
 import database.ReminderTable
 import database.TaskContentTable
 import database.TaskTable
@@ -62,5 +64,22 @@ internal fun ReminderEntity.toReminderTable() = ReminderTable(
     time = time,
     type = type,
     schedule = schedule,
+    createdAt = createdAt
+)
+
+/* record */
+internal fun RecordTable.toRecordEntity() = RecordEntity(
+    id = id,
+    taskId = taskId,
+    entry = entry,
+    entryEpochDay = entryEpochDay,
+    createdAt = createdAt
+)
+
+internal fun RecordEntity.toRecordTable() = RecordTable(
+    id = id,
+    taskId = taskId,
+    entry = entry,
+    entryEpochDay = entryEpochDay,
     createdAt = createdAt
 )

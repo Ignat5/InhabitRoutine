@@ -1,5 +1,6 @@
 package com.example.inhabitroutine.domain.task.impl.use_case
 
+import com.example.inhabitroutine.data.record.api.RecordRepository
 import com.example.inhabitroutine.data.reminder.api.ReminderRepository
 import com.example.inhabitroutine.data.task.api.TaskRepository
 import com.example.inhabitroutine.domain.model.derived.TaskExtras
@@ -29,6 +30,7 @@ import kotlinx.datetime.LocalDate
 internal class DefaultReadTasksWithExtrasAndRecordByDateUseCase(
     private val taskRepository: TaskRepository,
     private val reminderRepository: ReminderRepository,
+    private val recordRepository: RecordRepository,
     private val defaultDispatcher: CoroutineDispatcher
 ) : ReadTasksWithExtrasAndRecordByDateUseCase {
 
@@ -270,17 +272,17 @@ internal class DefaultReadTasksWithExtrasAndRecordByDateUseCase(
     }
 
     private fun readRecordsByDate(date: LocalDate): Flow<List<RecordModel>> =
-        flow { emit(emptyList()) }
+        recordRepository.readRecordsByDate(date)
 
     private fun readTasksByDate(date: LocalDate) =
         taskRepository.readTasksByDate(date)
             .map { allTasks ->
-            if (allTasks.isNotEmpty()) {
-                withContext(defaultDispatcher) {
-                    allTasks.filterTasks(date)
-                }
-            } else emptyList()
-        }.distinctUntilChanged()
+                if (allTasks.isNotEmpty()) {
+                    withContext(defaultDispatcher) {
+                        allTasks.filterTasks(date)
+                    }
+                } else emptyList()
+            }.distinctUntilChanged()
 
     private fun readRemindersByDate(date: LocalDate) =
         reminderRepository.readRemindersByDate(date).map { allReminders ->
