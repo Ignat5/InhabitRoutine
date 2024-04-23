@@ -6,14 +6,19 @@ import com.example.inhabitroutine.core.presentation.ui.dialog.pick_task_type.Pic
 import com.example.inhabitroutine.core.util.ResultModel
 import com.example.inhabitroutine.domain.model.derived.TaskStatus
 import com.example.inhabitroutine.domain.model.derived.TaskWithExtrasAndRecordModel
+import com.example.inhabitroutine.domain.model.task.TaskModel
 import com.example.inhabitroutine.domain.model.task.type.TaskProgressType
 import com.example.inhabitroutine.domain.model.task.type.TaskType
+import com.example.inhabitroutine.domain.record.api.SaveRecordUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTasksWithExtrasAndRecordByDateUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.SaveTaskDraftUseCase
+import com.example.inhabitroutine.domain.task.api.use_case.ValidateProgressLimitNumberUseCase
 import com.example.inhabitroutine.feature.view_schedule.components.ViewScheduleScreenConfig
 import com.example.inhabitroutine.feature.view_schedule.components.ViewScheduleScreenEvent
 import com.example.inhabitroutine.feature.view_schedule.components.ViewScheduleScreenNavigation
 import com.example.inhabitroutine.feature.view_schedule.components.ViewScheduleScreenState
+import com.example.inhabitroutine.feature.view_schedule.config.enter_number_record.EnterTaskNumberRecordStateHolder
+import com.example.inhabitroutine.feature.view_schedule.config.enter_number_record.components.EnterTaskNumberRecordScreenResult
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -42,6 +47,8 @@ class ViewScheduleViewModel(
     override val viewModelScope: CoroutineScope,
     private val readTasksWithExtrasAndRecordByDateUseCase: ReadTasksWithExtrasAndRecordByDateUseCase,
     private val saveTaskDraftUseCase: SaveTaskDraftUseCase,
+    private val saveRecordUseCase: SaveRecordUseCase,
+    private val validateProgressLimitNumberUseCase: ValidateProgressLimitNumberUseCase,
     private val defaultDispatcher: CoroutineDispatcher
 ) : BaseViewModel<ViewScheduleScreenEvent, ViewScheduleScreenState, ViewScheduleScreenNavigation, ViewScheduleScreenConfig>() {
 
@@ -98,6 +105,9 @@ class ViewScheduleViewModel(
 
     override fun onEvent(event: ViewScheduleScreenEvent) {
         when (event) {
+            is ViewScheduleScreenEvent.OnTaskClick ->
+                onTaskClick(event)
+
             is ViewScheduleScreenEvent.OnDateClick ->
                 onDateClick(event)
 
@@ -125,6 +135,31 @@ class ViewScheduleViewModel(
 
             is ViewScheduleScreenEvent.ResultEvent.PickTaskProgressType ->
                 onPickTaskProgressTypeResultEvent(event)
+
+            is ViewScheduleScreenEvent.ResultEvent.EnterTaskNumberRecord ->
+                onEnterTaskNumberRecord(event)
+
+        }
+    }
+
+    private fun onEnterTaskNumberRecord(event: ViewScheduleScreenEvent.ResultEvent.EnterTaskNumberRecord) {
+        onIdleToAction {
+            when (val result = event.result) {
+                is EnterTaskNumberRecordScreenResult.Confirm ->
+                    onConfirmEnterTaskNumberRecord(result)
+
+                is EnterTaskNumberRecordScreenResult.Dismiss -> Unit
+            }
+        }
+    }
+
+    private fun onConfirmEnterTaskNumberRecord(result: EnterTaskNumberRecordScreenResult.Confirm) {
+        viewModelScope.launch {
+            saveRecordUseCase(
+                taskId = result.taskId,
+                date = result.date,
+                requestType = SaveRecordUseCase.RequestType.EntryNumber(result.number)
+            )
         }
     }
 
@@ -171,6 +206,45 @@ class ViewScheduleViewModel(
             TaskType.RecurringTask -> onPickRecurringTaskType()
             TaskType.SingleTask -> onPickSingleTaskType()
         }
+    }
+
+    private fun onTaskClick(event: ViewScheduleScreenEvent.OnTaskClick) {
+        allTasksState.value.find { it.taskWithExtrasModel.taskModel.id == event.taskId }
+            ?.let { taskWithExtrasAndRecord ->
+                when (taskWithExtrasAndRecord) {
+                    is TaskWithExtrasAndRecordModel.Habit -> {
+                        when (taskWithExtrasAndRecord) {
+                            is TaskWithExtrasAndRecordModel.Habit.HabitContinuous -> {
+                                when (taskWithExtrasAndRecord) {
+                                    is TaskWithExtrasAndRecordModel.Habit.HabitContinuous.HabitNumber -> {
+                                        onHabitNumberClick(taskWithExtrasAndRecord)
+                                    }
+
+                                    is TaskWithExtrasAndRecordModel.Habit.HabitContinuous.HabitTime -> {}
+                                }
+                            }
+
+                            is TaskWithExtrasAndRecordModel.Habit.HabitYesNo -> {}
+                        }
+                    }
+
+                    is TaskWithExtrasAndRecordModel.Task -> {}
+                }
+            }
+    }
+
+    private fun onHabitNumberClick(taskWithExtrasAndRecordModel: TaskWithExtrasAndRecordModel.Habit.HabitContinuous.HabitNumber) {
+        setUpConfigState(
+            ViewScheduleScreenConfig.EnterTaskNumberRecord(
+                stateHolder = EnterTaskNumberRecordStateHolder(
+                    taskModel = taskWithExtrasAndRecordModel.taskWithExtrasModel.taskModel,
+                    entry = taskWithExtrasAndRecordModel.recordEntry,
+                    date = currentDateState.value,
+                    validateProgressLimitNumberUseCase = validateProgressLimitNumberUseCase,
+                    holderScope = provideChildScope()
+                )
+            )
+        )
     }
 
     private fun onDateClick(event: ViewScheduleScreenEvent.OnDateClick) {

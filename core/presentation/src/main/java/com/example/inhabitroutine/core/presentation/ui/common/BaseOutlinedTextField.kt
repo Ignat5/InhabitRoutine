@@ -28,6 +28,7 @@ fun BaseOutlinedTextField(
     modifier: Modifier = Modifier,
     valueValidator: ((String) -> Boolean)? = null,
     label: (@Composable () -> Unit)? = null,
+    placeholder: (@Composable () -> Unit)? = null,
     supportingText: (@Composable () -> Unit)? = null,
     singleLine: Boolean = false,
     minLines: Int = 1,
@@ -54,6 +55,7 @@ fun BaseOutlinedTextField(
             }
         },
         label = label,
+        placeholder = placeholder,
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions,
         supportingText = supportingText,

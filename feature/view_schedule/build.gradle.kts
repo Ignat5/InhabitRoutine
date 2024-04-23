@@ -43,6 +43,7 @@ dependencies {
     implementation(project(":domain:model"))
     implementation(project(":core:util"))
     implementation(project(":domain:task:api"))
+    implementation(project(":domain:record:api"))
 
     implementation(libs.bundles.compose)
     implementation(libs.kotlin.coroutines.core)

@@ -6,8 +6,8 @@ sealed interface TaskStatus {
 
     data object Completed : Habit, Task
     sealed interface NotCompleted : TaskStatus {
-        data object Pending : Habit, Task
-        data object Skipped : Habit
-        data object Failed : Habit
+        data object Pending : NotCompleted, Habit, Task
+        data object Skipped : NotCompleted, Habit
+        data object Failed : NotCompleted, Habit
     }
 }

@@ -56,6 +56,9 @@ dependencies {
     implementation(project(":domain:reminder:api"))
     implementation(project(":domain:reminder:impl"))
 
+    implementation(project(":domain:record:api"))
+    implementation(project(":domain:record:impl"))
+
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
     ksp(libs.hilt.compiler)

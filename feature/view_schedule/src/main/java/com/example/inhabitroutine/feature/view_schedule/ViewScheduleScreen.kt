@@ -60,9 +60,11 @@ import com.example.inhabitroutine.core.presentation.ui.util.toMonthDayYearDispla
 import com.example.inhabitroutine.domain.model.derived.TaskStatus
 import com.example.inhabitroutine.domain.model.derived.TaskWithExtrasAndRecordModel
 import com.example.inhabitroutine.domain.model.record.content.RecordEntry
+import com.example.inhabitroutine.domain.model.task.type.ProgressLimitType
 import com.example.inhabitroutine.feature.view_schedule.components.ViewScheduleScreenConfig
 import com.example.inhabitroutine.feature.view_schedule.components.ViewScheduleScreenEvent
 import com.example.inhabitroutine.feature.view_schedule.components.ViewScheduleScreenState
+import com.example.inhabitroutine.feature.view_schedule.config.enter_number_record.EnterTaskNumberRecordDialog
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.plus
@@ -134,7 +136,9 @@ fun ViewScheduleScreen(
                             ItemTask(
                                 item = item,
                                 context = context,
-                                onClick = { /*TODO*/ },
+                                onClick = {
+                                    onEvent(ViewScheduleScreenEvent.OnTaskClick(item.taskWithExtrasModel.taskModel.id))
+                                },
                                 onLongClick = { /*TODO*/ },
                                 modifier = Modifier.animateItemPlacement()
                             )
@@ -196,7 +200,7 @@ private fun TaskTitleRow(
         modifier = Modifier
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Text(
             text = item.taskWithExtrasModel.taskModel.title,
@@ -309,7 +313,8 @@ private fun TaskProgressIndicator(
     }
     val progressState by animateFloatAsState(
         targetValue = progress,
-        animationSpec = spring(stiffness = Spring.StiffnessVeryLow)
+        animationSpec = spring(stiffness = Spring.StiffnessVeryLow),
+        label = ""
     )
     CircularProgressIndicator(
         progress = { progressState },
@@ -334,7 +339,14 @@ private fun getTaskProgress(
                                 when (val entry = item.recordEntry) {
                                     is RecordEntry.Number -> {
                                         item.taskWithExtrasModel.taskModel.progress.let { numberProgress ->
-                                            (entry.number / numberProgress.limitNumber).toFloat()
+                                            when (numberProgress.limitType) {
+                                                ProgressLimitType.AtLeast -> {
+                                                    (entry.number / numberProgress.limitNumber).toFloat()
+                                                }
+
+                                                ProgressLimitType.NoMoreThan -> NOT_COMPLETED_PROGRESS
+                                                ProgressLimitType.Exactly -> NOT_COMPLETED_PROGRESS
+                                            }
                                         }
                                     }
 
@@ -346,13 +358,20 @@ private fun getTaskProgress(
                                 when (val entry = item.recordEntry) {
                                     is RecordEntry.Time -> {
                                         item.taskWithExtrasModel.taskModel.progress.let { timeProgress ->
-                                            entry.time.toMillisecondOfDay().toFloat()
-                                                .let { entryValue ->
-                                                    timeProgress.limitTime.toMillisecondOfDay()
-                                                        .toFloat().let { progressValue ->
-                                                            entryValue / progressValue
+                                            when (timeProgress.limitType) {
+                                                ProgressLimitType.AtLeast -> {
+                                                    entry.time.toMillisecondOfDay().toFloat()
+                                                        .let { entryValue ->
+                                                            timeProgress.limitTime.toMillisecondOfDay()
+                                                                .toFloat().let { progressValue ->
+                                                                    entryValue / progressValue
+                                                                }
                                                         }
                                                 }
+
+                                                ProgressLimitType.NoMoreThan -> NOT_COMPLETED_PROGRESS
+                                                ProgressLimitType.Exactly -> NOT_COMPLETED_PROGRESS
+                                            }
                                         }
                                     }
 
@@ -525,7 +544,7 @@ private fun NextPrevButton(
 @Composable
 fun ViewScheduleScreenConfig(
     config: ViewScheduleScreenConfig,
-    onEvent: (ViewScheduleScreenEvent) -> Unit,
+    onEvent: (ViewScheduleScreenEvent) -> Unit
 ) {
     when (config) {
         is ViewScheduleScreenConfig.PickTaskType -> {
@@ -537,6 +556,12 @@ fun ViewScheduleScreenConfig(
         is ViewScheduleScreenConfig.PickTaskProgressType -> {
             PickTaskProgressTypeDialog(allTaskProgressTypes = config.allProgressTypes) { result ->
                 onEvent(ViewScheduleScreenEvent.ResultEvent.PickTaskProgressType(result))
+            }
+        }
+
+        is ViewScheduleScreenConfig.EnterTaskNumberRecord -> {
+            EnterTaskNumberRecordDialog(stateHolder = config.stateHolder) {
+                onEvent(ViewScheduleScreenEvent.ResultEvent.EnterTaskNumberRecord(it))
             }
         }
     }

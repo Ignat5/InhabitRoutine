@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -38,18 +39,23 @@ fun PickTaskProgressTypeDialog(
 ) {
     BaseDialog(
         onDismissRequest = { onResult(PickTaskProgressTypeScreenResult.Dismiss) },
-        title = {
-            BaseDialogDefaults.BaseDialogTitle(titleText = stringResource(id = R.string.habit_progress_type_title))
-        }
     ) {
-        LazyColumn(modifier = Modifier.fillMaxWidth()) {
-            items(allTaskProgressTypes) { item ->
-                ItemTaskProgressType(
-                    taskType = item,
-                    onClick = {
-                        onResult(PickTaskProgressTypeScreenResult.Confirm(item))
-                    }
-                )
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = stringResource(id = R.string.habit_progress_type_title),
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                items(allTaskProgressTypes) { item ->
+                    ItemTaskProgressType(
+                        taskType = item,
+                        onClick = {
+                            onResult(PickTaskProgressTypeScreenResult.Confirm(item))
+                        }
+                    )
+                }
             }
         }
     }

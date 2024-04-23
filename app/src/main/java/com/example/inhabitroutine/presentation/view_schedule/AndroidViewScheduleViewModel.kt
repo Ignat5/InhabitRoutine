@@ -3,9 +3,11 @@ package com.example.inhabitroutine.presentation.view_schedule
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.example.inhabitroutine.core.di.qualifiers.DefaultDispatcherQualifier
+import com.example.inhabitroutine.domain.record.api.SaveRecordUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTasksWithExtrasAndRecordByDateUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.SaveTaskDraftUseCase
+import com.example.inhabitroutine.domain.task.api.use_case.ValidateProgressLimitNumberUseCase
 import com.example.inhabitroutine.feature.view_schedule.ViewScheduleViewModel
 import com.example.inhabitroutine.feature.view_schedule.components.ViewScheduleScreenConfig
 import com.example.inhabitroutine.feature.view_schedule.components.ViewScheduleScreenEvent
@@ -21,6 +23,8 @@ class AndroidViewScheduleViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     readTasksWithExtrasAndRecordByDateUseCase: ReadTasksWithExtrasAndRecordByDateUseCase,
     saveTaskDraftUseCase: SaveTaskDraftUseCase,
+    saveRecordUseCase: SaveRecordUseCase,
+    validateProgressLimitNumberUseCase: ValidateProgressLimitNumberUseCase,
     @DefaultDispatcherQualifier defaultDispatcher: CoroutineDispatcher
 ) : BaseAndroidViewModel<ViewScheduleScreenEvent, ViewScheduleScreenState, ViewScheduleScreenNavigation, ViewScheduleScreenConfig>() {
 
@@ -28,6 +32,8 @@ class AndroidViewScheduleViewModel @Inject constructor(
         viewModelScope = viewModelScope,
         readTasksWithExtrasAndRecordByDateUseCase = readTasksWithExtrasAndRecordByDateUseCase,
         saveTaskDraftUseCase = saveTaskDraftUseCase,
+        saveRecordUseCase = saveRecordUseCase,
+        validateProgressLimitNumberUseCase = validateProgressLimitNumberUseCase,
         defaultDispatcher = defaultDispatcher
     )
 

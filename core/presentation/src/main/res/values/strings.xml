@@ -19,6 +19,7 @@
     <string name="task_status_done">Done</string>
     <string name="task_status_skipped">Skipped</string>
     <string name="task_status_failed">Failed</string>
+    <string name="task_enter_number_progress_label">Number</string>
 
     <!-- task config (create/edit task)   -->
     <string name="task_config_title">Activity name</string>
@@ -64,6 +65,7 @@
     <string name="save">Save</string>
     <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
+    <string name="goal">Goal</string>
 
     <!-- discard activity -->
     <string name="confirm_discard_activity_title">Discard</string>
