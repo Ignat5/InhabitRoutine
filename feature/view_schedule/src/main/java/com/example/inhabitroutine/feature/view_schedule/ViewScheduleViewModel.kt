@@ -20,6 +20,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -39,18 +40,18 @@ class ViewScheduleViewModel(
     private val defaultDispatcher: CoroutineDispatcher
 ) : BaseViewModel<ViewScheduleScreenEvent, ViewScheduleScreenState, ViewScheduleScreenNavigation, ViewScheduleScreenConfig>() {
 
-    private val currentDate = MutableStateFlow(todayDate)
+    private val currentDateState = MutableStateFlow(todayDate)
 
-    private val allTasksState = currentDate.flatMapLatest { date ->
+    private val allTasksState = currentDateState.flatMapLatest { date ->
         readTasksWithExtrasAndRecordByDateUseCase(date)
             .distinctUntilChanged()
             .map { allTasks ->
-            if (allTasks.isNotEmpty()) {
-                withContext(defaultDispatcher) {
-                    allTasks.sortTasks()
-                }
-            } else emptyList()
-        }
+                if (allTasks.isNotEmpty()) {
+                    withContext(defaultDispatcher) {
+                        allTasks.sortTasks()
+                    }
+                } else emptyList()
+            }
     }.stateIn(
         viewModelScope,
         SharingStarted.Eagerly,
@@ -58,7 +59,22 @@ class ViewScheduleViewModel(
     )
 
     override val uiScreenState: StateFlow<ViewScheduleScreenState> =
-        MutableStateFlow(ViewScheduleScreenState)
+        combine(
+            currentDateState,
+            allTasksState
+        ) { currentDate, allTasks ->
+            ViewScheduleScreenState(
+                currentDate = currentDate,
+                allTasks = allTasks
+            )
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.Eagerly,
+            ViewScheduleScreenState(
+                currentDate = currentDateState.value,
+                allTasks = allTasksState.value
+            )
+        )
 
     override fun onEvent(event: ViewScheduleScreenEvent) {
         when (event) {
