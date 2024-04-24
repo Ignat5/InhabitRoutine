@@ -8,4 +8,8 @@ import kotlinx.datetime.LocalDate
 interface RecordRepository {
     fun readRecordsByDate(targetDate: LocalDate): Flow<List<RecordModel>>
     suspend fun saveRecord(recordModel: RecordModel): ResultModel<Unit, Throwable>
+    suspend fun deleteRecordByTaskIdAndDate(
+        taskId: String,
+        targetDate: LocalDate
+    ): ResultModel<Unit, Throwable>
 }

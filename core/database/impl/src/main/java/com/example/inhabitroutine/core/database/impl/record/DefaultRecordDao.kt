@@ -35,4 +35,15 @@ internal class DefaultRecordDao(
             recordDao.insertRecord(recordEntity.toRecordTable())
         }
 
+    override suspend fun deleteRecordByTaskIdAndDate(
+        taskId: String,
+        targetEpochDay: Long
+    ): ResultModel<Unit, Throwable> =
+        runQuery(ioDispatcher) {
+            recordDao.deleteRecordByTaskIdAndDate(
+                taskId = taskId,
+                targetEpochDay = targetEpochDay
+            )
+        }
+
 }

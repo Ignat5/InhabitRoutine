@@ -9,6 +9,7 @@ import com.example.inhabitroutine.domain.model.derived.TaskWithExtrasAndRecordMo
 import com.example.inhabitroutine.domain.model.task.TaskModel
 import com.example.inhabitroutine.domain.model.task.type.TaskProgressType
 import com.example.inhabitroutine.domain.model.task.type.TaskType
+import com.example.inhabitroutine.domain.record.api.DeleteRecordUseCase
 import com.example.inhabitroutine.domain.record.api.SaveRecordUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTasksWithExtrasAndRecordByDateUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.SaveTaskDraftUseCase
@@ -50,6 +51,7 @@ class ViewScheduleViewModel(
     private val readTasksWithExtrasAndRecordByDateUseCase: ReadTasksWithExtrasAndRecordByDateUseCase,
     private val saveTaskDraftUseCase: SaveTaskDraftUseCase,
     private val saveRecordUseCase: SaveRecordUseCase,
+    private val deleteRecordUseCase: DeleteRecordUseCase,
     private val validateProgressLimitNumberUseCase: ValidateProgressLimitNumberUseCase,
     private val defaultDispatcher: CoroutineDispatcher
 ) : BaseViewModel<ViewScheduleScreenEvent, ViewScheduleScreenState, ViewScheduleScreenNavigation, ViewScheduleScreenConfig>() {
@@ -250,11 +252,15 @@ class ViewScheduleViewModel(
                                 }
                             }
 
-                            is TaskWithExtrasAndRecordModel.Habit.HabitYesNo -> {}
+                            is TaskWithExtrasAndRecordModel.Habit.HabitYesNo -> {
+                                onHabitYesNoClick(taskWithExtrasAndRecord)
+                            }
                         }
                     }
 
-                    is TaskWithExtrasAndRecordModel.Task -> {}
+                    is TaskWithExtrasAndRecordModel.Task -> {
+                        onRecurringOrSingleTaskClick(taskWithExtrasAndRecord)
+                    }
                 }
             }
     }
@@ -284,6 +290,59 @@ class ViewScheduleViewModel(
                 )
             )
         )
+    }
+
+    private fun onHabitYesNoClick(taskWithExtrasAndRecordModel: TaskWithExtrasAndRecordModel.Habit.HabitYesNo) {
+        viewModelScope.launch {
+            val taskId = taskWithExtrasAndRecordModel.taskWithExtrasModel.taskModel.id
+            val date = currentDateState.value
+            when (val status = taskWithExtrasAndRecordModel.status) {
+                is TaskStatus.Completed -> {
+                    deleteRecordUseCase(taskId = taskId, date = date)
+                }
+
+                is TaskStatus.NotCompleted -> {
+                    when (status) {
+                        is TaskStatus.NotCompleted.Pending -> {
+                            saveRecordUseCase(
+                                taskId = taskId,
+                                date = date,
+                                requestType = SaveRecordUseCase.RequestType.EntryDone
+                            )
+                        }
+
+                        else -> {
+                            deleteRecordUseCase(
+                                taskId = taskId,
+                                date = date
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun onRecurringOrSingleTaskClick(taskWithExtrasAndRecordModel: TaskWithExtrasAndRecordModel.Task) {
+        viewModelScope.launch {
+            val taskId = taskWithExtrasAndRecordModel.taskWithExtrasModel.taskModel.id
+            val date = currentDateState.value
+            when (taskWithExtrasAndRecordModel.status) {
+                is TaskStatus.NotCompleted.Pending -> {
+                    saveRecordUseCase(
+                        taskId = taskId,
+                        date = date,
+                        requestType = SaveRecordUseCase.RequestType.EntryDone
+                    )
+                }
+                is TaskStatus.Completed -> {
+                    deleteRecordUseCase(
+                        taskId = taskId,
+                        date = date
+                    )
+                }
+            }
+        }
     }
 
     private fun onDateClick(event: ViewScheduleScreenEvent.OnDateClick) {

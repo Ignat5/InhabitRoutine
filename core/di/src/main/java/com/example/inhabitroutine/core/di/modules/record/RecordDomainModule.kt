@@ -1,6 +1,7 @@
 package com.example.inhabitroutine.core.di.modules.record
 
 import com.example.inhabitroutine.data.record.api.RecordRepository
+import com.example.inhabitroutine.domain.record.api.DeleteRecordUseCase
 import com.example.inhabitroutine.domain.record.api.SaveRecordUseCase
 import com.example.inhabitroutine.domain.record.impl.di.LocalRecordDomainModule
 import dagger.Module
@@ -17,6 +18,15 @@ object RecordDomainModule {
         recordRepository: RecordRepository
     ): SaveRecordUseCase {
         return LocalRecordDomainModule.provideSaveRecordUseCase(
+            recordRepository = recordRepository
+        )
+    }
+
+    @Provides
+    fun provideDeleteRecordUseCase(
+        recordRepository: RecordRepository
+    ): DeleteRecordUseCase {
+        return LocalRecordDomainModule.provideDeleteRecordUseCase(
             recordRepository = recordRepository
         )
     }

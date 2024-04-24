@@ -26,8 +26,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.inhabitroutine.core.presentation.R
-import com.example.inhabitroutine.core.presentation.ui.dialog.base.BaseDialog
-import com.example.inhabitroutine.core.presentation.ui.dialog.base.BaseDialogDefaults
 import com.example.inhabitroutine.core.presentation.ui.util.toIconId
 import com.example.inhabitroutine.domain.model.task.type.TaskProgressType
 
@@ -37,37 +35,73 @@ fun PickTaskProgressTypeDialog(
     allTaskProgressTypes: List<TaskProgressType>,
     onResult: (PickTaskProgressTypeScreenResult) -> Unit
 ) {
-    BaseDialog(
+    BasicAlertDialog(
         onDismissRequest = { onResult(PickTaskProgressTypeScreenResult.Dismiss) },
     ) {
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Text(
-                text = stringResource(id = R.string.habit_progress_type_title),
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                items(allTaskProgressTypes) { item ->
-                    ItemTaskProgressType(
-                        taskType = item,
-                        onClick = {
-                            onResult(PickTaskProgressTypeScreenResult.Confirm(item))
-                        }
-                    )
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = AlertDialogDefaults.shape,
+            color = AlertDialogDefaults.containerColor,
+            tonalElevation = AlertDialogDefaults.TonalElevation,
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 24.dp)
+            ) {
+                Text(
+                    text = stringResource(id = R.string.habit_progress_type_title),
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                    items(allTaskProgressTypes) { item ->
+                        ItemTaskProgressType(
+                            taskType = item,
+                            onClick = {
+                                onResult(PickTaskProgressTypeScreenResult.Confirm(item))
+                            }
+                        )
+                    }
                 }
             }
         }
     }
+
+//    BaseDialog(
+//        onDismissRequest = { onResult(PickTaskProgressTypeScreenResult.Dismiss) },
+//    ) {
+//        Column(modifier = Modifier.fillMaxWidth()) {
+//            Text(
+//                text = stringResource(id = R.string.habit_progress_type_title),
+//                style = MaterialTheme.typography.titleLarge,
+//                color = MaterialTheme.colorScheme.onSurface
+//            )
+//            Spacer(modifier = Modifier.height(8.dp))
+//            LazyColumn(modifier = Modifier.fillMaxWidth()) {
+//                items(allTaskProgressTypes) { item ->
+//                    ItemTaskProgressType(
+//                        taskType = item,
+//                        onClick = {
+//                            onResult(PickTaskProgressTypeScreenResult.Confirm(item))
+//                        }
+//                    )
+//                }
+//            }
+//        }
+//    }
 }
 
 @Composable
 private fun ItemTaskProgressType(
     taskType: TaskProgressType,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Box(
-        modifier = Modifier.clickable { onClick() }
+        modifier = modifier.clickable { onClick() }
     ) {
         Row(
             modifier = Modifier

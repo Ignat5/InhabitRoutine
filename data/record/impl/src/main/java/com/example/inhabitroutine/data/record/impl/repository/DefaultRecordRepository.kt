@@ -33,4 +33,12 @@ internal class DefaultRecordRepository(
     override suspend fun saveRecord(recordModel: RecordModel): ResultModel<Unit, Throwable> =
         recordDataSource.saveRecord(recordModel.toRecordDataModel())
 
+    override suspend fun deleteRecordByTaskIdAndDate(
+        taskId: String,
+        targetDate: LocalDate
+    ): ResultModel<Unit, Throwable> = recordDataSource.deleteRecordByTaskIdAndDate(
+        taskId = taskId,
+        targetDate = targetDate
+    )
+
 }

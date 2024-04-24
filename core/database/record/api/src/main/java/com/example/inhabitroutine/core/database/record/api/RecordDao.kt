@@ -6,4 +6,5 @@ import kotlinx.coroutines.flow.Flow
 interface RecordDao {
     fun readRecordsByDate(targetEpochDay: Long): Flow<List<RecordEntity>>
     suspend fun saveRecord(recordEntity: RecordEntity): ResultModel<Unit, Throwable>
+    suspend fun deleteRecordByTaskIdAndDate(taskId: String, targetEpochDay: Long): ResultModel<Unit, Throwable>
 }

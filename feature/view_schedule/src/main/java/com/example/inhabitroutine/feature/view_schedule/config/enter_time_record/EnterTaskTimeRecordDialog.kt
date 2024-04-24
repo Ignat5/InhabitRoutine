@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.example.inhabitroutine.core.presentation.R
 import com.example.inhabitroutine.core.presentation.ui.base.BaseDialogWithResult
 import com.example.inhabitroutine.core.presentation.ui.common.BaseTimeInput
+import com.example.inhabitroutine.core.presentation.ui.common.BaseTimePicker
 import com.example.inhabitroutine.core.presentation.ui.dialog.base.BaseDialog
 import com.example.inhabitroutine.core.presentation.ui.dialog.base.BaseDialogActionType
 import com.example.inhabitroutine.core.presentation.ui.dialog.base.BaseDialogDefaults
@@ -89,7 +90,7 @@ private fun EnterTaskTimeRecordDialogStateless(
                 overflow = TextOverflow.Ellipsis
             )
             Spacer(modifier = Modifier.height(8.dp))
-            BaseTimeInput(
+            BaseTimePicker(
                 initHours = state.inputHours,
                 initMinutes = state.inputMinutes,
                 onHoursUpdate = { onEvent(EnterTaskTimeRecordScreenEvent.OnInputHoursUpdate(it)) },

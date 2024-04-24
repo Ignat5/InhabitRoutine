@@ -37,4 +37,12 @@ internal class DefaultRecordDataSource(
             recordDao.saveRecord(recordEntity)
         } ?: ResultModel.failure(IllegalStateException())
 
+    override suspend fun deleteRecordByTaskIdAndDate(
+        taskId: String,
+        targetDate: LocalDate
+    ): ResultModel<Unit, Throwable> = recordDao.deleteRecordByTaskIdAndDate(
+        taskId = taskId,
+        targetEpochDay = targetDate.encodeToEpochDay()
+    )
+
 }

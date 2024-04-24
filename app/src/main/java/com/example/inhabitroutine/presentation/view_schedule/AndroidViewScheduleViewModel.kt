@@ -3,6 +3,7 @@ package com.example.inhabitroutine.presentation.view_schedule
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.example.inhabitroutine.core.di.qualifiers.DefaultDispatcherQualifier
+import com.example.inhabitroutine.domain.record.api.DeleteRecordUseCase
 import com.example.inhabitroutine.domain.record.api.SaveRecordUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTasksWithExtrasAndRecordByDateUseCase
@@ -24,6 +25,7 @@ class AndroidViewScheduleViewModel @Inject constructor(
     readTasksWithExtrasAndRecordByDateUseCase: ReadTasksWithExtrasAndRecordByDateUseCase,
     saveTaskDraftUseCase: SaveTaskDraftUseCase,
     saveRecordUseCase: SaveRecordUseCase,
+    deleteRecordUseCase: DeleteRecordUseCase,
     validateProgressLimitNumberUseCase: ValidateProgressLimitNumberUseCase,
     @DefaultDispatcherQualifier defaultDispatcher: CoroutineDispatcher
 ) : BaseAndroidViewModel<ViewScheduleScreenEvent, ViewScheduleScreenState, ViewScheduleScreenNavigation, ViewScheduleScreenConfig>() {
@@ -33,6 +35,7 @@ class AndroidViewScheduleViewModel @Inject constructor(
         readTasksWithExtrasAndRecordByDateUseCase = readTasksWithExtrasAndRecordByDateUseCase,
         saveTaskDraftUseCase = saveTaskDraftUseCase,
         saveRecordUseCase = saveRecordUseCase,
+        deleteRecordUseCase = deleteRecordUseCase,
         validateProgressLimitNumberUseCase = validateProgressLimitNumberUseCase,
         defaultDispatcher = defaultDispatcher
     )

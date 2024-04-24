@@ -287,7 +287,7 @@ private fun getProgressTextOrNull(
 
                 is TaskWithExtrasAndRecordModel.Habit.HabitYesNo -> {
                     when (item.status) {
-                        is TaskStatus.Completed -> context.getString(R.string.task_status_done)
+                        is TaskStatus.Completed -> null //context.getString(R.string.task_status_done)
                         is TaskStatus.NotCompleted.Pending -> null
                         is TaskStatus.NotCompleted.Skipped -> context.getString(R.string.task_status_skipped)
                         is TaskStatus.NotCompleted.Failed -> context.getString(R.string.task_status_failed)
