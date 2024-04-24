@@ -6,7 +6,6 @@ import com.example.inhabitroutine.data.task.api.TaskRepository
 import com.example.inhabitroutine.domain.model.derived.TaskExtras
 import com.example.inhabitroutine.domain.model.derived.TaskStatus
 import com.example.inhabitroutine.domain.model.derived.TaskWithExtrasAndRecordModel
-import com.example.inhabitroutine.domain.model.derived.TaskWithExtrasModel
 import com.example.inhabitroutine.domain.model.record.RecordModel
 import com.example.inhabitroutine.domain.model.record.content.RecordEntry
 import com.example.inhabitroutine.domain.model.reminder.ReminderModel
@@ -22,7 +21,6 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.LocalDate
@@ -36,235 +34,155 @@ internal class DefaultReadTasksWithExtrasAndRecordByDateUseCase(
 
     override operator fun invoke(date: LocalDate): Flow<List<TaskWithExtrasAndRecordModel>> =
         combine(
-            readTasksWithExtrasByDate(date),
-            readRecordsByDate(date)
-        ) { allTasksWithExtras, allRecords ->
-            withContext(defaultDispatcher) {
-                allTasksWithExtras.map { taskWithExtras ->
-                    async {
-                        taskWithExtras.toTaskWithExtrasAndRecord(allRecords.find { it.taskId == taskWithExtras.taskModel.id })
-                    }
-                }.awaitAll()
-            }
-        }
-
-    private fun readTasksWithExtrasByDate(date: LocalDate): Flow<List<TaskWithExtrasModel>> =
-        combine(
             readTasksByDate(date),
-            readRemindersByDate(date)
-        ) { allTasks, allReminders ->
+            readRemindersByDate(date),
+            readRecordsByDate(date)
+        ) { allTasks, allReminders, allRecords ->
             withContext(defaultDispatcher) {
                 allTasks.map { taskModel ->
                     async {
-                        taskModel.toTaskWithExtras(allReminders.filter { it.taskId == taskModel.id })
+                        taskModel.toTaskWithExtrasAndRecord(
+                            allReminders = allReminders.filter { it.taskId == taskModel.id },
+                            record = allRecords.find { it.taskId == taskModel.id }
+                        )
                     }
                 }.awaitAll()
             }
         }
 
-    private fun TaskModel.toTaskWithExtras(
-        allReminders: List<ReminderModel>
-    ): TaskWithExtrasModel = this.let { taskModel ->
-        when (taskModel) {
-            is TaskModel.Habit -> {
-                when (taskModel) {
-                    is TaskModel.Habit.HabitContinuous -> {
-                        when (taskModel) {
-                            is TaskModel.Habit.HabitContinuous.HabitNumber -> {
-                                TaskWithExtrasModel.Habit.HabitContinuous.HabitNumber(
-                                    taskModel = taskModel,
-                                    taskExtras = TaskExtras.Habit.HabitContinuous.HabitNumber(
-                                        allReminders = allReminders
-                                    )
-                                )
-                            }
+    private fun TaskModel.toTaskWithExtrasAndRecord(
+        allReminders: List<ReminderModel>,
+        record: RecordModel?
+    ): TaskWithExtrasAndRecordModel {
+        return this.let { taskModel ->
+            when (taskModel) {
+                is TaskModel.Habit -> {
+                    when (taskModel) {
+                        is TaskModel.Habit.HabitContinuous -> {
+                            when (taskModel) {
+                                is TaskModel.Habit.HabitContinuous.HabitNumber -> {
+                                    (record?.entry as? RecordEntry.HabitEntry.Continuous.Number).let { entry ->
+                                        TaskWithExtrasAndRecordModel.Habit.HabitContinuous.HabitNumber(
+                                            task = taskModel,
+                                            taskExtras = TaskExtras.Habit.HabitContinuous.HabitNumber(
+                                                allReminders
+                                            ),
+                                            recordEntry = entry,
+                                            status = when (entry) {
+                                                null -> TaskStatus.NotCompleted.Pending
+                                                is RecordEntry.Number -> {
+                                                    taskModel.progress.let { progress ->
+                                                        val isDone = when (progress.limitType) {
+                                                            ProgressLimitType.AtLeast -> {
+                                                                entry.number >= progress.limitNumber
+                                                            }
 
-                            is TaskModel.Habit.HabitContinuous.HabitTime -> {
-                                TaskWithExtrasModel.Habit.HabitContinuous.HabitTime(
-                                    taskModel = taskModel,
-                                    taskExtras = TaskExtras.Habit.HabitContinuous.HabitTime(
-                                        allReminders = allReminders
-                                    )
+                                                            ProgressLimitType.Exactly -> {
+                                                                entry.number == progress.limitNumber
+                                                            }
+
+                                                            ProgressLimitType.NoMoreThan -> {
+                                                                entry.number <= progress.limitNumber
+                                                            }
+                                                        }
+                                                        if (isDone) TaskStatus.Completed
+                                                        else TaskStatus.NotCompleted.Pending
+                                                    }
+                                                }
+
+                                                is RecordEntry.Skip -> TaskStatus.NotCompleted.Skipped
+                                                is RecordEntry.Fail -> TaskStatus.NotCompleted.Failed
+                                            }
+                                        )
+                                    }
+                                }
+
+                                is TaskModel.Habit.HabitContinuous.HabitTime -> {
+                                    (record?.entry as? RecordEntry.HabitEntry.Continuous.Time).let { entry ->
+                                        TaskWithExtrasAndRecordModel.Habit.HabitContinuous.HabitTime(
+                                            task = taskModel,
+                                            taskExtras = TaskExtras.Habit.HabitContinuous.HabitTime(
+                                                allReminders
+                                            ),
+                                            recordEntry = entry,
+                                            status = when (entry) {
+                                                null -> TaskStatus.NotCompleted.Pending
+                                                is RecordEntry.Time -> {
+                                                    taskModel.progress.let { progress ->
+                                                        val isDone = when (progress.limitType) {
+                                                            ProgressLimitType.AtLeast -> {
+                                                                entry.time >= progress.limitTime
+                                                            }
+
+                                                            ProgressLimitType.Exactly -> {
+                                                                entry.time == progress.limitTime
+                                                            }
+
+                                                            ProgressLimitType.NoMoreThan -> {
+                                                                entry.time <= progress.limitTime
+                                                            }
+                                                        }
+                                                        if (isDone) TaskStatus.Completed
+                                                        else TaskStatus.NotCompleted.Pending
+                                                    }
+                                                }
+
+                                                is RecordEntry.Skip -> TaskStatus.NotCompleted.Skipped
+                                                is RecordEntry.Fail -> TaskStatus.NotCompleted.Failed
+                                            }
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        is TaskModel.Habit.HabitYesNo -> {
+                            (record?.entry as? RecordEntry.HabitEntry.YesNo).let { entry ->
+                                TaskWithExtrasAndRecordModel.Habit.HabitYesNo(
+                                    task = taskModel,
+                                    taskExtras = TaskExtras.Habit.HabitYesNo(allReminders),
+                                    recordEntry = entry,
+                                    status = when (entry) {
+                                        null -> TaskStatus.NotCompleted.Pending
+                                        is RecordEntry.Done -> TaskStatus.Completed
+                                        is RecordEntry.Skip -> TaskStatus.NotCompleted.Skipped
+                                        is RecordEntry.Fail -> TaskStatus.NotCompleted.Failed
+                                    }
                                 )
                             }
                         }
                     }
-
-                    is TaskModel.Habit.HabitYesNo -> {
-                        TaskWithExtrasModel.Habit.HabitYesNo(
-                            taskModel = taskModel,
-                            taskExtras = TaskExtras.Habit.HabitYesNo(
-                                allReminders = allReminders
-                            )
-                        )
-                    }
                 }
-            }
 
-            is TaskModel.Task -> {
-                when (taskModel) {
-                    is TaskModel.Task.RecurringTask -> {
-                        TaskWithExtrasModel.Task.RecurringTask(
-                            taskModel = taskModel,
-                            taskExtras = TaskExtras.Task.RecurringTask(
-                                allReminders = allReminders
-                            )
-                        )
-                    }
-
-                    is TaskModel.Task.SingleTask -> {
-                        TaskWithExtrasModel.Task.SingleTask(
-                            taskModel = taskModel,
-                            taskExtras = TaskExtras.Task.SingleTask(
-                                allReminders = allReminders
-                            )
-                        )
-                    }
-                }
-            }
-        }
-    }
-
-    private fun TaskWithExtrasModel.toTaskWithExtrasAndRecord(
-        recordModel: RecordModel?
-    ): TaskWithExtrasAndRecordModel = this.let { taskWithExtrasModel ->
-        when (taskWithExtrasModel) {
-            is TaskWithExtrasModel.Habit -> {
-                when (taskWithExtrasModel) {
-                    is TaskWithExtrasModel.Habit.HabitContinuous -> {
-                        when (taskWithExtrasModel) {
-                            is TaskWithExtrasModel.Habit.HabitContinuous.HabitNumber -> {
-                                (recordModel?.entry as? RecordEntry.HabitEntry.Continuous.Number)?.let { entry ->
-                                    TaskWithExtrasAndRecordModel.Habit.HabitContinuous.HabitNumber(
-                                        taskWithExtrasModel = taskWithExtrasModel,
-                                        recordEntry = entry,
-                                        status = when (entry) {
-                                            is RecordEntry.Number -> {
-                                                taskWithExtrasModel.taskModel.progress.let { progressNumber ->
-                                                    val isCompleted =
-                                                        when (progressNumber.limitType) {
-                                                            ProgressLimitType.AtLeast -> {
-                                                                entry.number >= progressNumber.limitNumber
-                                                            }
-
-                                                            ProgressLimitType.Exactly -> {
-                                                                entry.number == progressNumber.limitNumber
-                                                            }
-
-                                                            ProgressLimitType.NoMoreThan -> {
-                                                                entry.number <= progressNumber.limitNumber
-                                                            }
-                                                        }
-                                                    if (isCompleted) TaskStatus.Completed
-                                                    else TaskStatus.NotCompleted.Pending
-                                                }
-                                            }
-
-                                            is RecordEntry.Skip -> TaskStatus.NotCompleted.Skipped
-                                            is RecordEntry.Fail -> TaskStatus.NotCompleted.Failed
-                                        }
-                                    )
-                                }
-                                    ?: TaskWithExtrasAndRecordModel.Habit.HabitContinuous.HabitNumber(
-                                        taskWithExtrasModel = taskWithExtrasModel,
-                                        recordEntry = null,
-                                        status = TaskStatus.NotCompleted.Pending
-                                    )
-                            }
-
-                            is TaskWithExtrasModel.Habit.HabitContinuous.HabitTime -> {
-                                (recordModel?.entry as? RecordEntry.HabitEntry.Continuous.Time)?.let { entry ->
-                                    TaskWithExtrasAndRecordModel.Habit.HabitContinuous.HabitTime(
-                                        taskWithExtrasModel = taskWithExtrasModel,
-                                        recordEntry = entry,
-                                        status = when (entry) {
-                                            is RecordEntry.Time -> {
-                                                taskWithExtrasModel.taskModel.progress.let { progressTime ->
-                                                    val isCompleted =
-                                                        when (progressTime.limitType) {
-                                                            ProgressLimitType.AtLeast -> {
-                                                                entry.time >= progressTime.limitTime
-                                                            }
-
-                                                            ProgressLimitType.Exactly -> {
-                                                                entry.time == progressTime.limitTime
-                                                            }
-
-                                                            ProgressLimitType.NoMoreThan -> {
-                                                                entry.time <= progressTime.limitTime
-                                                            }
-                                                        }
-                                                    if (isCompleted) TaskStatus.Completed
-                                                    else TaskStatus.NotCompleted.Pending
-                                                }
-                                            }
-
-                                            is RecordEntry.Skip -> TaskStatus.NotCompleted.Skipped
-                                            is RecordEntry.Fail -> TaskStatus.NotCompleted.Failed
-                                        }
-                                    )
-                                }
-                                    ?: TaskWithExtrasAndRecordModel.Habit.HabitContinuous.HabitTime(
-                                        taskWithExtrasModel = taskWithExtrasModel,
-                                        recordEntry = null,
-                                        status = TaskStatus.NotCompleted.Pending
-                                    )
+                is TaskModel.Task -> {
+                    when (taskModel) {
+                        is TaskModel.Task.RecurringTask -> {
+                            (record?.entry as? RecordEntry.TaskEntry).let { entry ->
+                                TaskWithExtrasAndRecordModel.Task.RecurringTask(
+                                    task = taskModel,
+                                    taskExtras = TaskExtras.Task.RecurringTask(allReminders),
+                                    recordEntry = entry,
+                                    status = when (entry) {
+                                        null -> TaskStatus.NotCompleted.Pending
+                                        is RecordEntry.Done -> TaskStatus.Completed
+                                    }
+                                )
                             }
                         }
-                    }
 
-                    is TaskWithExtrasModel.Habit.HabitYesNo -> {
-                        (recordModel?.entry as? RecordEntry.HabitEntry.YesNo)?.let { entry ->
-                            TaskWithExtrasAndRecordModel.Habit.HabitYesNo(
-                                taskWithExtrasModel = taskWithExtrasModel,
-                                recordEntry = entry,
-                                status = when (entry) {
-                                    is RecordEntry.Done -> TaskStatus.Completed
-                                    is RecordEntry.Skip -> TaskStatus.NotCompleted.Skipped
-                                    is RecordEntry.Fail -> TaskStatus.NotCompleted.Failed
-                                }
-                            )
-                        } ?: TaskWithExtrasAndRecordModel.Habit.HabitYesNo(
-                            taskWithExtrasModel = taskWithExtrasModel,
-                            recordEntry = null,
-                            status = TaskStatus.NotCompleted.Pending
-                        )
-                    }
-                }
-            }
-
-            is TaskWithExtrasModel.Task -> {
-                when (taskWithExtrasModel) {
-                    is TaskWithExtrasModel.Task.RecurringTask -> {
-                        (recordModel?.entry as? RecordEntry.TaskEntry)?.let { entry ->
-                            TaskWithExtrasAndRecordModel.Task.RecurringTask(
-                                taskWithExtrasModel = taskWithExtrasModel,
-                                recordEntry = entry,
-                                status = when (entry) {
-                                    is RecordEntry.Done -> TaskStatus.Completed
-                                }
-                            )
-                        } ?: TaskWithExtrasAndRecordModel.Task.RecurringTask(
-                            taskWithExtrasModel = taskWithExtrasModel,
-                            recordEntry = null,
-                            status = TaskStatus.NotCompleted.Pending
-                        )
-                    }
-
-                    is TaskWithExtrasModel.Task.SingleTask -> {
-                        (recordModel?.entry as? RecordEntry.TaskEntry)?.let { entry ->
-                            TaskWithExtrasAndRecordModel.Task.SingleTask(
-                                taskWithExtrasModel = taskWithExtrasModel,
-                                recordEntry = entry,
-                                status = when (entry) {
-                                    is RecordEntry.Done -> TaskStatus.Completed
-                                }
-                            )
-                        } ?: TaskWithExtrasAndRecordModel.Task.SingleTask(
-                            taskWithExtrasModel = taskWithExtrasModel,
-                            recordEntry = null,
-                            status = TaskStatus.NotCompleted.Pending
-                        )
+                        is TaskModel.Task.SingleTask -> {
+                            (record?.entry as? RecordEntry.TaskEntry).let { entry ->
+                                TaskWithExtrasAndRecordModel.Task.SingleTask(
+                                    task = taskModel,
+                                    taskExtras = TaskExtras.Task.SingleTask(allReminders),
+                                    recordEntry = entry,
+                                    status = when (entry) {
+                                        null -> TaskStatus.NotCompleted.Pending
+                                        is RecordEntry.Done -> TaskStatus.Completed
+                                    }
+                                )
+                            }
+                        }
                     }
                 }
             }

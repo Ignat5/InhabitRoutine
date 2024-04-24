@@ -26,7 +26,7 @@ class ViewTaskActionsStateHolder(
     override val uiScreenState: StateFlow<ViewTaskActionsScreenState> =
         MutableStateFlow(
             ViewTaskActionsScreenState(
-                taskWithExtrasAndRecordModel = taskWithExtrasAndRecordModel,
+                task = taskWithExtrasAndRecordModel.task,
                 allTaskActionItems = allTaskActions,
                 date = date
             )
@@ -44,7 +44,7 @@ class ViewTaskActionsStateHolder(
     private fun onEditTaskClick() {
         setUpResult(
             ViewTaskActionsScreenResult.OnEditTaskClick(
-                taskId = taskWithExtrasAndRecordModel.taskWithExtrasModel.taskModel.id
+                taskId = taskWithExtrasAndRecordModel.task.id
             )
         )
     }
@@ -52,7 +52,7 @@ class ViewTaskActionsStateHolder(
     private fun onDismissRequest() {
         setUpResult(
             ViewTaskActionsScreenResult.Dismiss(
-                taskId = taskWithExtrasAndRecordModel.taskWithExtrasModel.taskModel.id
+                taskId = taskWithExtrasAndRecordModel.task.id
             )
         )
     }
@@ -65,7 +65,7 @@ class ViewTaskActionsStateHolder(
                         is TaskWithExtrasAndRecordModel.Habit.HabitContinuous.HabitNumber -> {
                             add(
                                 ItemTaskAction.ContinuousProgress.Number(
-                                    progress = taskWithExtrasAndRecordModel.taskWithExtrasModel.taskModel.progress,
+                                    progress = taskWithExtrasAndRecordModel.task.progress,
                                     entry = taskWithExtrasAndRecordModel.recordEntry
                                 )
                             )
@@ -74,7 +74,7 @@ class ViewTaskActionsStateHolder(
                         is TaskWithExtrasAndRecordModel.Habit.HabitContinuous.HabitTime -> {
                             add(
                                 ItemTaskAction.ContinuousProgress.Time(
-                                    progress = taskWithExtrasAndRecordModel.taskWithExtrasModel.taskModel.progress,
+                                    progress = taskWithExtrasAndRecordModel.task.progress,
                                     entry = taskWithExtrasAndRecordModel.recordEntry
                                 )
                             )

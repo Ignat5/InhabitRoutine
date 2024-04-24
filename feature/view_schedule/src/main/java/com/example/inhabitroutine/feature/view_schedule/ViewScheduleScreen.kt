@@ -132,17 +132,17 @@ fun ViewScheduleScreen(
                 LazyColumn(modifier = Modifier.fillMaxWidth()) {
                     itemsIndexed(
                         items = state.allTasks,
-                        key = { _, item -> item.taskWithExtrasModel.taskModel.id }
+                        key = { _, item -> item.task.id }
                     ) { index, item ->
                         Column(modifier = Modifier.fillMaxWidth()) {
                             ItemTask(
                                 item = item,
                                 context = context,
                                 onClick = {
-                                    onEvent(ViewScheduleScreenEvent.OnTaskClick(item.taskWithExtrasModel.taskModel.id))
+                                    onEvent(ViewScheduleScreenEvent.OnTaskClick(item.task.id))
                                 },
                                 onLongClick = {
-                                    onEvent(ViewScheduleScreenEvent.OnTaskLongClick(item.taskWithExtrasModel.taskModel.id))
+                                    onEvent(ViewScheduleScreenEvent.OnTaskLongClick(item.task.id))
                                 },
                                 modifier = Modifier.animateItemPlacement()
                             )
@@ -207,7 +207,7 @@ private fun TaskTitleRow(
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Text(
-            text = item.taskWithExtrasModel.taskModel.title,
+            text = item.task.title,
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurface,
             maxLines = 1,
@@ -240,10 +240,10 @@ private fun TaskDetailRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        ChipTaskType(item.taskWithExtrasModel.taskModel.type)
-        ChipTaskProgressType(item.taskWithExtrasModel.taskModel.progressType)
-        val allReminders = remember(item.taskWithExtrasModel.taskExtras.allReminders) {
-            item.taskWithExtrasModel.taskExtras.allReminders
+        ChipTaskType(item.task.type)
+        ChipTaskProgressType(item.task.progressType)
+        val allReminders = remember(item.taskExtras.allReminders) {
+            item.taskExtras.allReminders
         }
         if (allReminders.isNotEmpty()) {
             ChipTaskReminders(allReminders = allReminders)
@@ -264,7 +264,7 @@ private fun getProgressTextOrNull(
                             when (val entry = item.recordEntry) {
                                 null -> null
                                 is RecordEntry.Number -> {
-                                    item.taskWithExtrasModel.taskModel.progress.let { progress ->
+                                    item.task.progress.let { progress ->
                                         "${entry.number.limitNumberToDisplay()} ${progress.limitUnit}"
                                     }
                                 }
@@ -300,10 +300,11 @@ private fun getProgressTextOrNull(
         }
 
         is TaskWithExtrasAndRecordModel.Task -> {
-            when (item.status) {
-                is TaskStatus.Completed -> context.getString(R.string.task_status_done)
-                is TaskStatus.NotCompleted.Pending -> null
-            }
+            null
+//            when (item.status) {
+//                is TaskStatus.Completed -> context.getString(R.string.task_status_done)
+//                is TaskStatus.NotCompleted.Pending -> null
+//            }
         }
     }
 }
@@ -342,7 +343,7 @@ private fun getTaskProgress(
                             is TaskWithExtrasAndRecordModel.Habit.HabitContinuous.HabitNumber -> {
                                 when (val entry = item.recordEntry) {
                                     is RecordEntry.Number -> {
-                                        item.taskWithExtrasModel.taskModel.progress.let { numberProgress ->
+                                        item.task.progress.let { numberProgress ->
                                             when (numberProgress.limitType) {
                                                 ProgressLimitType.AtLeast -> {
                                                     (entry.number / numberProgress.limitNumber).toFloat()
@@ -361,7 +362,7 @@ private fun getTaskProgress(
                             is TaskWithExtrasAndRecordModel.Habit.HabitContinuous.HabitTime -> {
                                 when (val entry = item.recordEntry) {
                                     is RecordEntry.Time -> {
-                                        item.taskWithExtrasModel.taskModel.progress.let { timeProgress ->
+                                        item.task.progress.let { timeProgress ->
                                             when (timeProgress.limitType) {
                                                 ProgressLimitType.AtLeast -> {
                                                     entry.time.toMillisecondOfDay().toFloat()

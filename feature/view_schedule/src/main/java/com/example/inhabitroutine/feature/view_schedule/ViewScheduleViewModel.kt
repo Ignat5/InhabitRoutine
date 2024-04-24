@@ -244,7 +244,7 @@ class ViewScheduleViewModel(
     }
 
     private fun onTaskClick(event: ViewScheduleScreenEvent.OnTaskClick) {
-        allTasksState.value.find { it.taskWithExtrasModel.taskModel.id == event.taskId }
+        allTasksState.value.find { it.task.id == event.taskId }
             ?.let { taskWithExtrasAndRecord ->
                 when (taskWithExtrasAndRecord) {
                     is TaskWithExtrasAndRecordModel.Habit -> {
@@ -278,7 +278,7 @@ class ViewScheduleViewModel(
         setUpConfigState(
             ViewScheduleScreenConfig.EnterTaskNumberRecord(
                 stateHolder = EnterTaskNumberRecordStateHolder(
-                    taskModel = taskWithExtrasAndRecordModel.taskWithExtrasModel.taskModel,
+                    taskModel = taskWithExtrasAndRecordModel.task,
                     entry = taskWithExtrasAndRecordModel.recordEntry,
                     date = currentDateState.value,
                     validateProgressLimitNumberUseCase = validateProgressLimitNumberUseCase,
@@ -292,7 +292,7 @@ class ViewScheduleViewModel(
         setUpConfigState(
             ViewScheduleScreenConfig.EnterTaskTimeRecord(
                 stateHolder = EnterTaskTimeRecordStateHolder(
-                    taskModel = taskWithExtrasAndRecordModel.taskWithExtrasModel.taskModel,
+                    taskModel = taskWithExtrasAndRecordModel.task,
                     entry = taskWithExtrasAndRecordModel.recordEntry,
                     date = currentDateState.value,
                     holderScope = provideChildScope()
@@ -303,7 +303,7 @@ class ViewScheduleViewModel(
 
     private fun onHabitYesNoClick(taskWithExtrasAndRecordModel: TaskWithExtrasAndRecordModel.Habit.HabitYesNo) {
         viewModelScope.launch {
-            val taskId = taskWithExtrasAndRecordModel.taskWithExtrasModel.taskModel.id
+            val taskId = taskWithExtrasAndRecordModel.task.id
             val date = currentDateState.value
             when (val status = taskWithExtrasAndRecordModel.status) {
                 is TaskStatus.Completed -> {
@@ -334,7 +334,7 @@ class ViewScheduleViewModel(
 
     private fun onRecurringOrSingleTaskClick(taskWithExtrasAndRecordModel: TaskWithExtrasAndRecordModel.Task) {
         viewModelScope.launch {
-            val taskId = taskWithExtrasAndRecordModel.taskWithExtrasModel.taskModel.id
+            val taskId = taskWithExtrasAndRecordModel.task.id
             val date = currentDateState.value
             when (taskWithExtrasAndRecordModel.status) {
                 is TaskStatus.NotCompleted.Pending -> {
@@ -356,7 +356,7 @@ class ViewScheduleViewModel(
     }
 
     private fun onTaskLongClick(event: ViewScheduleScreenEvent.OnTaskLongClick) {
-        allTasksState.value.find { it.taskWithExtrasModel.taskModel.id == event.taskId }
+        allTasksState.value.find { it.task.id == event.taskId }
             ?.let { taskWithExtrasAndRecordModel ->
 
             }
@@ -432,10 +432,10 @@ class ViewScheduleViewModel(
                     else -> Int.MAX_VALUE
                 }
             }.thenBy { taskWithExtrasAndRecord ->
-                taskWithExtrasAndRecord.taskWithExtrasModel.taskExtras.allReminders.minByOrNull { it.time }?.time?.toMillisecondOfDay()
+                taskWithExtrasAndRecord.taskExtras.allReminders.minByOrNull { it.time }?.time?.toMillisecondOfDay()
                     ?: Int.MAX_VALUE
             }.thenBy { taskWithExtrasAndRecord ->
-                taskWithExtrasAndRecord.taskWithExtrasModel.taskModel.createdAt
+                taskWithExtrasAndRecord.task.createdAt
             }
         )
     }

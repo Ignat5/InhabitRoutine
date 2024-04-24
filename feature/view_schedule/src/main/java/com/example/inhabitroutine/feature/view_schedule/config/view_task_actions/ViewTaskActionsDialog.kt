@@ -67,7 +67,7 @@ private fun ViewTaskActionsDialogStateless(
         onDismissRequest = { onEvent(ViewTaskActionsScreenEvent.OnDismissRequest) }) {
         Column(modifier = Modifier.fillMaxWidth()) {
             TaskTitleRow(
-                taskTitle = state.taskWithExtrasAndRecordModel.taskWithExtrasModel.taskModel.title,
+                taskTitle = state.task.title,
                 date = state.date,
                 onEditClick = { onEvent(ViewTaskActionsScreenEvent.OnEditTaskClick) }
             )
