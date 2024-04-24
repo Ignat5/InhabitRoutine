@@ -2,6 +2,7 @@ package com.example.inhabitroutine.feature.view_schedule
 
 import android.content.Context
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
@@ -41,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -316,16 +318,25 @@ private fun TaskProgressIndicator(
     val progress = remember(item) {
         getTaskProgress(item)
     }
+    val containerColor = when (item.status) {
+        is TaskStatus.NotCompleted.Failed -> MaterialTheme.colorScheme.errorContainer
+        is TaskStatus.NotCompleted.Skipped -> MaterialTheme.colorScheme.surfaceVariant
+        else -> MaterialTheme.colorScheme.primaryContainer
+    }
     val progressState by animateFloatAsState(
         targetValue = progress,
         animationSpec = spring(stiffness = Spring.StiffnessVeryLow),
         label = ""
     )
+    val containerColorState by animateColorAsState(
+        targetValue = containerColor,
+        animationSpec = spring(stiffness = Spring.StiffnessVeryLow)
+    )
     CircularProgressIndicator(
         progress = { progressState },
         modifier = Modifier.size(PROGRESS_INDICATOR_SIZE_DP.dp),
         color = MaterialTheme.colorScheme.onPrimaryContainer,
-        trackColor = MaterialTheme.colorScheme.primaryContainer,
+        trackColor = containerColorState,
         strokeWidth = PROGRESS_INDICATOR_STROKE_WIDTH_DP.dp
     )
 }

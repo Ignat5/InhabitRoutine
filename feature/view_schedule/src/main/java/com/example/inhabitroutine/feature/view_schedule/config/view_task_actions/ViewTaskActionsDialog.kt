@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -41,6 +42,7 @@ import com.example.inhabitroutine.feature.view_schedule.config.view_task_actions
 import com.example.inhabitroutine.feature.view_schedule.config.view_task_actions.components.ViewTaskActionsScreenResult
 import com.example.inhabitroutine.feature.view_schedule.config.view_task_actions.components.ViewTaskActionsScreenState
 import com.example.inhabitroutine.feature.view_schedule.config.view_task_actions.model.ItemTaskAction
+import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalTime
 
@@ -61,6 +63,7 @@ private fun ViewTaskActionsDialogStateless(
     onEvent: (ViewTaskActionsScreenEvent) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
     BaseModalBottomSheetDialog(
         sheetState = sheetState,
         dragHandle = null,
@@ -69,7 +72,8 @@ private fun ViewTaskActionsDialogStateless(
             TaskTitleRow(
                 taskTitle = state.task.title,
                 date = state.date,
-                onEditClick = { onEvent(ViewTaskActionsScreenEvent.OnEditTaskClick) }
+                onEditClick = { onEvent(ViewTaskActionsScreenEvent.OnEditTaskClick) },
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)
             )
             Spacer(modifier = Modifier.height(8.dp))
             LazyColumn(modifier = Modifier.fillMaxWidth()) {
@@ -80,6 +84,10 @@ private fun ViewTaskActionsDialogStateless(
                     val onItemClick: () -> Unit = remember {
                         val callback: () -> Unit = {
                             onEvent(ViewTaskActionsScreenEvent.OnItemActionClick(item.type))
+//                            scope.launch {
+//                                sheetState.hide()
+//                                onEvent(ViewTaskActionsScreenEvent.OnItemActionClick(item.type))
+//                            }
                         }
                         callback
                     }
@@ -126,10 +134,11 @@ private fun ViewTaskActionsDialogStateless(
 private fun TaskTitleRow(
     taskTitle: String,
     date: LocalDate,
-    onEditClick: () -> Unit
+    onEditClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(modifier = Modifier.weight(1f)) {

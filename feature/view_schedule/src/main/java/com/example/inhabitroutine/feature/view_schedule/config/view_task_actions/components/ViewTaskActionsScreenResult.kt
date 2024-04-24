@@ -1,36 +1,42 @@
 package com.example.inhabitroutine.feature.view_schedule.config.view_task_actions.components
 
 import com.example.inhabitroutine.core.presentation.components.result.ScreenResult
+import kotlinx.datetime.LocalDate
 
 sealed interface ViewTaskActionsScreenResult : ScreenResult {
-    val taskId: String
+    sealed interface OnActionClick : ViewTaskActionsScreenResult {
+        val taskId: String
+        val date: LocalDate
 
-    data class OnTaskProgressClick(
-        override val taskId: String
+        data class EnterProgress(
+            override val taskId: String,
+            override val date: LocalDate
+        ) : OnActionClick
+
+        data class Done(
+            override val taskId: String,
+            override val date: LocalDate
+        ) : OnActionClick
+
+        data class Skip(
+            override val taskId: String,
+            override val date: LocalDate
+        ) : OnActionClick
+
+        data class Fail(
+            override val taskId: String,
+            override val date: LocalDate
+        ) : OnActionClick
+
+        data class ResetEntry(
+            override val taskId: String,
+            override val date: LocalDate
+        ) : OnActionClick
+    }
+
+    data class OnEditClick(
+        val taskId: String
     ) : ViewTaskActionsScreenResult
 
-    data class OnDoneClick(
-        override val taskId: String
-    ) : ViewTaskActionsScreenResult
-
-    data class OnSkipClick(
-        override val taskId: String
-    ) : ViewTaskActionsScreenResult
-
-    data class OnFailClick(
-        override val taskId: String
-    ) : ViewTaskActionsScreenResult
-
-    data class OnResetEntryClick(
-        override val taskId: String
-    ) : ViewTaskActionsScreenResult
-
-
-    data class OnEditTaskClick(
-        override val taskId: String
-    ) : ViewTaskActionsScreenResult
-
-    data class Dismiss(
-        override val taskId: String
-    ) : ViewTaskActionsScreenResult
+    data object Dismiss : ViewTaskActionsScreenResult
 }

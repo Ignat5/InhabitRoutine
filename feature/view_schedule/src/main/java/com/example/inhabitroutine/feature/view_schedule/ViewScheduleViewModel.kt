@@ -21,6 +21,8 @@ import com.example.inhabitroutine.feature.view_schedule.config.enter_number_reco
 import com.example.inhabitroutine.feature.view_schedule.config.enter_number_record.components.EnterTaskNumberRecordScreenResult
 import com.example.inhabitroutine.feature.view_schedule.config.enter_time_record.EnterTaskTimeRecordStateHolder
 import com.example.inhabitroutine.feature.view_schedule.config.enter_time_record.components.EnterTaskTimeRecordScreenResult
+import com.example.inhabitroutine.feature.view_schedule.config.view_task_actions.ViewTaskActionsStateHolder
+import com.example.inhabitroutine.feature.view_schedule.config.view_task_actions.components.ViewTaskActionsScreenResult
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -155,7 +157,127 @@ class ViewScheduleViewModel(
     }
 
     private fun onViewTaskActionsResultEvent(event: ViewScheduleScreenEvent.ResultEvent.ViewTaskActions) {
+        onIdleToAction {
+            when (val result = event.result) {
+                is ViewTaskActionsScreenResult.OnActionClick ->
+                    onTaskActionClick(result)
 
+                is ViewTaskActionsScreenResult.OnEditClick ->
+                    onEditTaskClick(result)
+
+                is ViewTaskActionsScreenResult.Dismiss -> Unit
+            }
+        }
+    }
+
+    private fun onTaskActionClick(result: ViewTaskActionsScreenResult.OnActionClick) {
+        when (result) {
+            is ViewTaskActionsScreenResult.OnActionClick.EnterProgress ->
+                onEnterTaskProgress(result)
+
+            is ViewTaskActionsScreenResult.OnActionClick.Done ->
+                onTaskDoneClick(result)
+
+            is ViewTaskActionsScreenResult.OnActionClick.Skip ->
+                onTaskSkipClick(result)
+
+            is ViewTaskActionsScreenResult.OnActionClick.Fail ->
+                onTaskFailClick(result)
+
+            is ViewTaskActionsScreenResult.OnActionClick.ResetEntry ->
+                onTaskResetEntryClick(result)
+        }
+    }
+
+    private fun onTaskResetEntryClick(result: ViewTaskActionsScreenResult.OnActionClick.ResetEntry) {
+        viewModelScope.launch {
+            deleteRecordUseCase(
+                taskId = result.taskId,
+                date = result.date
+            )
+        }
+    }
+
+    private fun onTaskFailClick(result: ViewTaskActionsScreenResult.OnActionClick.Fail) {
+        viewModelScope.launch {
+            saveRecordUseCase(
+                taskId = result.taskId,
+                date = result.date,
+                requestType = SaveRecordUseCase.RequestType.EntryFail
+            )
+        }
+    }
+
+    private fun onTaskSkipClick(result: ViewTaskActionsScreenResult.OnActionClick.Skip) {
+        viewModelScope.launch {
+            saveRecordUseCase(
+                taskId = result.taskId,
+                date = result.date,
+                requestType = SaveRecordUseCase.RequestType.EntrySkip
+            )
+        }
+    }
+
+    private fun onTaskDoneClick(result: ViewTaskActionsScreenResult.OnActionClick.Done) {
+        viewModelScope.launch {
+            saveRecordUseCase(
+                taskId = result.taskId,
+                date = result.date,
+                requestType = SaveRecordUseCase.RequestType.EntryDone
+            )
+        }
+    }
+
+    private fun onEnterTaskProgress(result: ViewTaskActionsScreenResult.OnActionClick.EnterProgress) {
+        allTasksState.value.find { it.task.id == result.taskId }
+            ?.let { taskWithExtrasAndRecordModel ->
+                when (taskWithExtrasAndRecordModel) {
+                    is TaskWithExtrasAndRecordModel.Habit.HabitContinuous.HabitNumber -> {
+                        onEnterTaskNumberProgress(taskWithExtrasAndRecordModel)
+                    }
+
+                    is TaskWithExtrasAndRecordModel.Habit.HabitContinuous.HabitTime -> {
+                        onEnterTaskTimeProgress(taskWithExtrasAndRecordModel)
+                    }
+
+                    else -> Unit
+                }
+            }
+    }
+
+    private fun onEnterTaskTimeProgress(taskWithExtrasAndRecordModel: TaskWithExtrasAndRecordModel.Habit.HabitContinuous.HabitTime) {
+        setUpConfigState(
+            ViewScheduleScreenConfig.EnterTaskTimeRecord(
+                stateHolder = EnterTaskTimeRecordStateHolder(
+                    taskModel = taskWithExtrasAndRecordModel.task,
+                    entry = taskWithExtrasAndRecordModel.recordEntry,
+                    date = currentDateState.value,
+                    holderScope = provideChildScope()
+                )
+            )
+        )
+    }
+
+    private fun onEnterTaskNumberProgress(taskWithExtrasAndRecordModel: TaskWithExtrasAndRecordModel.Habit.HabitContinuous.HabitNumber) {
+        setUpConfigState(
+            ViewScheduleScreenConfig.EnterTaskNumberRecord(
+                stateHolder = EnterTaskNumberRecordStateHolder(
+                    taskModel = taskWithExtrasAndRecordModel.task,
+                    entry = taskWithExtrasAndRecordModel.recordEntry,
+                    date = currentDateState.value,
+                    validateProgressLimitNumberUseCase = validateProgressLimitNumberUseCase,
+                    holderScope = provideChildScope()
+                )
+            )
+        )
+    }
+
+    private fun onEditTaskClick(result: ViewTaskActionsScreenResult.OnEditClick) {
+        setUpNavigationState(
+            ViewScheduleScreenNavigation.EditTask(
+                taskId = result.taskId
+            )
+        )
     }
 
     private fun onEnterTaskNumberRecordResultEvent(event: ViewScheduleScreenEvent.ResultEvent.EnterTaskNumberRecord) {
@@ -358,7 +480,15 @@ class ViewScheduleViewModel(
     private fun onTaskLongClick(event: ViewScheduleScreenEvent.OnTaskLongClick) {
         allTasksState.value.find { it.task.id == event.taskId }
             ?.let { taskWithExtrasAndRecordModel ->
-
+                setUpConfigState(
+                    ViewScheduleScreenConfig.ViewTaskActions(
+                        stateHolder = ViewTaskActionsStateHolder(
+                            taskWithExtrasAndRecordModel = taskWithExtrasAndRecordModel,
+                            date = currentDateState.value,
+                            holderScope = provideChildScope()
+                        )
+                    )
+                )
             }
     }
 

@@ -34,26 +34,92 @@ class ViewTaskActionsStateHolder(
 
     override fun onEvent(event: ViewTaskActionsScreenEvent) {
         when (event) {
-            is ViewTaskActionsScreenEvent.OnItemActionClick -> {}
-            is ViewTaskActionsScreenEvent.OnEditTaskClick -> {}
+            is ViewTaskActionsScreenEvent.OnItemActionClick ->
+                onItemActionClick(event)
+
+            is ViewTaskActionsScreenEvent.OnEditTaskClick ->
+                onEditTaskClick()
+
             is ViewTaskActionsScreenEvent.OnDismissRequest ->
                 onDismissRequest()
         }
     }
 
+    private fun onItemActionClick(event: ViewTaskActionsScreenEvent.OnItemActionClick) {
+        when (event.itemType) {
+            ItemTaskAction.Type.Progress ->
+                onProgressActionClick()
+
+            ItemTaskAction.Type.Done ->
+                onDoneActionClick()
+
+            ItemTaskAction.Type.Skip ->
+                onSkipActionClick()
+
+            ItemTaskAction.Type.Fail ->
+                onFailActionClick()
+
+            ItemTaskAction.Type.Reset ->
+                onResetActionClick()
+        }
+    }
+
+    private fun onResetActionClick() {
+        setUpResult(
+            ViewTaskActionsScreenResult.OnActionClick.ResetEntry(
+                taskId = taskWithExtrasAndRecordModel.task.id,
+                date = date
+            )
+        )
+    }
+
+    private fun onFailActionClick() {
+        setUpResult(
+            ViewTaskActionsScreenResult.OnActionClick.Fail(
+                taskId = taskWithExtrasAndRecordModel.task.id,
+                date = date
+            )
+        )
+    }
+
+    private fun onSkipActionClick() {
+        setUpResult(
+            ViewTaskActionsScreenResult.OnActionClick.Skip(
+                taskId = taskWithExtrasAndRecordModel.task.id,
+                date = date
+            )
+        )
+    }
+
+    private fun onDoneActionClick() {
+        setUpResult(
+            ViewTaskActionsScreenResult.OnActionClick.Done(
+                taskId = taskWithExtrasAndRecordModel.task.id,
+                date = date
+            )
+        )
+    }
+
+    private fun onProgressActionClick() {
+        setUpResult(
+            ViewTaskActionsScreenResult.OnActionClick.EnterProgress(
+                taskId = taskWithExtrasAndRecordModel.task.id,
+                date = date
+            )
+        )
+    }
+
     private fun onEditTaskClick() {
         setUpResult(
-            ViewTaskActionsScreenResult.OnEditTaskClick(
-                taskId = taskWithExtrasAndRecordModel.task.id
+            ViewTaskActionsScreenResult.OnEditClick(
+                taskId = taskWithExtrasAndRecordModel.task.id,
             )
         )
     }
 
     private fun onDismissRequest() {
         setUpResult(
-            ViewTaskActionsScreenResult.Dismiss(
-                taskId = taskWithExtrasAndRecordModel.task.id
-            )
+            ViewTaskActionsScreenResult.Dismiss
         )
     }
 
