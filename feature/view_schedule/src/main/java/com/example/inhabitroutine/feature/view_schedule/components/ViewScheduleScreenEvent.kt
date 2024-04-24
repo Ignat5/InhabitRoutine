@@ -6,10 +6,12 @@ import com.example.inhabitroutine.core.presentation.ui.dialog.pick_task_progress
 import com.example.inhabitroutine.core.presentation.ui.dialog.pick_task_type.PickTaskTypeScreenResult
 import com.example.inhabitroutine.feature.view_schedule.config.enter_number_record.components.EnterTaskNumberRecordScreenResult
 import com.example.inhabitroutine.feature.view_schedule.config.enter_time_record.components.EnterTaskTimeRecordScreenResult
+import com.example.inhabitroutine.feature.view_schedule.config.view_task_actions.components.ViewTaskActionsScreenResult
 import kotlinx.datetime.LocalDate
 
 sealed interface ViewScheduleScreenEvent : ScreenEvent {
     data class OnTaskClick(val taskId: String) : ViewScheduleScreenEvent
+    data class OnTaskLongClick(val taskId: String) : ViewScheduleScreenEvent
     data object OnNextWeekClick : ViewScheduleScreenEvent
     data object OnPrevWeekClick : ViewScheduleScreenEvent
     data class OnDateClick(val date: LocalDate) : ViewScheduleScreenEvent
@@ -34,6 +36,10 @@ sealed interface ViewScheduleScreenEvent : ScreenEvent {
 
         data class EnterTaskTimeRecord(
             override val result: EnterTaskTimeRecordScreenResult
+        ) : ResultEvent
+
+        data class ViewTaskActions(
+            override val result: ViewTaskActionsScreenResult
         ) : ResultEvent
     }
 }

@@ -66,6 +66,7 @@ import com.example.inhabitroutine.feature.view_schedule.components.ViewScheduleS
 import com.example.inhabitroutine.feature.view_schedule.components.ViewScheduleScreenState
 import com.example.inhabitroutine.feature.view_schedule.config.enter_number_record.EnterTaskNumberRecordDialog
 import com.example.inhabitroutine.feature.view_schedule.config.enter_time_record.EnterTaskTimeRecordDialog
+import com.example.inhabitroutine.feature.view_schedule.config.view_task_actions.ViewTaskActionsDialog
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.plus
@@ -140,7 +141,9 @@ fun ViewScheduleScreen(
                                 onClick = {
                                     onEvent(ViewScheduleScreenEvent.OnTaskClick(item.taskWithExtrasModel.taskModel.id))
                                 },
-                                onLongClick = { /*TODO*/ },
+                                onLongClick = {
+                                    onEvent(ViewScheduleScreenEvent.OnTaskLongClick(item.taskWithExtrasModel.taskModel.id))
+                                },
                                 modifier = Modifier.animateItemPlacement()
                             )
                             if (index != state.allTasks.lastIndex) {
@@ -569,6 +572,12 @@ fun ViewScheduleScreenConfig(
         is ViewScheduleScreenConfig.EnterTaskTimeRecord -> {
             EnterTaskTimeRecordDialog(stateHolder = config.stateHolder) {
                 onEvent(ViewScheduleScreenEvent.ResultEvent.EnterTaskTimeRecord(it))
+            }
+        }
+
+        is ViewScheduleScreenConfig.ViewTaskActions -> {
+            ViewTaskActionsDialog(stateHolder = config.stateHolder) {
+                onEvent(ViewScheduleScreenEvent.ResultEvent.ViewTaskActions(it))
             }
         }
     }

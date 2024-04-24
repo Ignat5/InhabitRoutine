@@ -6,7 +6,6 @@ import com.example.inhabitroutine.core.presentation.ui.dialog.pick_task_type.Pic
 import com.example.inhabitroutine.core.util.ResultModel
 import com.example.inhabitroutine.domain.model.derived.TaskStatus
 import com.example.inhabitroutine.domain.model.derived.TaskWithExtrasAndRecordModel
-import com.example.inhabitroutine.domain.model.task.TaskModel
 import com.example.inhabitroutine.domain.model.task.type.TaskProgressType
 import com.example.inhabitroutine.domain.model.task.type.TaskType
 import com.example.inhabitroutine.domain.record.api.DeleteRecordUseCase
@@ -109,8 +108,14 @@ class ViewScheduleViewModel(
 
     override fun onEvent(event: ViewScheduleScreenEvent) {
         when (event) {
+            is ViewScheduleScreenEvent.ResultEvent ->
+                onResultEvent(event)
+
             is ViewScheduleScreenEvent.OnTaskClick ->
                 onTaskClick(event)
+
+            is ViewScheduleScreenEvent.OnTaskLongClick ->
+                onTaskLongClick(event)
 
             is ViewScheduleScreenEvent.OnDateClick ->
                 onDateClick(event)
@@ -120,9 +125,6 @@ class ViewScheduleViewModel(
 
             is ViewScheduleScreenEvent.OnPrevWeekClick ->
                 onPrevWeekClick()
-
-            is ViewScheduleScreenEvent.ResultEvent ->
-                onResultEvent(event)
 
             is ViewScheduleScreenEvent.OnCreateTaskClick ->
                 onCreateTaskClick()
@@ -141,15 +143,22 @@ class ViewScheduleViewModel(
                 onPickTaskProgressTypeResultEvent(event)
 
             is ViewScheduleScreenEvent.ResultEvent.EnterTaskNumberRecord ->
-                onEnterTaskNumberRecord(event)
+                onEnterTaskNumberRecordResultEvent(event)
 
             is ViewScheduleScreenEvent.ResultEvent.EnterTaskTimeRecord ->
-                onEnterTaskTimeRecord(event)
+                onEnterTaskTimeRecordResultEvent(event)
+
+            is ViewScheduleScreenEvent.ResultEvent.ViewTaskActions ->
+                onViewTaskActionsResultEvent(event)
 
         }
     }
 
-    private fun onEnterTaskNumberRecord(event: ViewScheduleScreenEvent.ResultEvent.EnterTaskNumberRecord) {
+    private fun onViewTaskActionsResultEvent(event: ViewScheduleScreenEvent.ResultEvent.ViewTaskActions) {
+
+    }
+
+    private fun onEnterTaskNumberRecordResultEvent(event: ViewScheduleScreenEvent.ResultEvent.EnterTaskNumberRecord) {
         onIdleToAction {
             when (val result = event.result) {
                 is EnterTaskNumberRecordScreenResult.Confirm ->
@@ -160,7 +169,7 @@ class ViewScheduleViewModel(
         }
     }
 
-    private fun onEnterTaskTimeRecord(event: ViewScheduleScreenEvent.ResultEvent.EnterTaskTimeRecord) {
+    private fun onEnterTaskTimeRecordResultEvent(event: ViewScheduleScreenEvent.ResultEvent.EnterTaskTimeRecord) {
         onIdleToAction {
             when (val result = event.result) {
                 is EnterTaskTimeRecordScreenResult.Confirm -> onConfirmEnterTaskTimeRecord(result)
@@ -335,6 +344,7 @@ class ViewScheduleViewModel(
                         requestType = SaveRecordUseCase.RequestType.EntryDone
                     )
                 }
+
                 is TaskStatus.Completed -> {
                     deleteRecordUseCase(
                         taskId = taskId,
@@ -343,6 +353,13 @@ class ViewScheduleViewModel(
                 }
             }
         }
+    }
+
+    private fun onTaskLongClick(event: ViewScheduleScreenEvent.OnTaskLongClick) {
+        allTasksState.value.find { it.taskWithExtrasModel.taskModel.id == event.taskId }
+            ?.let { taskWithExtrasAndRecordModel ->
+
+            }
     }
 
     private fun onDateClick(event: ViewScheduleScreenEvent.OnDateClick) {

@@ -3,6 +3,7 @@ package com.example.inhabitroutine.core.presentation.ui.dialog.pick_task_progres
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,6 +27,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.inhabitroutine.core.presentation.R
+import com.example.inhabitroutine.core.presentation.ui.dialog.base.BaseDialog
 import com.example.inhabitroutine.core.presentation.ui.util.toIconId
 import com.example.inhabitroutine.domain.model.task.type.TaskProgressType
 
@@ -35,36 +37,29 @@ fun PickTaskProgressTypeDialog(
     allTaskProgressTypes: List<TaskProgressType>,
     onResult: (PickTaskProgressTypeScreenResult) -> Unit
 ) {
-    BasicAlertDialog(
+    BaseDialog(
         onDismissRequest = { onResult(PickTaskProgressTypeScreenResult.Dismiss) },
+        dialogPadding = PaddingValues(vertical = 24.dp)
     ) {
-        Surface(
-            modifier = Modifier.fillMaxWidth(),
-            shape = AlertDialogDefaults.shape,
-            color = AlertDialogDefaults.containerColor,
-            tonalElevation = AlertDialogDefaults.TonalElevation,
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 24.dp)
-            ) {
-                Text(
-                    text = stringResource(id = R.string.habit_progress_type_title),
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                    items(allTaskProgressTypes) { item ->
-                        ItemTaskProgressType(
-                            taskType = item,
-                            onClick = {
-                                onResult(PickTaskProgressTypeScreenResult.Confirm(item))
-                            }
-                        )
-                    }
+            Text(
+                text = stringResource(id = R.string.habit_progress_type_title),
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                items(allTaskProgressTypes) { item ->
+                    ItemTaskProgressType(
+                        taskType = item,
+                        onClick = {
+                            onResult(PickTaskProgressTypeScreenResult.Confirm(item))
+                        }
+                    )
                 }
             }
         }
