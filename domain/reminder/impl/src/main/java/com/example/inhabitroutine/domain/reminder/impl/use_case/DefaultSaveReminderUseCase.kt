@@ -1,14 +1,14 @@
 package com.example.inhabitroutine.domain.reminder.impl.use_case
 
-import com.example.inhabitroutine.core.util.CoreUtil
 import com.example.inhabitroutine.core.util.ResultModel
 import com.example.inhabitroutine.core.util.mapFailure
+import com.example.inhabitroutine.core.util.randomUUID
 import com.example.inhabitroutine.data.reminder.api.ReminderRepository
 import com.example.inhabitroutine.domain.model.reminder.ReminderModel
 import com.example.inhabitroutine.domain.model.reminder.content.ReminderSchedule
 import com.example.inhabitroutine.domain.model.reminder.type.ReminderType
 import com.example.inhabitroutine.domain.reminder.api.SaveReminderUseCase
-import com.example.inhabitroutine.domain.reminder.impl.use_case.local.CheckReminderOverlapUseCase
+import com.example.inhabitroutine.domain.reminder.impl.util.checkOverlap
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
@@ -20,8 +20,6 @@ internal class DefaultSaveReminderUseCase(
     private val defaultDispatcher: CoroutineDispatcher
 ) : SaveReminderUseCase {
 
-    private val checkReminderOverlapUseCase = CheckReminderOverlapUseCase()
-
     override suspend operator fun invoke(
         taskId: String,
         time: LocalTime,
@@ -29,7 +27,7 @@ internal class DefaultSaveReminderUseCase(
         schedule: ReminderSchedule
     ): ResultModel<Unit, SaveReminderUseCase.SaveReminderFailure> = withContext(defaultDispatcher) {
         ReminderModel(
-            id = CoreUtil.randomUUID(),
+            id = randomUUID(),
             taskId = taskId,
             time = time,
             type = type,
@@ -52,10 +50,7 @@ internal class DefaultSaveReminderUseCase(
     private suspend fun checkIfOverlaps(reminderModel: ReminderModel): Boolean =
         reminderRepository.readRemindersByTaskId(reminderModel.taskId).firstOrNull()
             ?.let { allReminders ->
-                checkReminderOverlapUseCase(
-                    targetReminder = reminderModel,
-                    allReminders = allReminders
-                )
+                reminderModel.checkOverlap(allReminders)
             } ?: false
 
 }

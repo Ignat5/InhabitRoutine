@@ -64,10 +64,9 @@ internal class DefaultTaskRepository(
         }
 
     override suspend fun saveTask(
-        taskModel: TaskModel,
-        versionStartDate: LocalDate
+        taskModel: TaskModel
     ): ResultModel<Unit, Throwable> =
-        taskModel.toTaskDataModel(versionStartDate).let { taskDataModel ->
+        taskModel.toTaskDataModel().let { taskDataModel ->
             taskDataSource.saveTask(taskDataModel)
         }
 

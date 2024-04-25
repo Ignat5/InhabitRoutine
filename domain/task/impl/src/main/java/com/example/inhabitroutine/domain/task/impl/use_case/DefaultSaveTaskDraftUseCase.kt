@@ -1,8 +1,8 @@
 package com.example.inhabitroutine.domain.task.impl.use_case
 
-import com.example.inhabitroutine.core.util.CoreUtil
 import com.example.inhabitroutine.core.util.ResultModel
 import com.example.inhabitroutine.core.util.mapSuccess
+import com.example.inhabitroutine.core.util.randomUUID
 import com.example.inhabitroutine.data.task.api.TaskRepository
 import com.example.inhabitroutine.domain.model.task.TaskModel
 import com.example.inhabitroutine.domain.model.task.content.TaskDate
@@ -13,6 +13,7 @@ import com.example.inhabitroutine.domain.task.impl.util.DomainConst
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
@@ -23,22 +24,24 @@ internal class DefaultSaveTaskDraftUseCase(
 
     override suspend operator fun invoke(requestType: SaveTaskDraftUseCase.RequestType): ResultModel<String, Throwable> =
         withContext(defaultDispatcher) {
-            buildTaskModel(requestType).let { taskModel ->
-                Clock.System.now()
-                    .toLocalDateTime(TimeZone.currentSystemDefault())
-                    .date.let { todayDate ->
-                        taskRepository.saveTask(
-                            taskModel = taskModel,
-                            versionStartDate = todayDate
-                        ).mapSuccess {
-                            taskModel.id
-                        }
+            Clock.System.now()
+                .toLocalDateTime(TimeZone.currentSystemDefault()).date.let { todayDate ->
+                buildTaskModel(
+                    requestType = requestType,
+                    versionStartDate = todayDate
+                ).let { taskModel ->
+                    taskRepository.saveTask(taskModel).mapSuccess {
+                        taskModel.id
                     }
+                }
             }
         }
 
-    private fun buildTaskModel(requestType: SaveTaskDraftUseCase.RequestType): TaskModel {
-        val taskId = CoreUtil.randomUUID()
+    private fun buildTaskModel(
+        requestType: SaveTaskDraftUseCase.RequestType,
+        versionStartDate: LocalDate
+    ): TaskModel {
+        val taskId = randomUUID()
         val title = DomainConst.DEFAULT_TASK_TITLE
         val description = DomainConst.DEFAULT_TASK_DESCRIPTION
         val isArchived = DomainConst.DEFAULT_TASK_IS_ARCHIVED
@@ -62,6 +65,7 @@ internal class DefaultSaveTaskDraftUseCase(
                             date = date,
                             frequency = frequency,
                             isArchived = isArchived,
+                            versionStartDate = versionStartDate,
                             isDraft = isDraft,
                             createdAt = createdAt
                         )
@@ -80,6 +84,7 @@ internal class DefaultSaveTaskDraftUseCase(
                             ),
                             frequency = frequency,
                             isArchived = isArchived,
+                            versionStartDate = versionStartDate,
                             isDraft = isDraft,
                             createdAt = createdAt
                         )
@@ -97,6 +102,7 @@ internal class DefaultSaveTaskDraftUseCase(
                             ),
                             frequency = frequency,
                             isArchived = isArchived,
+                            versionStartDate = versionStartDate,
                             isDraft = isDraft,
                             createdAt = createdAt
                         )
@@ -115,6 +121,7 @@ internal class DefaultSaveTaskDraftUseCase(
                     ),
                     frequency = DomainConst.DEFAULT_TASK_FREQUENCY,
                     isArchived = isArchived,
+                    versionStartDate = versionStartDate,
                     isDraft = isDraft,
                     createdAt = createdAt
                 )
@@ -127,6 +134,7 @@ internal class DefaultSaveTaskDraftUseCase(
                     description = description,
                     date = TaskDate.Day(startDate),
                     isArchived = isArchived,
+                    versionStartDate = versionStartDate,
                     isDraft = isDraft,
                     createdAt = createdAt
                 )

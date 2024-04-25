@@ -1,15 +1,16 @@
 package com.example.inhabitroutine.domain.task.impl.use_case
 
 import com.example.inhabitroutine.core.util.ResultModel
+import com.example.inhabitroutine.core.util.todayDate
 import com.example.inhabitroutine.data.task.api.TaskRepository
 import com.example.inhabitroutine.domain.model.task.TaskModel
 import com.example.inhabitroutine.domain.task.api.use_case.ArchiveTaskByIdUseCase
-import com.example.inhabitroutine.domain.task.impl.util.todayDate
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.Clock
 
 internal class DefaultArchiveTaskByIdUseCase(
     private val taskRepository: TaskRepository,
@@ -30,13 +31,15 @@ internal class DefaultArchiveTaskByIdUseCase(
                             when (taskModel) {
                                 is TaskModel.Habit.HabitContinuous.HabitNumber -> {
                                     taskModel.copy(
-                                        isArchived = isArchived
+                                        isArchived = isArchived,
+                                        versionStartDate = Clock.System.todayDate
                                     )
                                 }
 
                                 is TaskModel.Habit.HabitContinuous.HabitTime -> {
                                     taskModel.copy(
-                                        isArchived = isArchived
+                                        isArchived = isArchived,
+                                        versionStartDate = Clock.System.todayDate
                                     )
                                 }
                             }
@@ -44,7 +47,8 @@ internal class DefaultArchiveTaskByIdUseCase(
 
                         is TaskModel.Habit.HabitYesNo -> {
                             taskModel.copy(
-                                isArchived = isArchived
+                                isArchived = isArchived,
+                                versionStartDate = Clock.System.todayDate
                             )
                         }
                     }
@@ -54,22 +58,21 @@ internal class DefaultArchiveTaskByIdUseCase(
                     when (taskModel) {
                         is TaskModel.Task.RecurringTask -> {
                             taskModel.copy(
-                                isArchived = isArchived
+                                isArchived = isArchived,
+                                versionStartDate = Clock.System.todayDate
                             )
                         }
 
                         is TaskModel.Task.SingleTask -> {
                             taskModel.copy(
-                                isArchived = isArchived
+                                isArchived = isArchived,
+                                versionStartDate = Clock.System.todayDate
                             )
                         }
                     }
                 }
             }
-            val resultModel = taskRepository.saveTask(
-                taskModel = newTaskModel,
-                versionStartDate = todayDate
-            )
+            val resultModel = taskRepository.saveTask(newTaskModel)
             if (resultModel is ResultModel.Success) {
                 externalScope.launch {
 //                    TODO(set/reset reminders)

@@ -28,6 +28,7 @@ internal fun TaskDataModel.toTaskModel(): TaskModel? = runCatching {
                         ),
                         frequency = this.frequency.toTaskFrequency() ?: return@runCatching null,
                         isArchived = this.isArchived,
+                        versionStartDate = versionStartDate,
                         isDraft = this.isDraft,
                         createdAt = this.createdAt
                     )
@@ -46,6 +47,7 @@ internal fun TaskDataModel.toTaskModel(): TaskModel? = runCatching {
                             ?: return@runCatching null,
                         frequency = this.frequency.toTaskFrequency() ?: return@runCatching null,
                         isArchived = this.isArchived,
+                        versionStartDate = versionStartDate,
                         isDraft = this.isDraft,
                         createdAt = this.createdAt
                     )
@@ -64,6 +66,7 @@ internal fun TaskDataModel.toTaskModel(): TaskModel? = runCatching {
                             ?: return@runCatching null,
                         frequency = this.frequency.toTaskFrequency() ?: return@runCatching null,
                         isArchived = this.isArchived,
+                        versionStartDate = versionStartDate,
                         isDraft = this.isDraft,
                         createdAt = this.createdAt
                     )
@@ -82,6 +85,7 @@ internal fun TaskDataModel.toTaskModel(): TaskModel? = runCatching {
                 ),
                 frequency = this.frequency.toTaskFrequency() ?: return@runCatching null,
                 isArchived = this.isArchived,
+                versionStartDate = versionStartDate,
                 isDraft = this.isDraft,
                 createdAt = this.createdAt
             )
@@ -96,6 +100,7 @@ internal fun TaskDataModel.toTaskModel(): TaskModel? = runCatching {
                     date = this.startDate,
                 ),
                 isArchived = this.isArchived,
+                versionStartDate = versionStartDate,
                 isDraft = this.isDraft,
                 createdAt = this.createdAt
             )
@@ -103,9 +108,7 @@ internal fun TaskDataModel.toTaskModel(): TaskModel? = runCatching {
     }
 }.getOrNull()
 
-internal fun TaskModel.toTaskDataModel(
-    versionStartDate: LocalDate
-): TaskDataModel {
+internal fun TaskModel.toTaskDataModel(): TaskDataModel {
     val startDate = when (this) {
         is TaskModel.Habit -> this.date.startDate
         is TaskModel.Task.RecurringTask -> this.date.startDate
@@ -125,7 +128,6 @@ internal fun TaskModel.toTaskDataModel(
         is TaskModel.Task.RecurringTask -> this.frequency.toTaskFrequencyContent()
         is TaskModel.Task.SingleTask -> TaskContentDataModel.FrequencyContent.Day
     }
-//    val versionStartDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
     return TaskDataModel(
         id = id,
         type = type,

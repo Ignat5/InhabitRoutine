@@ -12,8 +12,7 @@ interface TaskRepository {
     fun readTasksByDate(targetDate: LocalDate): Flow<List<TaskModel>>
     fun readTasksById(taskId: String): Flow<List<TaskModel>>
     suspend fun saveTask(
-        taskModel: TaskModel,
-        versionStartDate: LocalDate
+        taskModel: TaskModel
     ): ResultModel<Unit, Throwable>
 
     suspend fun updateTaskTitleById(
