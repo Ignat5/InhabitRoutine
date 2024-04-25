@@ -129,6 +129,10 @@ selectTasksById:
 SELECT * FROM TaskView tView
 WHERE tView.task_id = :taskId;
 
+selectTasksByType:
+SELECT * FROM TaskView tView
+WHERE tView.task_type IN :targetTaskTypes;
+
 insertTask:
 INSERT OR REPLACE INTO TaskTable
 VALUES ?;

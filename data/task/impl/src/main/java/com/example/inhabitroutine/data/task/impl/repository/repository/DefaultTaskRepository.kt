@@ -8,6 +8,7 @@ import com.example.inhabitroutine.data.task.impl.repository.util.toTaskDataModel
 import com.example.inhabitroutine.data.task.impl.repository.util.toTaskModel
 import com.example.inhabitroutine.domain.model.task.TaskModel
 import com.example.inhabitroutine.domain.model.task.content.TaskDate
+import com.example.inhabitroutine.domain.model.task.type.TaskType
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -54,6 +55,17 @@ internal class DefaultTaskRepository(
 
     override fun readTasksById(taskId: String): Flow<List<TaskModel>> =
         taskDataSource.readTasksById(taskId).map { allTasks ->
+            if (allTasks.isNotEmpty()) {
+                withContext(defaultDispatcher) {
+                    allTasks.map {
+                        async { it.toTaskModel() }
+                    }.awaitAll().filterNotNull()
+                }
+            } else emptyList()
+        }
+
+    override fun readTasksByTaskType(targetTaskTypes: Set<TaskType>): Flow<List<TaskModel>> =
+        taskDataSource.readTasksByTaskType(targetTaskTypes).map { allTasks ->
             if (allTasks.isNotEmpty()) {
                 withContext(defaultDispatcher) {
                     allTasks.map {

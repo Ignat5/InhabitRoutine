@@ -61,6 +61,16 @@ internal class DefaultTaskDao(
                 } else emptyList()
             }
 
+    override fun readTasksByTaskType(targetTaskTypes: Set<String>): Flow<List<TaskEntity>> =
+        taskDao.selectTasksByType(targetTaskTypes).readQueryList(ioDispatcher)
+            .map { allTasks ->
+                if (allTasks.isNotEmpty()) {
+                    withContext(ioDispatcher) {
+                        allTasks.map { it.toTaskEntity() }
+                    }
+                } else emptyList()
+            }
+
     override suspend fun saveTask(taskEntity: TaskEntity): ResultModel<Unit, Throwable> =
         db.runTransaction(ioDispatcher) {
             taskDao.apply {

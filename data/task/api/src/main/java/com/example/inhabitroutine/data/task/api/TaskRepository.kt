@@ -3,6 +3,7 @@ package com.example.inhabitroutine.data.task.api
 import com.example.inhabitroutine.core.util.ResultModel
 import com.example.inhabitroutine.domain.model.task.TaskModel
 import com.example.inhabitroutine.domain.model.task.content.TaskDate
+import com.example.inhabitroutine.domain.model.task.type.TaskType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDate
 
@@ -11,6 +12,7 @@ interface TaskRepository {
     fun readTasksByQuery(query: String): Flow<List<TaskModel>>
     fun readTasksByDate(targetDate: LocalDate): Flow<List<TaskModel>>
     fun readTasksById(taskId: String): Flow<List<TaskModel>>
+    fun readTasksByTaskType(targetTaskTypes: Set<TaskType>): Flow<List<TaskModel>>
     suspend fun saveTask(
         taskModel: TaskModel
     ): ResultModel<Unit, Throwable>
