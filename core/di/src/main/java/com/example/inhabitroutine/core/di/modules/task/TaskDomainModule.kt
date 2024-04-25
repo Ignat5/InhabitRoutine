@@ -18,6 +18,7 @@ import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskFrequencyBy
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskProgressByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskTitleByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ValidateProgressLimitNumberUseCase
+import com.example.inhabitroutine.domain.task.api.use_case.calculate_statistics.CalculateTaskStatisticsUseCase
 import com.example.inhabitroutine.domain.task.impl.di.LocalTaskDomainModule
 import dagger.Module
 import dagger.Provides
@@ -157,6 +158,19 @@ object TaskDomainModule {
         return LocalTaskDomainModule.provideResetTaskByIdUseCase(
             updateTaskDateByIdUseCase = updateTaskDateByIdUseCase,
             externalScope = externalScope
+        )
+    }
+
+    @Provides
+    fun provideCalculateTaskStatisticsUseCase(
+        taskRepository: TaskRepository,
+        recordRepository: RecordRepository,
+        @DefaultDispatcherQualifier defaultDispatcher: CoroutineDispatcher
+    ): CalculateTaskStatisticsUseCase {
+        return LocalTaskDomainModule.provideCalculateTaskStatisticsUseCase(
+            taskRepository = taskRepository,
+            recordRepository = recordRepository,
+            defaultDispatcher = defaultDispatcher
         )
     }
 

@@ -215,13 +215,19 @@ class EditTaskViewModel(
 
     private fun onItemActionClick(event: EditTaskScreenEvent.OnItemActionClick) {
         when (val item = event.item) {
-            is ItemTaskAction.ViewStatistics -> {}
+            is ItemTaskAction.ViewStatistics ->
+                onViewTaskStatisticsClick()
+
             is ItemTaskAction.ArchiveUnarchive ->
                 onArchiveUnarchiveActionClick(item)
 
             is ItemTaskAction.Reset -> onResetActionClick()
             is ItemTaskAction.Delete -> onDeleteActionClick()
         }
+    }
+
+    private fun onViewTaskStatisticsClick() {
+        setUpNavigationState(EditTaskScreenNavigation.ViewTaskStatistics(taskId))
     }
 
     private fun onResetActionClick() {

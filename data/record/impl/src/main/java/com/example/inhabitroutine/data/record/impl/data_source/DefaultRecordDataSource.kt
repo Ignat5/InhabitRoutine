@@ -32,6 +32,17 @@ internal class DefaultRecordDataSource(
             } else emptyList()
         }
 
+    override fun readRecordsByTaskId(taskId: String): Flow<List<RecordDataModel>> =
+        recordDao.readRecordsByTaskId(taskId).map { allRecords ->
+            if (allRecords.isNotEmpty()) {
+                withContext(ioDispatcher) {
+                    allRecords.map {
+                        async { it.toRecordDataModel(json) }
+                    }.awaitAll().filterNotNull()
+                }
+            } else emptyList()
+        }
+
     override suspend fun saveRecord(recordDataModel: RecordDataModel): ResultModel<Unit, Throwable> =
         recordDataModel.toRecordEntity(json)?.let { recordEntity ->
             recordDao.saveRecord(recordEntity)

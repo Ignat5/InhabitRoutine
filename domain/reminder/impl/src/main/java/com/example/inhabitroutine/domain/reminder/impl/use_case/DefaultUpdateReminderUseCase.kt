@@ -5,7 +5,7 @@ import com.example.inhabitroutine.core.util.mapFailure
 import com.example.inhabitroutine.data.reminder.api.ReminderRepository
 import com.example.inhabitroutine.domain.model.reminder.ReminderModel
 import com.example.inhabitroutine.domain.reminder.api.UpdateReminderUseCase
-import com.example.inhabitroutine.domain.reminder.impl.use_case.local.CheckReminderOverlapUseCase
+import com.example.inhabitroutine.domain.reminder.impl.util.checkOverlap
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
@@ -14,8 +14,6 @@ internal class DefaultUpdateReminderUseCase(
     private val reminderRepository: ReminderRepository,
     private val defaultDispatcher: CoroutineDispatcher
 ) : UpdateReminderUseCase {
-
-    private val checkReminderOverlapsUseCase = CheckReminderOverlapUseCase()
 
     override suspend operator fun invoke(
         reminderModel: ReminderModel
@@ -38,10 +36,7 @@ internal class DefaultUpdateReminderUseCase(
             .firstOrNull()
             ?.filterNot { it.id == reminderModel.id }
             ?.let { allReminders ->
-                checkReminderOverlapsUseCase(
-                    targetReminder = reminderModel,
-                    allReminders = allReminders
-                )
+                reminderModel.checkOverlap(allReminders)
             } ?: false
 
 }

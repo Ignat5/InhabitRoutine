@@ -16,7 +16,7 @@
 
     <!-- task schedule -->
     <string name="task_status_pending">Pending</string>
-    <string name="task_status_done">Done</string>
+    <string name="task_status_done">Completed</string>
     <string name="task_status_skipped">Skipped</string>
     <string name="task_status_failed">Failed</string>
     <string name="task_enter_number_progress_label">Number</string>
@@ -64,6 +64,18 @@
     <string name="progress_limit_type_at_least_title">At least</string>
     <string name="progress_limit_type_exactly_title">Exactly</string>
     <string name="progress_limit_type_no_more_than_title">No more than</string>
+
+    <!--  task statistics -->
+    <string name="task_statistics_habit_score_title">Habit score</string>
+    <string name="task_statistics_streak_title">Streak</string>
+    <string name="task_statistics_times_completed_title">Times completed</string>
+    <string name="task_statistics_status_count_title">Status</string>
+    <string name="task_statistics_current_streak_title">Current streak</string>
+    <string name="task_statistics_best_streak_title">Best streak</string>
+    <string name="task_statistics_completion_count_week_title">This week</string>
+    <string name="task_statistics_completion_count_month_title">This month</string>
+    <string name="task_statistics_completion_count_year_title">This year</string>
+    <string name="task_statistics_completion_count_all_time_title">All time</string>
 
     <!-- common   -->
     <string name="save">Save</string>

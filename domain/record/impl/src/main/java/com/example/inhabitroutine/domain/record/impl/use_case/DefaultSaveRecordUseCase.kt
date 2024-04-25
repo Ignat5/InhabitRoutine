@@ -1,7 +1,7 @@
 package com.example.inhabitroutine.domain.record.impl.use_case
 
-import com.example.inhabitroutine.core.util.CoreUtil
 import com.example.inhabitroutine.core.util.ResultModel
+import com.example.inhabitroutine.core.util.randomUUID
 import com.example.inhabitroutine.data.record.api.RecordRepository
 import com.example.inhabitroutine.domain.model.record.RecordModel
 import com.example.inhabitroutine.domain.model.record.content.RecordEntry
@@ -27,7 +27,7 @@ internal class DefaultSaveRecordUseCase(
         }
         return recordRepository.saveRecord(
             RecordModel(
-                id = CoreUtil.randomUUID(),
+                id = randomUUID(),
                 taskId = taskId,
                 entry = entry,
                 date = date,

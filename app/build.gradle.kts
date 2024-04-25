@@ -65,6 +65,7 @@ dependencies {
     implementation(project(":feature:create_edit_task"))
     implementation(project(":feature:view_reminders"))
     implementation(project(":feature:search_tasks"))
+    implementation(project(":feature:view_task_statistics"))
 
     implementation(project(":core:presentation"))
     implementation(project(":core:util"))
