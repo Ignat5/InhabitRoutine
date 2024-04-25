@@ -16,6 +16,7 @@ import com.example.inhabitroutine.navigation.edit_task.editTaskDestination
 import com.example.inhabitroutine.navigation.search_tasks.searchTasksDestination
 import com.example.inhabitroutine.navigation.view_reminders.viewRemindersDestination
 import com.example.inhabitroutine.navigation.view_schedule.viewScheduleDestination
+import com.example.inhabitroutine.navigation.view_task_statistics.viewTaskStatisticsDestination
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -62,6 +63,7 @@ fun RootGraph() {
             editTaskDestination(onNavigate)
             viewRemindersDestination(onNavigate)
             searchTasksDestination(onNavigate)
+            viewTaskStatisticsDestination(onNavigate)
         }
     }
 }

@@ -13,7 +13,7 @@ import com.example.inhabitroutine.domain.model.record.RecordModel
 import com.example.inhabitroutine.domain.model.record.content.RecordEntry
 import com.example.inhabitroutine.domain.model.task.TaskModel
 import com.example.inhabitroutine.domain.model.util.checkIfMatches
-import com.example.inhabitroutine.domain.task.api.use_case.calculate_statistics.CalculateStatisticsUseCase
+import com.example.inhabitroutine.domain.task.api.use_case.calculate_statistics.CalculateTaskStatisticsUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.calculate_statistics.TaskCompletionCount
 import com.example.inhabitroutine.domain.task.api.use_case.calculate_statistics.TaskStatisticsModel
 import com.example.inhabitroutine.domain.task.api.use_case.calculate_statistics.TaskStreakModel
@@ -33,11 +33,11 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.plus
 import kotlinx.datetime.until
 
-internal class DefaultCalculateStatisticsUseCase(
+internal class DefaultCalculateTaskStatisticsUseCase(
     private val taskRepository: TaskRepository,
     private val recordRepository: RecordRepository,
     private val defaultDispatcher: CoroutineDispatcher
-) : CalculateStatisticsUseCase {
+) : CalculateTaskStatisticsUseCase {
 
     override suspend operator fun invoke(taskId: String): ResultModel<TaskStatisticsModel, Throwable> {
         return combine(

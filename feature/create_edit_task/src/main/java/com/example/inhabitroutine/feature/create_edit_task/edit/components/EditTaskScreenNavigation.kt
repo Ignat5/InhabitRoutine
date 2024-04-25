@@ -8,5 +8,9 @@ sealed interface EditTaskScreenNavigation : ScreenNavigation {
         val baseNavigation: BaseCreateEditTaskScreenNavigation
     ) : EditTaskScreenNavigation
 
+    data class ViewTaskStatistics(
+        val taskId: String
+    ) : EditTaskScreenNavigation
+
     data object Back : EditTaskScreenNavigation
 }

@@ -34,6 +34,14 @@ fun NavGraphBuilder.editTaskDestination(onNavigate: (TargetNavDest) -> Unit) {
                         }
                     }
 
+                    is EditTaskScreenNavigation.ViewTaskStatistics -> {
+                        onNavigate(
+                            TargetNavDest.Destination(
+                                route = AppNavDest.buildViewTaskStatisticsRoute(destination.taskId)
+                            )
+                        )
+                    }
+
                     is EditTaskScreenNavigation.Back -> {
                         onNavigate(TargetNavDest.Back)
                     }
