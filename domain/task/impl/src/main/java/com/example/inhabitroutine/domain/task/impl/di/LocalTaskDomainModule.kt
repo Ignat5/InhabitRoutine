@@ -1,10 +1,13 @@
 package com.example.inhabitroutine.domain.task.impl.di
 
+import com.example.inhabitroutine.data.record.api.RecordRepository
+import com.example.inhabitroutine.data.reminder.api.ReminderRepository
 import com.example.inhabitroutine.data.task.api.TaskRepository
 import com.example.inhabitroutine.domain.task.api.use_case.ArchiveTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.DeleteTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTasksByQueryUseCase
+import com.example.inhabitroutine.domain.task.api.use_case.ReadTasksWithExtrasAndRecordByDateUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ResetTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.SaveTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.SaveTaskDraftUseCase
@@ -18,6 +21,7 @@ import com.example.inhabitroutine.domain.task.impl.use_case.DefaultArchiveTaskBy
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultDeleteTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultReadTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultReadTasksByQueryUseCase
+import com.example.inhabitroutine.domain.task.impl.use_case.DefaultReadTasksWithExtrasAndRecordByDateUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultResetTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultSaveTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultSaveTaskDraftUseCase
@@ -46,6 +50,20 @@ object LocalTaskDomainModule {
     ): ReadTasksByQueryUseCase {
         return DefaultReadTasksByQueryUseCase(
             taskRepository = taskRepository,
+            defaultDispatcher = defaultDispatcher
+        )
+    }
+
+    fun provideReadTasksWithExtrasAndRecordByDateUseCase(
+        taskRepository: TaskRepository,
+        reminderRepository: ReminderRepository,
+        recordRepository: RecordRepository,
+        defaultDispatcher: CoroutineDispatcher
+    ): ReadTasksWithExtrasAndRecordByDateUseCase {
+        return DefaultReadTasksWithExtrasAndRecordByDateUseCase(
+            taskRepository = taskRepository,
+            reminderRepository = reminderRepository,
+            recordRepository = recordRepository,
             defaultDispatcher = defaultDispatcher
         )
     }

@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 interface TaskDao {
     fun readTaskById(taskId: String): Flow<TaskEntity?>
     fun readTasksByQuery(query: String): Flow<List<TaskEntity>>
+    fun readTasksByDate(targetEpochDay: Long): Flow<List<TaskEntity>>
     suspend fun saveTask(taskEntity: TaskEntity): ResultModel<Unit, Throwable>
     suspend fun updateTaskTitleById(
         taskId: String,

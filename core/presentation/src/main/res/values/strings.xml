@@ -14,6 +14,13 @@
     <string name="habit_progress_type_number_description">Daily record is a number value</string>
     <string name="habit_progress_type_time_description">Daily record is a time value</string>
 
+    <!-- task schedule -->
+    <string name="task_status_pending">Pending</string>
+    <string name="task_status_done">Done</string>
+    <string name="task_status_skipped">Skipped</string>
+    <string name="task_status_failed">Failed</string>
+    <string name="task_enter_number_progress_label">Number</string>
+
     <!-- task config (create/edit task)   -->
     <string name="task_config_title">Activity name</string>
     <string name="task_config_description">Description</string>
@@ -44,6 +51,10 @@
     <string name="task_action_delete_message">Are you sure you want to delete the activity?</string>
     <string name="task_action_reset_title">Reset activity</string>
     <string name="task_action_reset_message">Are you sure you want to reset the habit?</string>
+    <string name="task_action_done">Mark as done</string>
+    <string name="task_action_skip">Skip</string>
+    <string name="task_action_fail">Mark as failed</string>
+    <string name="task_action_reset_entry">Reset entry</string>
 
     <!--  pick task progress  -->
     <string name="task_config_limit_number_label">Goal</string>
@@ -58,6 +69,7 @@
     <string name="save">Save</string>
     <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
+    <string name="goal">Goal</string>
 
     <!-- discard activity -->
     <string name="confirm_discard_activity_title">Discard</string>

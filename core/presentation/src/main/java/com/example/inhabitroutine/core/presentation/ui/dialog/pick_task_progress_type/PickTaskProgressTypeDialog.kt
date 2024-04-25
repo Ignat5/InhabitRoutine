@@ -3,16 +3,21 @@ package com.example.inhabitroutine.core.presentation.ui.dialog.pick_task_progres
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.AlertDialogDefaults
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -23,10 +28,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.inhabitroutine.core.presentation.R
 import com.example.inhabitroutine.core.presentation.ui.dialog.base.BaseDialog
-import com.example.inhabitroutine.core.presentation.ui.dialog.base.BaseDialogDefaults
 import com.example.inhabitroutine.core.presentation.ui.util.toIconId
 import com.example.inhabitroutine.domain.model.task.type.TaskProgressType
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PickTaskProgressTypeDialog(
     allTaskProgressTypes: List<TaskProgressType>,
@@ -34,30 +39,64 @@ fun PickTaskProgressTypeDialog(
 ) {
     BaseDialog(
         onDismissRequest = { onResult(PickTaskProgressTypeScreenResult.Dismiss) },
-        title = {
-            BaseDialogDefaults.BaseDialogTitle(titleText = stringResource(id = R.string.habit_progress_type_title))
-        }
+        dialogPadding = PaddingValues(vertical = 24.dp)
     ) {
-        LazyColumn(modifier = Modifier.fillMaxWidth()) {
-            items(allTaskProgressTypes) { item ->
-                ItemTaskProgressType(
-                    taskType = item,
-                    onClick = {
-                        onResult(PickTaskProgressTypeScreenResult.Confirm(item))
-                    }
-                )
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Text(
+                text = stringResource(id = R.string.habit_progress_type_title),
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                items(allTaskProgressTypes) { item ->
+                    ItemTaskProgressType(
+                        taskType = item,
+                        onClick = {
+                            onResult(PickTaskProgressTypeScreenResult.Confirm(item))
+                        }
+                    )
+                }
             }
         }
     }
+
+//    BaseDialog(
+//        onDismissRequest = { onResult(PickTaskProgressTypeScreenResult.Dismiss) },
+//    ) {
+//        Column(modifier = Modifier.fillMaxWidth()) {
+//            Text(
+//                text = stringResource(id = R.string.habit_progress_type_title),
+//                style = MaterialTheme.typography.titleLarge,
+//                color = MaterialTheme.colorScheme.onSurface
+//            )
+//            Spacer(modifier = Modifier.height(8.dp))
+//            LazyColumn(modifier = Modifier.fillMaxWidth()) {
+//                items(allTaskProgressTypes) { item ->
+//                    ItemTaskProgressType(
+//                        taskType = item,
+//                        onClick = {
+//                            onResult(PickTaskProgressTypeScreenResult.Confirm(item))
+//                        }
+//                    )
+//                }
+//            }
+//        }
+//    }
 }
 
 @Composable
 private fun ItemTaskProgressType(
     taskType: TaskProgressType,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Box(
-        modifier = Modifier.clickable { onClick() }
+        modifier = modifier.clickable { onClick() }
     ) {
         Row(
             modifier = Modifier

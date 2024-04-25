@@ -43,6 +43,7 @@ fun BaseDialog(
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
     properties: DialogProperties = DialogProperties(),
+    dialogPadding: PaddingValues = PaddingValues(DialogPadding),
     content: @Composable ColumnScope.() -> Unit
 ) {
     BasicAlertDialog(
@@ -56,7 +57,7 @@ fun BaseDialog(
             color = AlertDialogDefaults.containerColor,
             tonalElevation = AlertDialogDefaults.TonalElevation,
         ) {
-            Column(modifier = Modifier.padding(DialogPadding)) {
+            Column(modifier = Modifier.padding(dialogPadding)) {
                 content()
             }
         }

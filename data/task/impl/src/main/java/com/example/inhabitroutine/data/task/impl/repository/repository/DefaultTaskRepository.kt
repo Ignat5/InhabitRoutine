@@ -9,6 +9,8 @@ import com.example.inhabitroutine.data.task.impl.repository.util.toTaskModel
 import com.example.inhabitroutine.domain.model.task.TaskModel
 import com.example.inhabitroutine.domain.model.task.content.TaskDate
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -30,9 +32,24 @@ internal class DefaultTaskRepository(
 
     override fun readTasksByQuery(query: String): Flow<List<TaskModel>> =
         taskDataSource.readTasksByQuery(query).map { allTasks ->
-            withContext(defaultDispatcher) {
-                allTasks.mapNotNull { it.toTaskModel() }
-            }
+            if (allTasks.isNotEmpty()) {
+                withContext(defaultDispatcher) {
+                    allTasks.map {
+                        async { it.toTaskModel() }
+                    }.awaitAll().filterNotNull()
+                }
+            } else emptyList()
+        }
+
+    override fun readTasksByDate(targetDate: LocalDate): Flow<List<TaskModel>> =
+        taskDataSource.readTasksByDate(targetDate).map { allTasks ->
+            if (allTasks.isNotEmpty()) {
+                withContext(defaultDispatcher) {
+                    allTasks.map {
+                        async { it.toTaskModel() }
+                    }.awaitAll().filterNotNull()
+                }
+            } else emptyList()
         }
 
     override suspend fun saveTask(
@@ -89,4 +106,5 @@ internal class DefaultTaskRepository(
 
     override suspend fun deleteTaskById(taskId: String): ResultModel<Unit, Throwable> =
         taskDataSource.deleteTaskById(taskId)
+
 }
