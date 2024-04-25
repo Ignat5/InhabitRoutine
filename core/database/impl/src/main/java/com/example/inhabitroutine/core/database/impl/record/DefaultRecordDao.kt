@@ -30,6 +30,16 @@ internal class DefaultRecordDao(
                 } else emptyList()
             }
 
+    override fun readRecordsByTaskId(taskId: String): Flow<List<RecordEntity>> =
+        recordDao.selectRecordsByTaskId(taskId).readQueryList(ioDispatcher)
+            .map { allReminders ->
+                if (allReminders.isNotEmpty()) {
+                    withContext(ioDispatcher) {
+                        allReminders.map { it.toRecordEntity() }
+                    }
+                } else emptyList()
+            }
+
     override suspend fun saveRecord(recordEntity: RecordEntity): ResultModel<Unit, Throwable> =
         runQuery(ioDispatcher) {
             recordDao.insertRecord(recordEntity.toRecordTable())

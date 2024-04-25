@@ -52,6 +52,17 @@ internal class DefaultTaskRepository(
             } else emptyList()
         }
 
+    override fun readTasksById(taskId: String): Flow<List<TaskModel>> =
+        taskDataSource.readTasksById(taskId).map { allTasks ->
+            if (allTasks.isNotEmpty()) {
+                withContext(defaultDispatcher) {
+                    allTasks.map {
+                        async { it.toTaskModel() }
+                    }.awaitAll().filterNotNull()
+                }
+            } else emptyList()
+        }
+
     override suspend fun saveTask(
         taskModel: TaskModel,
         versionStartDate: LocalDate

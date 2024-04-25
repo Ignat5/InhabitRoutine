@@ -30,6 +30,17 @@ internal class DefaultRecordRepository(
             } else emptyList()
         }
 
+    override fun readRecordsByTaskId(taskId: String): Flow<List<RecordModel>> =
+        recordDataSource.readRecordsByTaskId(taskId).map { allRecords ->
+            if (allRecords.isNotEmpty()) {
+                withContext(defaultDispatcher) {
+                    allRecords.map {
+                        async { it.toRecordModel() }
+                    }.awaitAll()
+                }
+            } else emptyList()
+        }
+
     override suspend fun saveRecord(recordModel: RecordModel): ResultModel<Unit, Throwable> =
         recordDataSource.saveRecord(recordModel.toRecordDataModel())
 

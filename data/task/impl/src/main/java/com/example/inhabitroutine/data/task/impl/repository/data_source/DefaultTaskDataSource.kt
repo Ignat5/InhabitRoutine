@@ -52,6 +52,17 @@ internal class DefaultTaskDataSource(
             } else emptyList()
         }
 
+    override fun readTasksById(taskId: String): Flow<List<TaskDataModel>> =
+        taskDao.readTasksById(taskId).map { allTasks ->
+            if (allTasks.isNotEmpty()) {
+                withContext(ioDispatcher) {
+                    allTasks.map {
+                        async { it.toTaskDataModel(json) }
+                    }.awaitAll().filterNotNull()
+                }
+            } else emptyList()
+        }
+
     override suspend fun saveTask(taskDataModel: TaskDataModel): ResultModel<Unit, Throwable> =
         withContext(ioDispatcher) {
             taskDataModel.toTaskEntity(json)?.let { taskEntity ->
