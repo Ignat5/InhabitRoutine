@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <string name="app_title" translatable="false">Inhabit Routine</string>
+
+    <!--  drawer  -->
+    <string name="drawer_view_schedule_title">Schedule</string>
+    <string name="drawer_view_habits_title">Habits</string>
+    <string name="drawer_view_tasks_title">Tasks</string>
+    <string name="drawer_settings_title">Settings</string>
+
+    <!--  view schedule  -->
     <string name="habit_title">Habit</string>
     <string name="recurring_task_title">Recurring task</string>
     <string name="single_task_title">Task</string>
@@ -20,6 +30,9 @@
     <string name="task_status_skipped">Skipped</string>
     <string name="task_status_failed">Failed</string>
     <string name="task_enter_number_progress_label">Number</string>
+
+    <!--  view tasks  -->
+    <string name="view_tasks_screen_title">Tasks</string>
 
     <!-- task config (create/edit task)   -->
     <string name="task_config_title">Activity name</string>

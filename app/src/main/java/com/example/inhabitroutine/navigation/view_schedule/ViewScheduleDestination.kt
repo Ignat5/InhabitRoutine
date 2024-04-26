@@ -50,7 +50,7 @@ fun NavGraphBuilder.viewScheduleDestination(
                 ViewScheduleScreenConfig(config, onEvent)
             },
             screenContent = { state, onEvent ->
-                ViewScheduleScreen(state, onEvent)
+                ViewScheduleScreen(state, onEvent, onMenuClick)
             }
         )
     }

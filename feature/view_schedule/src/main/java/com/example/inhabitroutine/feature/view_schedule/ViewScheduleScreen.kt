@@ -88,12 +88,13 @@ private const val WEEK_ITEM_TITLE_LENGTH = 3
 fun ViewScheduleScreen(
     state: ViewScheduleScreenState,
     onEvent: (ViewScheduleScreenEvent) -> Unit,
+    onMenuClick: () -> Unit
 ) {
     Scaffold(
         topBar = {
             ScreenTopBar(
                 currentDate = state.currentDate,
-                onMenuClick = {},
+                onMenuClick = onMenuClick,
                 onSearchClick = {
                     onEvent(ViewScheduleScreenEvent.OnSearchClick)
                 },
