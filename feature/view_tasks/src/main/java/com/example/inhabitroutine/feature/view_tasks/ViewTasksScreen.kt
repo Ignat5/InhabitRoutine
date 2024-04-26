@@ -50,6 +50,7 @@ import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskStartDate
 import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskType
 import com.example.inhabitroutine.core.presentation.ui.common.CreateTaskFAB
 import com.example.inhabitroutine.core.presentation.ui.common.TaskDivider
+import com.example.inhabitroutine.core.presentation.ui.dialog.pick_task_type.PickTaskTypeDialog
 import com.example.inhabitroutine.domain.model.task.TaskModel
 import com.example.inhabitroutine.domain.model.task.content.TaskDate
 import com.example.inhabitroutine.feature.view_tasks.components.ViewTasksScreenConfig
@@ -70,13 +71,15 @@ fun ViewTasksScreen(
         topBar = {
             ScreenTopBar(
                 onMenuClick = onMenuClick,
-                onSearchClick = {}
+                onSearchClick = {
+                    onEvent(ViewTasksScreenEvent.OnSearchClick)
+                }
             )
         },
         floatingActionButton = {
             CreateTaskFAB(
                 onClick = {
-
+                    onEvent(ViewTasksScreenEvent.OnCreateTaskClick)
                 }
             )
         },
@@ -440,7 +443,13 @@ fun ViewTasksConfig(
     config: ViewTasksScreenConfig,
     onEvent: (ViewTasksScreenEvent) -> Unit
 ) {
-
+    when (config) {
+        is ViewTasksScreenConfig.PickTaskType -> {
+            PickTaskTypeDialog(allTaskTypes = config.allTaskTypes) {
+                onEvent(ViewTasksScreenEvent.ResultEvent.PickTaskType(it))
+            }
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

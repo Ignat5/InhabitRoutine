@@ -1,11 +1,14 @@
 package com.example.inhabitroutine.feature.view_tasks
 
 import com.example.inhabitroutine.core.presentation.base.BaseViewModel
+import com.example.inhabitroutine.core.presentation.ui.dialog.pick_task_type.PickTaskTypeScreenResult
+import com.example.inhabitroutine.core.util.ResultModel
 import com.example.inhabitroutine.core.util.todayDate
 import com.example.inhabitroutine.domain.model.task.TaskModel
 import com.example.inhabitroutine.domain.model.task.content.TaskDate
 import com.example.inhabitroutine.domain.model.task.type.TaskType
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTasksUseCase
+import com.example.inhabitroutine.domain.task.api.use_case.SaveTaskDraftUseCase
 import com.example.inhabitroutine.feature.view_tasks.components.ViewTasksScreenConfig
 import com.example.inhabitroutine.feature.view_tasks.components.ViewTasksScreenEvent
 import com.example.inhabitroutine.feature.view_tasks.components.ViewTasksScreenNavigation
@@ -21,12 +24,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 
 class ViewTasksViewModel(
     readTasksUseCase: ReadTasksUseCase,
+    private val saveTaskDraftUseCase: SaveTaskDraftUseCase,
     private val defaultDispatcher: CoroutineDispatcher,
     override val viewModelScope: CoroutineScope
 ) : BaseViewModel<ViewTasksScreenEvent, ViewTasksScreenState, ViewTasksScreenNavigation, ViewTasksScreenConfig>() {
@@ -82,6 +87,9 @@ class ViewTasksViewModel(
 
     override fun onEvent(event: ViewTasksScreenEvent) {
         when (event) {
+            is ViewTasksScreenEvent.ResultEvent ->
+                onResultEvent(event)
+
             is ViewTasksScreenEvent.OnPickFilterByStatus ->
                 onPickFilterByStatus(event)
 
@@ -90,6 +98,46 @@ class ViewTasksViewModel(
 
             is ViewTasksScreenEvent.OnPickSort ->
                 onPickSort(event)
+
+            is ViewTasksScreenEvent.OnCreateTaskClick ->
+                onCreateTaskClick()
+
+            is ViewTasksScreenEvent.OnSearchClick ->
+                onSearchClick()
+        }
+    }
+
+    private fun onResultEvent(event: ViewTasksScreenEvent.ResultEvent) {
+        when (event) {
+            is ViewTasksScreenEvent.ResultEvent.PickTaskType ->
+                onPickTaskTypeResultEvent(event)
+
+        }
+    }
+
+    private fun onPickTaskTypeResultEvent(event: ViewTasksScreenEvent.ResultEvent.PickTaskType) {
+        onIdleToAction {
+            when (val result = event.result) {
+                is PickTaskTypeScreenResult.Confirm -> onConfirmPickTaskType(result)
+                is PickTaskTypeScreenResult.Dismiss -> Unit
+            }
+        }
+    }
+
+    private fun onConfirmPickTaskType(result: PickTaskTypeScreenResult.Confirm) {
+        viewModelScope.launch {
+            val requestType = when (result.taskType) {
+                TaskType.RecurringTask -> SaveTaskDraftUseCase.RequestType.CreateRecurringTask
+                TaskType.SingleTask -> SaveTaskDraftUseCase.RequestType.CreateSingleTask
+                else -> return@launch
+            }
+            val resultModel = saveTaskDraftUseCase(requestType)
+            if (resultModel is ResultModel.Success) {
+                val taskId = resultModel.value
+                setUpNavigationState(
+                    ViewTasksScreenNavigation.CreateTask(taskId)
+                )
+            }
         }
     }
 
@@ -115,6 +163,17 @@ class ViewTasksViewModel(
 
     private fun onPickSort(event: ViewTasksScreenEvent.OnPickSort) {
         sortState.update { event.taskSort }
+    }
+
+    private fun onCreateTaskClick() {
+        val availableTaskTypes = setOf(TaskType.RecurringTask, TaskType.SingleTask)
+        setUpConfigState(ViewTasksScreenConfig.PickTaskType(
+            allTaskTypes = TaskType.entries.filter { it in availableTaskTypes }
+        ))
+    }
+
+    private fun onSearchClick() {
+        setUpNavigationState(ViewTasksScreenNavigation.SearchTasks)
     }
 
     private fun List<TaskModel.Task>.filterByStatus(filterByStatus: TaskFilterByStatus) =
