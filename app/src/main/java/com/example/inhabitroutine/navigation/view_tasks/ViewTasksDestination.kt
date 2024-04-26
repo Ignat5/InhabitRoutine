@@ -1,5 +1,7 @@
 package com.example.inhabitroutine.navigation.view_tasks
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -11,9 +13,14 @@ import com.example.inhabitroutine.presentation.base.BaseDestination
 import com.example.inhabitroutine.presentation.view_tasks.AndroidViewTasksViewModel
 
 fun NavGraphBuilder.viewTasksDestination(
-    onNavigate: (TargetNavDest) -> Unit
+    onNavigate: (TargetNavDest) -> Unit,
+    onMenuClick: () -> Unit
 ) {
-    composable(route = AppNavDest.ViewTasksDestination.route) {
+    composable(
+        route = AppNavDest.ViewTasksDestination.route,
+        enterTransition = { EnterTransition.None },
+        exitTransition = { ExitTransition.None }
+    ) {
         val viewModel: AndroidViewTasksViewModel = hiltViewModel()
         BaseDestination(
             viewModel = viewModel,
@@ -22,7 +29,7 @@ fun NavGraphBuilder.viewTasksDestination(
                 ViewTasksConfig(config, onEvent)
             },
             screenContent = { state, onEvent ->
-                ViewTasksScreen(state, onEvent)
+                ViewTasksScreen(state, onEvent, onMenuClick)
             }
         )
     }

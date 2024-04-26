@@ -96,7 +96,15 @@ class PickTaskFrequencyStateHolder(
 
     private fun onConfirmClick() {
         if (canConfirmState.value) {
-            setUpResult(PickTaskFrequencyScreenResult.Confirm(inputTaskFrequencyState.value))
+            val frequency = when (val f = inputTaskFrequencyState.value) {
+                is TaskFrequency.EveryDay -> TaskFrequency.EveryDay
+                is TaskFrequency.DaysOfWeek -> {
+                    if (f.daysOfWeek.size != DayOfWeek.entries.size) {
+                        TaskFrequency.DaysOfWeek(f.daysOfWeek)
+                    } else TaskFrequency.EveryDay
+                }
+            }
+            setUpResult(PickTaskFrequencyScreenResult.Confirm(frequency))
         }
     }
 

@@ -14,7 +14,5 @@ sealed interface ViewTasksScreenEvent : ScreenEvent {
         val filterByType: TaskFilterByType
     ) : ViewTasksScreenEvent
 
-    data class OnPickSort(
-        val taskSort: TaskSort
-    ) : ViewTasksScreenEvent
+    data class OnPickSort(val taskSort: TaskSort) : ViewTasksScreenEvent
 }

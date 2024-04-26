@@ -1,45 +1,86 @@
 package com.example.inhabitroutine.feature.view_tasks
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.inhabitroutine.core.presentation.R
+import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskArchived
+import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskEndDate
+import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskFrequency
+import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskProgressType
+import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskStartDate
+import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskType
+import com.example.inhabitroutine.core.presentation.ui.common.CreateTaskFAB
+import com.example.inhabitroutine.core.presentation.ui.common.TaskDivider
+import com.example.inhabitroutine.domain.model.task.TaskModel
+import com.example.inhabitroutine.domain.model.task.content.TaskDate
 import com.example.inhabitroutine.feature.view_tasks.components.ViewTasksScreenConfig
 import com.example.inhabitroutine.feature.view_tasks.components.ViewTasksScreenEvent
 import com.example.inhabitroutine.feature.view_tasks.components.ViewTasksScreenState
+import com.example.inhabitroutine.feature.view_tasks.model.TaskFilterByStatus
+import com.example.inhabitroutine.feature.view_tasks.model.TaskFilterByType
 import com.example.inhabitroutine.feature.view_tasks.model.TaskSort
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ViewTasksScreen(
     state: ViewTasksScreenState,
-    onEvent: (ViewTasksScreenEvent) -> Unit
+    onEvent: (ViewTasksScreenEvent) -> Unit,
+    onMenuClick: () -> Unit
 ) {
     Scaffold(
         topBar = {
             ScreenTopBar(
-                onMenuClick = {},
+                onMenuClick = onMenuClick,
                 onSearchClick = {}
             )
-        }
+        },
+        floatingActionButton = {
+            CreateTaskFAB(
+                onClick = {
+
+                }
+            )
+        },
+        floatingActionButtonPosition = FabPosition.End
     ) {
         Box(
             modifier = Modifier
@@ -47,9 +88,108 @@ fun ViewTasksScreen(
                 .padding(it)
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
-                FilterSortChipRow(sort = state.sort)
-                Spacer(modifier = Modifier.height(16.dp))
+                FilterSortChipRow(
+                    sort = state.sort,
+                    onSortClick = {
+                        onEvent(ViewTasksScreenEvent.OnPickSort(it))
+                    },
+                    filterByStatus = state.filterByStatus,
+                    onFilterByStatusClick = {
+                        onEvent(ViewTasksScreenEvent.OnPickFilterByStatus(it))
+                    },
+                    filterByType = state.filterByType,
+                    onFilterByTypeClick = {
+                        onEvent(ViewTasksScreenEvent.OnPickFilterByType(it))
+                    }
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                    itemsIndexed(
+                        items = state.allTasks,
+                        key = { index, item -> item.id }
+                    ) { index, item ->
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            ItemTask(
+                                item = item,
+                                onClick = {},
+                                modifier = Modifier.animateItemPlacement()
+                            )
+                            if (index != state.allTasks.lastIndex) {
+                                TaskDivider()
+                            }
+                        }
+                    }
+                }
             }
+        }
+    }
+}
+
+@Composable
+private fun ItemTask(
+    item: TaskModel.Task,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            TaskTitleRow(item.title)
+            TaskDetailsRow(item)
+        }
+    }
+}
+
+@Composable
+private fun TaskTitleRow(title: String) {
+    Text(
+        text = title,
+        style = MaterialTheme.typography.titleMedium,
+        color = MaterialTheme.colorScheme.onSurface,
+        modifier = Modifier.fillMaxWidth(),
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis
+    )
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun TaskDetailsRow(
+    item: TaskModel.Task
+) {
+    FlowRow(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        ChipTaskType(taskType = item.type)
+        ChipTaskProgressType(taskProgressType = item.progressType)
+        if (item.isArchived) {
+            ChipTaskArchived()
+        }
+        when (val taskDate = item.date) {
+            is TaskDate.Period -> {
+                ChipTaskStartDate(date = taskDate.startDate)
+                taskDate.endDate?.let { endDate ->
+                    ChipTaskEndDate(date = endDate)
+                }
+            }
+
+            is TaskDate.Day -> {
+                ChipTaskStartDate(date = taskDate.date)
+            }
+        }
+        if (item is TaskModel.RecurringActivity) {
+            ChipTaskFrequency(item.frequency)
         }
     }
 }
@@ -57,6 +197,11 @@ fun ViewTasksScreen(
 @Composable
 private fun FilterSortChipRow(
     sort: TaskSort,
+    onSortClick: (TaskSort) -> Unit,
+    filterByStatus: TaskFilterByStatus?,
+    onFilterByStatusClick: (TaskFilterByStatus) -> Unit,
+    filterByType: TaskFilterByType?,
+    onFilterByTypeClick: (TaskFilterByType) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyRow(
@@ -66,7 +211,22 @@ private fun FilterSortChipRow(
     ) {
         item {
             SortChip(
-                sort = sort
+                sort = sort,
+                onSortClick = onSortClick
+            )
+        }
+
+        item {
+            FilterByStatusChip(
+                filterByStatus = filterByStatus,
+                onFilterClick = onFilterByStatusClick
+            )
+        }
+
+        item {
+            FilterByTypeChip(
+                filterByType = filterByType,
+                onFilterClick = onFilterByTypeClick
             )
         }
     }
@@ -74,18 +234,205 @@ private fun FilterSortChipRow(
 
 @Composable
 private fun SortChip(
-    sort: TaskSort
+    sort: TaskSort,
+    onSortClick: (TaskSort) -> Unit
 ) {
-    FilterChip(
-        selected = false,
-        onClick = { /*TODO*/ },
-        label = {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_sort),
-                contentDescription = null
-            )
-        },
-    )
+    var isExpanded by remember {
+        mutableStateOf(false)
+    }
+    Box {
+        FilterChip(
+            selected = false,
+            onClick = { isExpanded = !isExpanded },
+            label = {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_sort),
+                    contentDescription = null
+                )
+            }
+        )
+        DropdownMenu(
+            expanded = isExpanded,
+            onDismissRequest = { isExpanded = false }
+        ) {
+            val allSortItems = remember { TaskSort.entries }
+            allSortItems.forEach { item ->
+                val titleResId = remember {
+                    when (item) {
+                        TaskSort.ByDate -> R.string.task_sort_by_date_title
+                        TaskSort.ByTitle -> R.string.task_sort_by_name_title
+                    }
+                }
+                val isSelected = remember {
+                    item == sort
+                }
+                DropdownMenuItem(
+                    text = {
+                        Text(text = stringResource(id = titleResId))
+                    },
+                    trailingIcon = {
+                        if (isSelected) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_check),
+                                modifier = Modifier.size(16.dp),
+                                contentDescription = null
+                            )
+                        }
+                    },
+                    onClick = {
+                        onSortClick(item)
+                        isExpanded = false
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun FilterByStatusChip(
+    filterByStatus: TaskFilterByStatus?,
+    onFilterClick: (TaskFilterByStatus) -> Unit
+) {
+    var isExpanded by remember {
+        mutableStateOf(false)
+    }
+    val isSelected = remember(filterByStatus) {
+        filterByStatus != null
+    }
+    Box {
+        FilterChip(
+            selected = isSelected,
+            onClick = { isExpanded = !isExpanded },
+            label = {
+                val titleResId = remember(filterByStatus) {
+                    when (filterByStatus) {
+                        null -> R.string.task_filter_by_status_title
+                        TaskFilterByStatus.OnlyActive -> R.string.task_filter_by_status_only_active_title
+                        TaskFilterByStatus.OnlyArchived -> R.string.task_filter_by_status_only_archived_title
+                    }
+                }
+                Text(text = stringResource(id = titleResId))
+            },
+            trailingIcon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_arrow_dropdown),
+                    modifier = Modifier.rotate(
+                        if (isExpanded) 180f else 0f
+                    ),
+                    contentDescription = null
+                )
+            },
+        )
+        DropdownMenu(
+            expanded = isExpanded,
+            onDismissRequest = { isExpanded = false }
+        ) {
+            val allFilterItems = remember { TaskFilterByStatus.entries }
+            allFilterItems.forEach { item ->
+                val titleResId = remember {
+                    when (item) {
+                        TaskFilterByStatus.OnlyActive -> R.string.task_filter_by_status_only_active_title
+                        TaskFilterByStatus.OnlyArchived -> R.string.task_filter_by_status_only_archived_title
+                    }
+                }
+                val isCurrent = remember {
+                    item == filterByStatus
+                }
+                DropdownMenuItem(
+                    text = {
+                        Text(text = stringResource(id = titleResId))
+                    },
+                    trailingIcon = {
+                        if (isCurrent) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_check),
+                                modifier = Modifier.size(16.dp),
+                                contentDescription = null
+                            )
+                        }
+                    },
+                    onClick = {
+                        onFilterClick(item)
+                        isExpanded = false
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun FilterByTypeChip(
+    filterByType: TaskFilterByType?,
+    onFilterClick: (TaskFilterByType) -> Unit
+) {
+    var isExpanded by remember {
+        mutableStateOf(false)
+    }
+    val isSelected = remember(filterByType) {
+        filterByType != null
+    }
+    Box {
+        FilterChip(
+            selected = isSelected,
+            onClick = { isExpanded = !isExpanded },
+            label = {
+                val titleResId = remember(filterByType) {
+                    when (filterByType) {
+                        null -> R.string.task_filter_by_type_title
+                        TaskFilterByType.OnlyRecurring -> R.string.task_filter_by_type_recurring_tasks_title
+                        TaskFilterByType.OnlySingle -> R.string.task_filter_by_type_single_tasks_title
+                    }
+                }
+                Text(text = stringResource(id = titleResId))
+            },
+            trailingIcon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_arrow_dropdown),
+                    modifier = Modifier.rotate(
+                        if (isExpanded) 180f else 0f
+                    ),
+                    contentDescription = null
+                )
+            },
+        )
+        DropdownMenu(
+            expanded = isExpanded,
+            onDismissRequest = { isExpanded = false }
+        ) {
+            val allFilterItems = remember { TaskFilterByType.entries }
+            allFilterItems.forEach { item ->
+                val titleResId = remember {
+                    when (item) {
+                        TaskFilterByType.OnlyRecurring -> R.string.task_filter_by_type_recurring_tasks_title
+                        TaskFilterByType.OnlySingle -> R.string.task_filter_by_type_single_tasks_title
+                    }
+                }
+                val isCurrent = remember {
+                    item == filterByType
+                }
+                DropdownMenuItem(
+                    text = {
+                        Text(text = stringResource(id = titleResId))
+                    },
+                    trailingIcon = {
+                        if (isCurrent) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_check),
+                                modifier = Modifier.size(16.dp),
+                                contentDescription = null
+                            )
+                        }
+                    },
+                    onClick = {
+                        onFilterClick(item)
+                        isExpanded = false
+                    }
+                )
+            }
+        }
+    }
 }
 
 @Composable

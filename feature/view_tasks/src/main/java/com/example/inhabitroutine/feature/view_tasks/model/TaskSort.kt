@@ -1,6 +1,14 @@
 package com.example.inhabitroutine.feature.view_tasks.model
 
-sealed interface TaskSort {
-    data object ByDate : TaskSort
-    data object ByTitle : TaskSort
+enum class TaskSort {
+    ByDate,
+    ByTitle
 }
+
+//sealed class TaskSort(val type: Type) {
+//    enum class Type { ByDate, ByTitle }
+//
+//    data object ByDate : TaskSort(Type.ByDate)
+//    data object ByTitle : TaskSort(Type.ByTitle)
+//
+//}

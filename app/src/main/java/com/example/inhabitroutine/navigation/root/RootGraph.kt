@@ -93,7 +93,10 @@ fun RootGraph() {
                 viewRemindersDestination(onNavigate)
                 searchTasksDestination(onNavigate)
                 viewTaskStatisticsDestination(onNavigate)
-                viewTasksDestination(onNavigate)
+                viewTasksDestination(
+                    onNavigate = onNavigate,
+                    onMenuClick = onMenuClick
+                )
             }
         }
     }

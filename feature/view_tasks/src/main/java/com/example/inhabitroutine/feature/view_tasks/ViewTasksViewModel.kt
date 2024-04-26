@@ -120,7 +120,7 @@ class ViewTasksViewModel(
     private fun List<TaskModel.Task>.filterByStatus(filterByStatus: TaskFilterByStatus) =
         this.let { allTasks ->
             when (filterByStatus) {
-                is TaskFilterByStatus.OnlyActive -> {
+                TaskFilterByStatus.OnlyActive -> {
                     Clock.System.todayDate.let { todayDate ->
                         allTasks.filter { taskModel ->
                             if (!taskModel.isArchived) {
@@ -138,22 +138,22 @@ class ViewTasksViewModel(
                     }
                 }
 
-                is TaskFilterByStatus.OnlyArchived -> allTasks.filter { it.isArchived }
+                TaskFilterByStatus.OnlyArchived -> allTasks.filter { it.isArchived }
             }
         }
 
     private fun List<TaskModel.Task>.filterByType(filterByType: TaskFilterByType) =
         this.let { allTasks ->
             when (filterByType) {
-                is TaskFilterByType.OnlyRecurring -> allTasks.filter { it.type == TaskType.RecurringTask }
-                is TaskFilterByType.OnlySingle -> allTasks.filter { it.type == TaskType.SingleTask }
+                TaskFilterByType.OnlyRecurring -> allTasks.filter { it.type == TaskType.RecurringTask }
+                TaskFilterByType.OnlySingle -> allTasks.filter { it.type == TaskType.SingleTask }
             }
         }
 
     private fun List<TaskModel.Task>.sortTasks(taskSort: TaskSort) =
         this.let { allTasks ->
             when (taskSort) {
-                is TaskSort.ByDate -> {
+                TaskSort.ByDate -> {
                     allTasks.sortedByDescending { taskModel ->
                         when (val date = taskModel.date) {
                             is TaskDate.Period -> date.startDate
@@ -162,7 +162,7 @@ class ViewTasksViewModel(
                     }
                 }
 
-                is TaskSort.ByTitle -> {
+                TaskSort.ByTitle -> {
                     allTasks.sortedBy { it.title }
                 }
             }
