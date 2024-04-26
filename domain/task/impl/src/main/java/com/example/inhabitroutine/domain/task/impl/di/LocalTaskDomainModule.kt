@@ -5,8 +5,10 @@ import com.example.inhabitroutine.data.reminder.api.ReminderRepository
 import com.example.inhabitroutine.data.task.api.TaskRepository
 import com.example.inhabitroutine.domain.task.api.use_case.ArchiveTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.DeleteTaskByIdUseCase
+import com.example.inhabitroutine.domain.task.api.use_case.ReadHabitsUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTasksByQueryUseCase
+import com.example.inhabitroutine.domain.task.api.use_case.ReadTasksUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ReadTasksWithExtrasAndRecordByDateUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ResetTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.SaveTaskByIdUseCase
@@ -21,8 +23,10 @@ import com.example.inhabitroutine.domain.task.api.use_case.calculate_statistics.
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultArchiveTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultCalculateTaskStatisticsUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultDeleteTaskByIdUseCase
+import com.example.inhabitroutine.domain.task.impl.use_case.DefaultReadHabitsUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultReadTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultReadTasksByQueryUseCase
+import com.example.inhabitroutine.domain.task.impl.use_case.DefaultReadTasksUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultReadTasksWithExtrasAndRecordByDateUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultResetTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.impl.use_case.DefaultSaveTaskByIdUseCase
@@ -66,6 +70,26 @@ object LocalTaskDomainModule {
             taskRepository = taskRepository,
             reminderRepository = reminderRepository,
             recordRepository = recordRepository,
+            defaultDispatcher = defaultDispatcher
+        )
+    }
+
+    fun provideReadTasksUseCase(
+        taskRepository: TaskRepository,
+        defaultDispatcher: CoroutineDispatcher
+    ): ReadTasksUseCase {
+        return DefaultReadTasksUseCase(
+            taskRepository = taskRepository,
+            defaultDispatcher = defaultDispatcher
+        )
+    }
+
+    fun provideReadHabitsUseCase(
+        taskRepository: TaskRepository,
+        defaultDispatcher: CoroutineDispatcher
+    ): ReadHabitsUseCase {
+        return DefaultReadHabitsUseCase(
+            taskRepository = taskRepository,
             defaultDispatcher = defaultDispatcher
         )
     }

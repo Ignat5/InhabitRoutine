@@ -7,6 +7,7 @@ import com.example.inhabitroutine.data.task.impl.repository.util.encodeToEpochDa
 import com.example.inhabitroutine.data.task.impl.repository.util.encodeToString
 import com.example.inhabitroutine.data.task.impl.repository.util.toTaskDataModel
 import com.example.inhabitroutine.data.task.impl.repository.util.toTaskEntity
+import com.example.inhabitroutine.domain.model.task.type.TaskType
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -54,6 +55,17 @@ internal class DefaultTaskDataSource(
 
     override fun readTasksById(taskId: String): Flow<List<TaskDataModel>> =
         taskDao.readTasksById(taskId).map { allTasks ->
+            if (allTasks.isNotEmpty()) {
+                withContext(ioDispatcher) {
+                    allTasks.map {
+                        async { it.toTaskDataModel(json) }
+                    }.awaitAll().filterNotNull()
+                }
+            } else emptyList()
+        }
+
+    override fun readTasksByTaskType(targetTaskTypes: Set<TaskType>): Flow<List<TaskDataModel>> =
+        taskDao.readTasksByTaskType(targetTaskTypes.encodeToString(json).toSet()).map { allTasks ->
             if (allTasks.isNotEmpty()) {
                 withContext(ioDispatcher) {
                     allTasks.map {

@@ -15,7 +15,7 @@ sealed interface TaskModel {
     val description: String
     val date: TaskDate
     val isArchived: Boolean
-    abstract val versionStartDate: LocalDate
+    val versionStartDate: LocalDate
     val isDraft: Boolean
     val createdAt: Long
 

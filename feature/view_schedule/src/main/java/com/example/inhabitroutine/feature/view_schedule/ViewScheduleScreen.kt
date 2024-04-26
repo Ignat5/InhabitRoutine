@@ -53,6 +53,7 @@ import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskProgressTy
 import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskReminders
 import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskType
 import com.example.inhabitroutine.core.presentation.ui.common.CreateTaskFAB
+import com.example.inhabitroutine.core.presentation.ui.common.TaskDivider
 import com.example.inhabitroutine.core.presentation.ui.dialog.pick_task_progress_type.PickTaskProgressTypeDialog
 import com.example.inhabitroutine.core.presentation.ui.dialog.pick_task_type.PickTaskTypeDialog
 import com.example.inhabitroutine.core.presentation.ui.util.limitNumberToDisplay
@@ -88,12 +89,13 @@ private const val WEEK_ITEM_TITLE_LENGTH = 3
 fun ViewScheduleScreen(
     state: ViewScheduleScreenState,
     onEvent: (ViewScheduleScreenEvent) -> Unit,
+    onMenuClick: () -> Unit
 ) {
     Scaffold(
         topBar = {
             ScreenTopBar(
                 currentDate = state.currentDate,
-                onMenuClick = {},
+                onMenuClick = onMenuClick,
                 onSearchClick = {
                     onEvent(ViewScheduleScreenEvent.OnSearchClick)
                 },
@@ -149,9 +151,7 @@ fun ViewScheduleScreen(
                                 modifier = Modifier.animateItemPlacement()
                             )
                             if (index != state.allTasks.lastIndex) {
-                                HorizontalDivider(
-                                    modifier = Modifier.alpha(0.2f)
-                                )
+                                TaskDivider()
                             }
                         }
                     }

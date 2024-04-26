@@ -129,6 +129,12 @@ selectTasksById:
 SELECT * FROM TaskView tView
 WHERE tView.task_id = :taskId;
 
+selectTasksByType:
+SELECT * FROM TaskView tView
+WHERE tView.task_type IN :targetTaskTypes
+GROUP BY tView.task_id
+HAVING tView.taskContent_versionStartEpochDay = MAX(tView.taskContent_versionStartEpochDay);
+
 insertTask:
 INSERT OR REPLACE INTO TaskTable
 VALUES ?;

@@ -112,6 +112,10 @@ private fun String.decodeFromTaskType(json: Json): TaskType? =
         json.decodeFromString<TaskType>(this)
     }.getOrNull()
 
+internal fun Collection<TaskType>.encodeToString(json: Json): Collection<String> = runCatching {
+    this.mapNotNull { it.encodeToString(json) }
+}.getOrElse { emptySet() }
+
 /* task progress type */
 
 private fun TaskProgressType.encodeToString(json: Json): String? =

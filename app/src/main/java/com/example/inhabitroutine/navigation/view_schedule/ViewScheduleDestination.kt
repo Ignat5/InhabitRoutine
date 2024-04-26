@@ -1,5 +1,7 @@
 package com.example.inhabitroutine.navigation.view_schedule
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -15,7 +17,11 @@ fun NavGraphBuilder.viewScheduleDestination(
     onNavigate: (TargetNavDest) -> Unit,
     onMenuClick: () -> Unit
 ) {
-    composable(AppNavDest.ViewScheduleDestination.route) {
+    composable(
+        route = AppNavDest.ViewScheduleDestination.route,
+        enterTransition = { EnterTransition.None },
+        exitTransition = { ExitTransition.None }
+    ) {
         val viewModel: AndroidViewScheduleViewModel = hiltViewModel()
         BaseDestination(
             viewModel = viewModel,
@@ -50,7 +56,7 @@ fun NavGraphBuilder.viewScheduleDestination(
                 ViewScheduleScreenConfig(config, onEvent)
             },
             screenContent = { state, onEvent ->
-                ViewScheduleScreen(state, onEvent)
+                ViewScheduleScreen(state, onEvent, onMenuClick)
             }
         )
     }

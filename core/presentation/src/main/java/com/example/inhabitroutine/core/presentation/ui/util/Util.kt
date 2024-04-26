@@ -36,7 +36,11 @@ fun TaskProgressType.toIconId(): Int = when (this) {
 fun TaskFrequency.toDisplay(context: Context) = this.let { frequency ->
     when (frequency) {
         is TaskFrequency.EveryDay -> context.getString(R.string.frequency_every_day)
-        is TaskFrequency.DaysOfWeek -> frequency.daysOfWeek.toDisplay(context)
+        is TaskFrequency.DaysOfWeek -> {
+            if (frequency.daysOfWeek.size != DayOfWeek.entries.size) {
+                frequency.daysOfWeek.toDisplay(context)
+            } else context.getString(R.string.frequency_every_day)
+        }
     }
 }
 

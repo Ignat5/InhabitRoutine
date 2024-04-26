@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <string name="app_title" translatable="false">Inhabit Routine</string>
+
+    <!--  drawer  -->
+    <string name="drawer_view_schedule_title">Schedule</string>
+    <string name="drawer_view_habits_title">Habits</string>
+    <string name="drawer_view_tasks_title">Tasks</string>
+    <string name="drawer_settings_title">Settings</string>
+
+    <!--  view schedule  -->
     <string name="habit_title">Habit</string>
     <string name="recurring_task_title">Recurring task</string>
     <string name="single_task_title">Task</string>
@@ -20,6 +30,17 @@
     <string name="task_status_skipped">Skipped</string>
     <string name="task_status_failed">Failed</string>
     <string name="task_enter_number_progress_label">Number</string>
+
+    <!--  view tasks  -->
+    <string name="view_tasks_screen_title">Tasks</string>
+    <string name="task_sort_by_date_title">By date</string>
+    <string name="task_sort_by_name_title">By name</string>
+    <string name="task_filter_by_status_title">Status</string>
+    <string name="task_filter_by_status_only_active_title">Only active</string>
+    <string name="task_filter_by_status_only_archived_title">Only archived</string>
+    <string name="task_filter_by_type_title">Type</string>
+    <string name="task_filter_by_type_recurring_tasks_title">Only recurring</string>
+    <string name="task_filter_by_type_single_tasks_title">Only single</string>
 
     <!-- task config (create/edit task)   -->
     <string name="task_config_title">Activity name</string>
@@ -46,6 +67,7 @@
     <string name="task_action_archive_confirm_message">Are you sure you want to archive the activity?</string>
     <string name="task_action_archive_success_message">Activity archived</string>
     <string name="task_action_unarchive_success_message">Activity unarchived</string>
+    <string name="task_action_delete_success_message">Activity deleted</string>
     <string name="task_action_reset_success_message">Habit reset</string>
     <string name="task_action_delete_title">Delete activity</string>
     <string name="task_action_delete_message">Are you sure you want to delete the activity?</string>
