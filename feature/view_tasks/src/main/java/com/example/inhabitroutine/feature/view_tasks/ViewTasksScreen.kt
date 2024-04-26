@@ -2,6 +2,7 @@ package com.example.inhabitroutine.feature.view_tasks
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,20 +29,27 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.inhabitroutine.core.presentation.R
+import com.example.inhabitroutine.core.presentation.ui.common.BaseSnackBar
 import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskArchived
 import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskEndDate
 import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskFrequency
@@ -50,15 +58,20 @@ import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskStartDate
 import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskType
 import com.example.inhabitroutine.core.presentation.ui.common.CreateTaskFAB
 import com.example.inhabitroutine.core.presentation.ui.common.TaskDivider
+import com.example.inhabitroutine.core.presentation.ui.dialog.archive_task.ArchiveTaskDialog
+import com.example.inhabitroutine.core.presentation.ui.dialog.delete_task.DeleteTaskDialog
 import com.example.inhabitroutine.core.presentation.ui.dialog.pick_task_type.PickTaskTypeDialog
 import com.example.inhabitroutine.domain.model.task.TaskModel
 import com.example.inhabitroutine.domain.model.task.content.TaskDate
 import com.example.inhabitroutine.feature.view_tasks.components.ViewTasksScreenConfig
 import com.example.inhabitroutine.feature.view_tasks.components.ViewTasksScreenEvent
 import com.example.inhabitroutine.feature.view_tasks.components.ViewTasksScreenState
+import com.example.inhabitroutine.feature.view_tasks.config.view_task_actions.ViewTaskActionsDialog
 import com.example.inhabitroutine.feature.view_tasks.model.TaskFilterByStatus
 import com.example.inhabitroutine.feature.view_tasks.model.TaskFilterByType
 import com.example.inhabitroutine.feature.view_tasks.model.TaskSort
+import com.example.inhabitroutine.feature.view_tasks.model.ViewTasksMessage
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -67,12 +80,21 @@ fun ViewTasksScreen(
     onEvent: (ViewTasksScreenEvent) -> Unit,
     onMenuClick: () -> Unit
 ) {
+    val snackBarHostState = remember { SnackbarHostState() }
     Scaffold(
         topBar = {
             ScreenTopBar(
                 onMenuClick = onMenuClick,
                 onSearchClick = {
                     onEvent(ViewTasksScreenEvent.OnSearchClick)
+                }
+            )
+        },
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackBarHostState,
+                snackbar = { data ->
+                    BaseSnackBar(snackBarData = data)
                 }
             )
         },
@@ -114,7 +136,13 @@ fun ViewTasksScreen(
                         Column(modifier = Modifier.fillMaxWidth()) {
                             ItemTask(
                                 item = item,
-                                onClick = {},
+                                onClick = {
+                                    onEvent(
+                                        ViewTasksScreenEvent.OnTaskClick(
+                                            item.id
+                                        )
+                                    )
+                                },
                                 modifier = Modifier.animateItemPlacement()
                             )
                             if (index != state.allTasks.lastIndex) {
@@ -124,10 +152,52 @@ fun ViewTasksScreen(
                     }
                 }
             }
+            SnackBarMessageHandler(
+                message = state.message,
+                snackBarHostState = snackBarHostState,
+                onMessageShown = {
+                    onEvent(ViewTasksScreenEvent.OnMessageShown)
+                }
+            )
         }
     }
 }
 
+@Composable
+private fun SnackBarMessageHandler(
+    message: ViewTasksMessage,
+    snackBarHostState: SnackbarHostState,
+    onMessageShown: () -> Unit
+) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    LaunchedEffect(message) {
+        when (message) {
+            is ViewTasksMessage.Idle -> Unit
+            is ViewTasksMessage.Message -> {
+                val messageResId = when (message) {
+                    is ViewTasksMessage.Message.ArchiveSuccess ->
+                        R.string.task_action_archive_success_message
+
+                    is ViewTasksMessage.Message.UnarchiveSuccess ->
+                        R.string.task_action_unarchive_success_message
+
+                    is ViewTasksMessage.Message.DeleteSuccess ->
+                        R.string.task_action_delete_success_message
+                }
+                scope.launch {
+                    snackBarHostState.showSnackbar(
+                        message = context.getString(messageResId),
+                        duration = SnackbarDuration.Short
+                    )
+                }
+                onMessageShown()
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ItemTask(
     item: TaskModel.Task,
@@ -137,7 +207,10 @@ private fun ItemTask(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .clickable { onClick() }
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onClick
+            )
     ) {
         Column(
             modifier = Modifier
@@ -176,9 +249,9 @@ private fun TaskDetailsRow(
     ) {
         ChipTaskType(taskType = item.type)
         ChipTaskProgressType(taskProgressType = item.progressType)
-        if (item.isArchived) {
-            ChipTaskArchived()
-        }
+//        if (item.isArchived) {
+//            ChipTaskArchived()
+//        }
         when (val taskDate = item.date) {
             is TaskDate.Period -> {
                 ChipTaskStartDate(date = taskDate.startDate)
@@ -444,6 +517,24 @@ fun ViewTasksConfig(
     onEvent: (ViewTasksScreenEvent) -> Unit
 ) {
     when (config) {
+        is ViewTasksScreenConfig.ViewTaskActions -> {
+            ViewTaskActionsDialog(stateHolder = config.stateHolder) {
+                onEvent(ViewTasksScreenEvent.ResultEvent.ViewTaskActions(it))
+            }
+        }
+
+        is ViewTasksScreenConfig.ArchiveTask -> {
+            ArchiveTaskDialog(stateHolder = config.stateHolder) {
+                onEvent(ViewTasksScreenEvent.ResultEvent.ArchiveTask(it))
+            }
+        }
+
+        is ViewTasksScreenConfig.DeleteTask -> {
+            DeleteTaskDialog(stateHolder = config.stateHolder) {
+                onEvent(ViewTasksScreenEvent.ResultEvent.DeleteTask(it))
+            }
+        }
+
         is ViewTasksScreenConfig.PickTaskType -> {
             PickTaskTypeDialog(allTaskTypes = config.allTaskTypes) {
                 onEvent(ViewTasksScreenEvent.ResultEvent.PickTaskType(it))

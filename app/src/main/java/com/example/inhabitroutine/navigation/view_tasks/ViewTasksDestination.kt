@@ -27,6 +27,14 @@ fun NavGraphBuilder.viewTasksDestination(
             viewModel = viewModel,
             onNavigation = { destination ->
                 when (destination) {
+                    is ViewTasksScreenNavigation.EditTask -> {
+                        onNavigate(
+                            TargetNavDest.Destination(
+                                route = AppNavDest.buildEditTaskRoute(destination.taskId)
+                            )
+                        )
+                    }
+
                     is ViewTasksScreenNavigation.CreateTask -> {
                         onNavigate(
                             TargetNavDest.Destination(

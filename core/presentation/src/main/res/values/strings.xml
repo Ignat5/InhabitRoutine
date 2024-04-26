@@ -67,6 +67,7 @@
     <string name="task_action_archive_confirm_message">Are you sure you want to archive the activity?</string>
     <string name="task_action_archive_success_message">Activity archived</string>
     <string name="task_action_unarchive_success_message">Activity unarchived</string>
+    <string name="task_action_delete_success_message">Activity deleted</string>
     <string name="task_action_reset_success_message">Habit reset</string>
     <string name="task_action_delete_title">Delete activity</string>
     <string name="task_action_delete_message">Are you sure you want to delete the activity?</string>
