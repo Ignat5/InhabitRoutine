@@ -67,6 +67,7 @@ dependencies {
     implementation(project(":feature:search_tasks"))
     implementation(project(":feature:view_task_statistics"))
     implementation(project(":feature:view_tasks"))
+    implementation(project(":feature:view_habits"))
 
     implementation(project(":core:presentation"))
     implementation(project(":core:util"))

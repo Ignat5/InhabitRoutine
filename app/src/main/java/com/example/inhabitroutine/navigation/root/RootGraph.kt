@@ -17,6 +17,7 @@ import com.example.inhabitroutine.navigation.TargetNavDest
 import com.example.inhabitroutine.navigation.create_task.createTaskDestination
 import com.example.inhabitroutine.navigation.edit_task.editTaskDestination
 import com.example.inhabitroutine.navigation.search_tasks.searchTasksDestination
+import com.example.inhabitroutine.navigation.view_habits.viewHabitsDestination
 import com.example.inhabitroutine.navigation.view_reminders.viewRemindersDestination
 import com.example.inhabitroutine.navigation.view_schedule.viewScheduleDestination
 import com.example.inhabitroutine.navigation.view_task_statistics.viewTaskStatisticsDestination
@@ -94,6 +95,10 @@ fun RootGraph() {
                 searchTasksDestination(onNavigate)
                 viewTaskStatisticsDestination(onNavigate)
                 viewTasksDestination(
+                    onNavigate = onNavigate,
+                    onMenuClick = onMenuClick
+                )
+                viewHabitsDestination(
                     onNavigate = onNavigate,
                     onMenuClick = onMenuClick
                 )

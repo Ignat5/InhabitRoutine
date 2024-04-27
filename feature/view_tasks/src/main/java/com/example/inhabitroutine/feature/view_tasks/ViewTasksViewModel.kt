@@ -213,12 +213,14 @@ class ViewTasksViewModel(
     }
 
     private fun onDeleteTask(result: ViewTaskActionsScreenResult.Action.Delete) {
-        setUpConfigState(ViewTasksScreenConfig.DeleteTask(
-            stateHolder = DeleteTaskStateHolder(
-                taskId = result.taskId,
-                holderScope = provideChildScope()
+        setUpConfigState(
+            ViewTasksScreenConfig.DeleteTask(
+                stateHolder = DeleteTaskStateHolder(
+                    taskId = result.taskId,
+                    holderScope = provideChildScope()
+                )
             )
-        ))
+        )
     }
 
     private fun onUnarchiveTask(result: ViewTaskActionsScreenResult.Action.Unarchive) {
@@ -340,8 +342,8 @@ class ViewTasksViewModel(
                                 when (val taskDate = taskModel.date) {
                                     is TaskDate.Period -> {
                                         taskDate.endDate?.let { endDate ->
-                                            todayDate <= endDate
-                                        } ?: true
+                                            todayDate in taskDate.startDate..endDate
+                                        } ?: (todayDate >= taskDate.startDate)
                                     }
 
                                     is TaskDate.Day -> taskDate.date >= todayDate

@@ -63,7 +63,7 @@ internal class DefaultCalculateTaskStatisticsUseCase(
         }.firstOrNull() ?: ResultModel.failure(NoSuchElementException())
     }
 
-    private suspend fun getTaskStatisticsModel(statusMap: Map<LocalDate, TaskWithRecordModel>): TaskStatisticsModel =
+    private suspend fun getTaskStatisticsModel(statusMap: Map<LocalDate, TaskStatus>): TaskStatisticsModel =
         coroutineScope {
             val habitScoreDef = async {
                 calculateHabitScore(statusMap)
@@ -89,16 +89,16 @@ internal class DefaultCalculateTaskStatisticsUseCase(
             )
         }
 
-    private fun calculateStatusCount(statusMap: Map<LocalDate, TaskWithRecordModel>): Map<TaskStatus, Int> {
+    private fun calculateStatusCount(statusMap: Map<LocalDate, TaskStatus>): Map<TaskStatus, Int> {
         val resultMap = mutableMapOf<TaskStatus, Int>()
         statusMap.forEach { entry ->
-            val count = resultMap[entry.value.status] ?: 0
-            resultMap[entry.value.status] = count + 1
+            val count = resultMap[entry.value] ?: 0
+            resultMap[entry.value] = count + 1
         }
         return resultMap
     }
 
-    private fun calculateCompletionCount(statusMap: Map<LocalDate, TaskWithRecordModel>): TaskCompletionCount {
+    private fun calculateCompletionCount(statusMap: Map<LocalDate, TaskStatus>): TaskCompletionCount {
         var weekCount = 0
         var monthCount = 0
         var yearCount = 0
@@ -107,7 +107,7 @@ internal class DefaultCalculateTaskStatisticsUseCase(
             val weekRange = todayDate.firstDayOfWeek.rangeTo(todayDate)
             val monthRange = todayDate.firstDayOfMonth.rangeTo(todayDate)
             val yearRange = todayDate.firstDayOfYear.rangeTo(todayDate)
-            statusMap.filterValues { it.status is TaskStatus.Completed }.let { statusMap ->
+            statusMap.filterValues { it is TaskStatus.Completed }.let { statusMap ->
                 statusMap.keys.forEach { nextDate ->
                     allTimeCount++
                     if (nextDate in weekRange) {
@@ -130,13 +130,13 @@ internal class DefaultCalculateTaskStatisticsUseCase(
         }
     }
 
-    private fun calculateStreak(statusMap: Map<LocalDate, TaskWithRecordModel>): TaskStreakModel {
+    private fun calculateStreak(statusMap: Map<LocalDate, TaskStatus>): TaskStreakModel {
         var currentStreakCount = 0
         var bestStreakCount = 0
-        statusMap.filterValues { it.status !is TaskStatus.NotCompleted.Skipped }.let { statusMap ->
+        statusMap.filterValues { it !is TaskStatus.NotCompleted.Skipped }.let { statusMap ->
             statusMap.keys.sorted().let { allDays ->
                 allDays.forEach { day ->
-                    statusMap.getValue(day).status.let { status ->
+                    statusMap.getValue(day).let { status ->
                         when (status) {
                             is TaskStatus.Completed -> {
                                 currentStreakCount++
@@ -159,12 +159,12 @@ internal class DefaultCalculateTaskStatisticsUseCase(
         }
     }
 
-    private fun calculateHabitScore(statusMap: Map<LocalDate, TaskWithRecordModel>): Float {
-        statusMap.filterValues { it.status !is TaskStatus.NotCompleted.Skipped }.let { statusMap ->
+    private fun calculateHabitScore(statusMap: Map<LocalDate, TaskStatus>): Float {
+        statusMap.filterValues { it !is TaskStatus.NotCompleted.Skipped }.let { statusMap ->
             if (statusMap.isEmpty()) return 0f
             val allCount = statusMap.size.toFloat()
             val completedCount =
-                statusMap.values.count { it.status is TaskStatus.Completed }.toFloat()
+                statusMap.values.count { it is TaskStatus.Completed }.toFloat()
             return completedCount / allCount
         }
     }
@@ -174,7 +174,7 @@ internal class DefaultCalculateTaskStatisticsUseCase(
         allRecords: List<RecordModel>,
         startDate: LocalDate,
         endDate: LocalDate
-    ): Map<LocalDate, TaskWithRecordModel> {
+    ): Map<LocalDate, TaskStatus> {
         return coroutineScope {
             startDate.until(endDate, DateTimeUnit.DAY).let { daysUntilEnd ->
                 (0..daysUntilEnd).map { dayOffset ->
@@ -204,50 +204,52 @@ internal class DefaultCalculateTaskStatisticsUseCase(
         taskModel: TaskModel.Habit,
         entry: RecordEntry?,
         date: LocalDate
-    ): Pair<LocalDate, TaskWithRecordModel.Habit>? {
+    ): Pair<LocalDate, TaskStatus>? {
         return if (taskModel.date.checkIfMatches(date) && taskModel.frequency.checkIfMatches(date) && !taskModel.isArchived) {
-            Pair(date, taskModel.toTaskWithRecordModel(entry))
+            val taskStatus =
+                (taskModel.getTaskStatusByRecordEntry(entry) as? TaskStatus.Habit) ?: TaskStatus.NotCompleted.Pending
+            Pair(date, taskStatus)
         } else return null
     }
 
-    private fun TaskModel.Habit.toTaskWithRecordModel(entry: RecordEntry?): TaskWithRecordModel.Habit {
-        return this.let { taskModel ->
-            taskModel.getTaskStatusByRecordEntry(entry).let { status ->
-                when (taskModel) {
-                    is TaskModel.Habit.HabitContinuous -> {
-                        when (taskModel) {
-                            is TaskModel.Habit.HabitContinuous.HabitNumber -> {
-                                TaskWithRecordModel.Habit.HabitContinuous.HabitNumber(
-                                    task = taskModel,
-                                    recordEntry = entry as? RecordEntry.HabitEntry.Continuous.Number,
-                                    status = (status as? TaskStatus.Habit)
-                                        ?: TaskStatus.NotCompleted.Pending
-                                )
-                            }
-
-                            is TaskModel.Habit.HabitContinuous.HabitTime -> {
-                                TaskWithRecordModel.Habit.HabitContinuous.HabitTime(
-                                    task = taskModel,
-                                    recordEntry = entry as? RecordEntry.HabitEntry.Continuous.Time,
-                                    status = (status as? TaskStatus.Habit)
-                                        ?: TaskStatus.NotCompleted.Pending
-                                )
-                            }
-                        }
-                    }
-
-                    is TaskModel.Habit.HabitYesNo -> {
-                        TaskWithRecordModel.Habit.HabitYesNo(
-                            task = taskModel,
-                            recordEntry = entry as? RecordEntry.HabitEntry.YesNo,
-                            status = (status as? TaskStatus.Habit)
-                                ?: TaskStatus.NotCompleted.Pending
-                        )
-                    }
-                }
-            }
-        }
-    }
+//    private fun TaskModel.Habit.toTaskWithRecordModel(entry: RecordEntry?): TaskWithRecordModel.Habit {
+//        return this.let { taskModel ->
+//            taskModel.getTaskStatusByRecordEntry(entry).let { status ->
+//                when (taskModel) {
+//                    is TaskModel.Habit.HabitContinuous -> {
+//                        when (taskModel) {
+//                            is TaskModel.Habit.HabitContinuous.HabitNumber -> {
+//                                TaskWithRecordModel.Habit.HabitContinuous.HabitNumber(
+//                                    task = taskModel,
+//                                    recordEntry = entry as? RecordEntry.HabitEntry.Continuous.Number,
+//                                    status = (status as? TaskStatus.Habit)
+//                                        ?: TaskStatus.NotCompleted.Pending
+//                                )
+//                            }
+//
+//                            is TaskModel.Habit.HabitContinuous.HabitTime -> {
+//                                TaskWithRecordModel.Habit.HabitContinuous.HabitTime(
+//                                    task = taskModel,
+//                                    recordEntry = entry as? RecordEntry.HabitEntry.Continuous.Time,
+//                                    status = (status as? TaskStatus.Habit)
+//                                        ?: TaskStatus.NotCompleted.Pending
+//                                )
+//                            }
+//                        }
+//                    }
+//
+//                    is TaskModel.Habit.HabitYesNo -> {
+//                        TaskWithRecordModel.Habit.HabitYesNo(
+//                            task = taskModel,
+//                            recordEntry = entry as? RecordEntry.HabitEntry.YesNo,
+//                            status = (status as? TaskStatus.Habit)
+//                                ?: TaskStatus.NotCompleted.Pending
+//                        )
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     private fun readTasksById(taskId: String): Flow<List<TaskModel.Habit>> =
         taskRepository.readTasksById(taskId).map { allTasks ->
