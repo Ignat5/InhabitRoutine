@@ -9,7 +9,7 @@ data class TaskStatisticsModel(
     val streakModel: TaskStreakModel,
     val completionCount: TaskCompletionCount,
     val statusCount: Map<TaskStatus, Int>,
-    val statusMap: Map<LocalDate, TaskWithRecordModel>
+    val statusMap: Map<LocalDate, TaskStatus>
 )
 
 data class TaskStreakModel(

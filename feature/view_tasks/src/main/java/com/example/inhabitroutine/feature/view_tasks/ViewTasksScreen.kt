@@ -249,9 +249,6 @@ private fun TaskDetailsRow(
     ) {
         ChipTaskType(taskType = item.type)
         ChipTaskProgressType(taskProgressType = item.progressType)
-//        if (item.isArchived) {
-//            ChipTaskArchived()
-//        }
         when (val taskDate = item.date) {
             is TaskDate.Period -> {
                 ChipTaskStartDate(date = taskDate.startDate)
