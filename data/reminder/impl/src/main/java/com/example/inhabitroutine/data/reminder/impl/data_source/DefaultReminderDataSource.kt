@@ -30,6 +30,13 @@ internal class DefaultReminderDataSource(
             }
         }
 
+    override fun readReminderById(reminderId: String): Flow<ReminderDataModel?> =
+        reminderDao.readReminderById(reminderId).map {
+            withContext(ioDispatcher) {
+                it?.toReminderDataModel(json)
+            }
+        }
+
     override fun readReminderCountByTaskId(taskId: String): Flow<Int> =
         reminderDao.readReminderCountByTaskId(taskId)
 

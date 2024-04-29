@@ -2,6 +2,7 @@ package com.example.inhabitroutine.domain.reminder.impl.util
 
 import com.example.inhabitroutine.domain.model.reminder.ReminderModel
 import com.example.inhabitroutine.domain.model.reminder.content.ReminderSchedule
+import kotlinx.datetime.LocalDate
 
 internal fun ReminderModel.checkOverlap(
     allReminders: List<ReminderModel>,
@@ -22,6 +23,16 @@ private fun ReminderSchedule.checkOverlap(targetSchedule: ReminderSchedule): Boo
                     is ReminderSchedule.AlwaysEnabled -> true
                     is ReminderSchedule.DaysOfWeek -> sourceSchedule.daysOfWeek.any { it in targetSchedule.daysOfWeek }
                 }
+            }
+        }
+    }
+
+internal fun ReminderSchedule.checkIfMatches(date: LocalDate) =
+    this.let { reminderSchedule ->
+        when (reminderSchedule) {
+            is ReminderSchedule.AlwaysEnabled -> true
+            is ReminderSchedule.DaysOfWeek -> {
+                date.dayOfWeek in reminderSchedule.daysOfWeek
             }
         }
     }

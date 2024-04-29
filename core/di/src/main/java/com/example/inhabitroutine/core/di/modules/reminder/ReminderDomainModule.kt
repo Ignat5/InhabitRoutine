@@ -1,11 +1,14 @@
 package com.example.inhabitroutine.core.di.modules.reminder
 
 import com.example.inhabitroutine.core.di.qualifiers.DefaultDispatcherQualifier
+import com.example.inhabitroutine.core.platform.reminder.api.ReminderManager
 import com.example.inhabitroutine.data.reminder.api.ReminderRepository
+import com.example.inhabitroutine.data.task.api.TaskRepository
 import com.example.inhabitroutine.domain.reminder.api.DeleteReminderByIdUseCase
 import com.example.inhabitroutine.domain.reminder.api.ReadReminderCountByTaskIdUseCase
 import com.example.inhabitroutine.domain.reminder.api.ReadRemindersByTaskIdUseCase
 import com.example.inhabitroutine.domain.reminder.api.SaveReminderUseCase
+import com.example.inhabitroutine.domain.reminder.api.SetUpNextReminderUseCase
 import com.example.inhabitroutine.domain.reminder.api.UpdateReminderUseCase
 import com.example.inhabitroutine.domain.reminder.impl.di.LocalReminderDomainModule
 import dagger.Module
@@ -64,6 +67,21 @@ object ReminderDomainModule {
     ): DeleteReminderByIdUseCase {
         return LocalReminderDomainModule.provideDeleteReminderByIdUseCase(
             reminderRepository = reminderRepository
+        )
+    }
+
+    @Provides
+    fun provideSetUpNextReminderUseCase(
+        reminderManager: ReminderManager,
+        reminderRepository: ReminderRepository,
+        taskRepository: TaskRepository,
+        @DefaultDispatcherQualifier defaultDispatcher: CoroutineDispatcher
+    ): SetUpNextReminderUseCase {
+        return LocalReminderDomainModule.provideSetUpNextReminderUseCase(
+            reminderManager = reminderManager,
+            reminderRepository = reminderRepository,
+            taskRepository = taskRepository,
+            defaultDispatcher = defaultDispatcher
         )
     }
 

@@ -72,6 +72,8 @@ dependencies {
     implementation(project(":core:presentation"))
     implementation(project(":core:util"))
     implementation(project(":core:di"))
+    implementation(project(":core:platform:reminder:api"))
+
     implementation(project(":domain:task:api"))
     implementation(project(":domain:reminder:api"))
     implementation(project(":domain:record:api"))

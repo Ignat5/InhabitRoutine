@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.inhabitroutine.domain.reminder.api.DeleteReminderByIdUseCase
 import com.example.inhabitroutine.domain.reminder.api.ReadRemindersByTaskIdUseCase
 import com.example.inhabitroutine.domain.reminder.api.SaveReminderUseCase
+import com.example.inhabitroutine.domain.reminder.api.SetUpNextReminderUseCase
 import com.example.inhabitroutine.domain.reminder.api.UpdateReminderUseCase
 import com.example.inhabitroutine.feature.view_reminders.ViewRemindersViewModel
 import com.example.inhabitroutine.feature.view_reminders.components.ViewRemindersScreenConfig
@@ -22,7 +23,8 @@ class AndroidViewRemindersViewModel @Inject constructor(
     readRemindersByTaskIdUseCase: ReadRemindersByTaskIdUseCase,
     saveReminderUseCase: SaveReminderUseCase,
     updateReminderUseCase: UpdateReminderUseCase,
-    deleteReminderByIdUseCase: DeleteReminderByIdUseCase
+    deleteReminderByIdUseCase: DeleteReminderByIdUseCase,
+    setUpNextReminderUseCase: SetUpNextReminderUseCase
 ) : BaseAndroidViewModel<ViewRemindersScreenEvent, ViewRemindersScreenState, ViewRemindersScreenNavigation, ViewRemindersScreenConfig>() {
 
     override val delegateViewModel = ViewRemindersViewModel(

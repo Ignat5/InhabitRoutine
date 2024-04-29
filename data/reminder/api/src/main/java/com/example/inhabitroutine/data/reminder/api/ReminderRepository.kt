@@ -7,6 +7,7 @@ import kotlinx.datetime.LocalDate
 
 interface ReminderRepository {
     fun readRemindersByTaskId(taskId: String): Flow<List<ReminderModel>>
+    fun readReminderById(reminderId: String): Flow<ReminderModel?>
     fun readReminderCountByTaskId(taskId: String): Flow<Int>
     fun readRemindersByDate(targetDate: LocalDate): Flow<List<ReminderModel>>
     fun readReminders(): Flow<List<ReminderModel>>

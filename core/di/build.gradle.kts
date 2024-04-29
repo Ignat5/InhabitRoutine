@@ -40,6 +40,7 @@ dependencies {
     implementation(project(":core:database:record:api"))
 
     implementation(project(":core:database:impl"))
+    implementation(project(":core:platform:reminder:api"))
 
     implementation(project(":data:task:api"))
     implementation(project(":data:task:impl"))
