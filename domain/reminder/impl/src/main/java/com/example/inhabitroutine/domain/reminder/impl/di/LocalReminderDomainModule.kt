@@ -4,6 +4,7 @@ import com.example.inhabitroutine.core.platform.reminder.api.ReminderManager
 import com.example.inhabitroutine.data.reminder.api.ReminderRepository
 import com.example.inhabitroutine.data.task.api.TaskRepository
 import com.example.inhabitroutine.domain.reminder.api.DeleteReminderByIdUseCase
+import com.example.inhabitroutine.domain.reminder.api.ReadReminderByIdUseCase
 import com.example.inhabitroutine.domain.reminder.api.ReadReminderCountByTaskIdUseCase
 import com.example.inhabitroutine.domain.reminder.api.ReadRemindersByTaskIdUseCase
 import com.example.inhabitroutine.domain.reminder.api.ResetTaskRemindersUseCase
@@ -12,6 +13,7 @@ import com.example.inhabitroutine.domain.reminder.api.SetUpNextReminderUseCase
 import com.example.inhabitroutine.domain.reminder.api.SetUpTaskRemindersUseCase
 import com.example.inhabitroutine.domain.reminder.api.UpdateReminderUseCase
 import com.example.inhabitroutine.domain.reminder.impl.use_case.DefaultDeleteReminderByIdUseCase
+import com.example.inhabitroutine.domain.reminder.impl.use_case.DefaultReadReminderByIdUseCase
 import com.example.inhabitroutine.domain.reminder.impl.use_case.DefaultReadReminderCountByTaskIdUseCase
 import com.example.inhabitroutine.domain.reminder.impl.use_case.DefaultReadRemindersByTaskIdUseCase
 import com.example.inhabitroutine.domain.reminder.impl.use_case.DefaultResetTaskRemindersUseCase
@@ -28,6 +30,14 @@ object LocalReminderDomainModule {
         reminderRepository: ReminderRepository
     ): ReadRemindersByTaskIdUseCase {
         return DefaultReadRemindersByTaskIdUseCase(
+            reminderRepository = reminderRepository
+        )
+    }
+
+    fun provideReadReminderByIdUseCase(
+        reminderRepository: ReminderRepository
+    ): ReadReminderByIdUseCase {
+        return DefaultReadReminderByIdUseCase(
             reminderRepository = reminderRepository
         )
     }

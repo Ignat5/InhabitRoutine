@@ -73,7 +73,7 @@ dependencies {
     /* core */
     implementation(project(":core:presentation"))
     implementation(project(":core:util"))
-//    implementation(project(":core:di"))
+    implementation(project(":domain:model"))
 
     /* di */
     implementation(project(":core:database:task:api"))
@@ -109,12 +109,13 @@ dependencies {
     implementation(libs.bundles.sqldelight)
     implementation(libs.sqldelight.androidDriver)
 
-    /* serialization */
-    implementation(libs.kotlin.serialization)
-
     /* compose */
     implementation(libs.bundles.compose)
     implementation(libs.hilt.navigation.compose)
+
+    /* other */
+    implementation(libs.kotlin.serialization)
+    implementation(libs.kotlin.datetime)
 
     /* tests */
     testImplementation(libs.junit)
