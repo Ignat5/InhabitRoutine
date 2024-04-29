@@ -1,6 +1,10 @@
 package com.example.inhabitroutine.domain.model.util
 
 import com.example.inhabitroutine.domain.model.record.content.RecordEntry
+import com.example.inhabitroutine.domain.model.reminder.ReminderModel
+import com.example.inhabitroutine.domain.model.reminder.content.ReminderSchedule
+import com.example.inhabitroutine.domain.model.reminder.type.ReminderType
+import com.example.inhabitroutine.domain.model.task.TaskModel
 import com.example.inhabitroutine.domain.model.task.content.TaskDate
 import com.example.inhabitroutine.domain.model.task.content.TaskFrequency
 import com.example.inhabitroutine.domain.model.task.content.TaskProgress
@@ -61,3 +65,38 @@ fun TaskProgress.Time.checkIfCompleted(entry: RecordEntry.Time): Boolean =
             }
         }
     }
+
+fun ReminderSchedule.checkIfMatches(date: LocalDate) =
+    this.let { reminderSchedule ->
+        when (reminderSchedule) {
+            is ReminderSchedule.AlwaysEnabled -> true
+            is ReminderSchedule.DaysOfWeek -> {
+                date.dayOfWeek in reminderSchedule.daysOfWeek
+            }
+        }
+    }
+
+fun ReminderModel.checkIfCanSetReminderForDate(
+    taskModel: TaskModel,
+    targetDate: LocalDate
+): Boolean {
+    this.let { reminderModel ->
+        if (taskModel.checkIfCanSetReminder() && reminderModel.checkIfCanSetReminder()) {
+            val inDateRange = taskModel.date.checkIfMatches(targetDate)
+            val isTaskScheduled = if (taskModel is TaskModel.RecurringActivity) {
+                taskModel.frequency.checkIfMatches(targetDate)
+            } else true
+            val isReminderScheduled = reminderModel.schedule.checkIfMatches(targetDate)
+            return inDateRange && isTaskScheduled && isReminderScheduled
+        }
+        return false
+    }
+}
+
+fun TaskModel.checkIfCanSetReminder() = this.let { taskModel ->
+    !taskModel.isDraft && !taskModel.isArchived
+}
+
+fun ReminderModel.checkIfCanSetReminder() = this.let { reminderModel ->
+    reminderModel.type in setOf(ReminderType.Notification)
+}

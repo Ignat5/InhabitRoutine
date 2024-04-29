@@ -61,6 +61,7 @@ android {
 }
 
 dependencies {
+    /* features */
     implementation(project(":feature:view_schedule"))
     implementation(project(":feature:create_edit_task"))
     implementation(project(":feature:view_reminders"))
@@ -69,19 +70,54 @@ dependencies {
     implementation(project(":feature:view_tasks"))
     implementation(project(":feature:view_habits"))
 
+    /* core */
     implementation(project(":core:presentation"))
     implementation(project(":core:util"))
-    implementation(project(":core:di"))
-    implementation(project(":domain:task:api"))
-    implementation(project(":domain:reminder:api"))
-    implementation(project(":domain:record:api"))
+    implementation(project(":domain:model"))
 
-    implementation(libs.bundles.compose)
+    /* di */
+    implementation(project(":core:database:task:api"))
+    implementation(project(":core:database:reminder:api"))
+    implementation(project(":core:database:record:api"))
+
+    implementation(project(":core:database:impl"))
+    implementation(project(":core:platform:reminder:api"))
+
+    implementation(project(":data:task:api"))
+    implementation(project(":data:task:impl"))
+
+    implementation(project(":data:reminder:api"))
+    implementation(project(":data:reminder:impl"))
+
+    implementation(project(":data:record:api"))
+    implementation(project(":data:record:impl"))
+
+    implementation(project(":domain:task:api"))
+    implementation(project(":domain:task:impl"))
+
+    implementation(project(":domain:reminder:api"))
+    implementation(project(":domain:reminder:impl"))
+
+    implementation(project(":domain:record:api"))
+    implementation(project(":domain:record:impl"))
+
     implementation(libs.hilt.android)
-    implementation(libs.hilt.navigation.compose)
     ksp(libs.hilt.android.compiler)
     ksp(libs.hilt.compiler)
 
+    /* database */
+    implementation(libs.bundles.sqldelight)
+    implementation(libs.sqldelight.androidDriver)
+
+    /* compose */
+    implementation(libs.bundles.compose)
+    implementation(libs.hilt.navigation.compose)
+
+    /* other */
+    implementation(libs.kotlin.serialization)
+    implementation(libs.kotlin.datetime)
+
+    /* tests */
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

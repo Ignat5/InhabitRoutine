@@ -11,8 +11,10 @@ java {
 dependencies {
     implementation(project(":domain:model"))
     implementation(project(":domain:reminder:api"))
+    implementation(project(":core:platform:reminder:api"))
     implementation(project(":core:util"))
     implementation(project(":data:reminder:api"))
+    implementation(project(":data:task:api"))
     implementation(libs.kotlin.coroutines.core)
     implementation(libs.kotlin.datetime)
 }

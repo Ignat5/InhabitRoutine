@@ -11,6 +11,7 @@ java {
 dependencies {
     implementation(project(":domain:model"))
     implementation(project(":domain:task:api"))
+    implementation(project(":domain:reminder:api"))
     implementation(project(":data:task:api"))
     implementation(project(":data:reminder:api"))
     implementation(project(":data:record:api"))

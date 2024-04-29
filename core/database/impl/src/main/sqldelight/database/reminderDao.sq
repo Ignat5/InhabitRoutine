@@ -2,6 +2,10 @@ selectRemindersByTaskId:
 SELECT * FROM ReminderTable tReminder
 WHERE tReminder.taskId = :taskId;
 
+selectReminderById:
+SELECT * FROM ReminderTable tReminder
+WHERE tReminder.id = :reminderId;
+
 selectReminderCountByTaskId:
 SELECT COUNT(*) FROM ReminderTable tReminder
 WHERE tReminder.taskId = :taskId;
@@ -16,6 +20,13 @@ tTask.endEpochDay >= :targetEpochDay
 
 selectReminders:
 SELECT * FROM ReminderTable;
+
+selectReminderIdsByTaskId:
+SELECT tReminder.id FROM ReminderTable tReminder
+WHERE tReminder.taskId = :taskId;
+
+selectReminderIds:
+SELECT tReminder.id FROM ReminderTable tReminder;
 
 insertReminder:
 INSERT OR REPLACE INTO ReminderTable

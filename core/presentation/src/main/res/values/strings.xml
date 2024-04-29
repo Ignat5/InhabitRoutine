@@ -134,6 +134,9 @@
     <string name="reminder_confirm_delete_title">Delete reminder</string>
     <string name="reminder_confirm_delete_message">Are you sure you want to delete the reminder?</string>
 
+    <!--  notification  -->
+    <string name="notification_reminder_channel_name">Notification reminders</string>
+
     <!--  days of week  -->
     <string name="day_of_week_monday">Monday</string>
     <string name="day_of_week_tuesday">Tuesday</string>

@@ -26,6 +26,11 @@ internal class DefaultReminderRepository(
             }
         }
 
+    override fun readReminderById(reminderId: String): Flow<ReminderModel?> =
+        reminderDataSource.readReminderById(reminderId).map {
+            it?.toReminderModel()
+        }
+
     override fun readReminderCountByTaskId(taskId: String): Flow<Int> =
         reminderDataSource.readReminderCountByTaskId(taskId)
 
@@ -48,6 +53,12 @@ internal class DefaultReminderRepository(
                 }.awaitAll()
             }
         }
+
+    override fun readReminderIdsByTaskId(taskId: String): Flow<List<String>> =
+        reminderDataSource.readReminderIdsByTaskId(taskId)
+
+    override fun readReminderIds(): Flow<List<String>> =
+        reminderDataSource.readReminderIds()
 
     override suspend fun saveReminder(reminderModel: ReminderModel): ResultModel<Unit, Throwable> =
         reminderDataSource.saveReminder(reminderModel.toReminderDataModel())
