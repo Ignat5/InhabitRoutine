@@ -1,5 +1,6 @@
 package com.example.inhabitroutine.core.di.modules.reminder
 
+import android.content.Context
 import com.example.inhabitroutine.core.di.qualifiers.DefaultDispatcherQualifier
 import com.example.inhabitroutine.core.platform.reminder.api.ReminderManager
 import com.example.inhabitroutine.data.reminder.api.ReminderRepository
@@ -11,9 +12,11 @@ import com.example.inhabitroutine.domain.reminder.api.SaveReminderUseCase
 import com.example.inhabitroutine.domain.reminder.api.SetUpNextReminderUseCase
 import com.example.inhabitroutine.domain.reminder.api.UpdateReminderUseCase
 import com.example.inhabitroutine.domain.reminder.impl.di.LocalReminderDomainModule
+import com.example.inhabitroutine.platform.reminder.manager.DefaultReminderManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 
@@ -83,6 +86,13 @@ object ReminderDomainModule {
             taskRepository = taskRepository,
             defaultDispatcher = defaultDispatcher
         )
+    }
+
+    @Provides
+    fun provideReminderManager(
+        @ApplicationContext context: Context
+    ): ReminderManager {
+        return DefaultReminderManager(context)
     }
 
 }
