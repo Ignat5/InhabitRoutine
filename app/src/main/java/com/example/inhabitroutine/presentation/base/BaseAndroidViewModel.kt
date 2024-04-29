@@ -18,7 +18,7 @@ abstract class BaseAndroidViewModel<SE : ScreenEvent, SS : ScreenState, SN : Scr
     protected abstract val delegateViewModel: BaseViewModel<SE, SS, SN, SC>
 
     val uiScreenState: StateFlow<SS> get() = delegateViewModel.uiScreenState
-    fun onEvent(event: SE) = delegateViewModel.onEvent(event)
+    open fun onEvent(event: SE) = delegateViewModel.onEvent(event)
 
     val uiScreenConfigState: StateFlow<BaseScreenConfig<SC>>
         get() = delegateViewModel.uiScreenConfigState

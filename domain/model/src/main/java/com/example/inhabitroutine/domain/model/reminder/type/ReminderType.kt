@@ -2,5 +2,10 @@ package com.example.inhabitroutine.domain.model.reminder.type
 
 enum class ReminderType {
     NoReminder,
-    Notification
+    Notification;
+
+    companion object {
+        val allNotifiableTypes: Set<ReminderType>
+            get() = setOf(Notification)
+    }
 }
