@@ -9,6 +9,7 @@ import com.example.inhabitroutine.domain.reminder.api.ReadReminderCountByTaskIdU
 import com.example.inhabitroutine.domain.reminder.api.ReadRemindersByTaskIdUseCase
 import com.example.inhabitroutine.domain.reminder.api.ResetTaskRemindersUseCase
 import com.example.inhabitroutine.domain.reminder.api.SaveReminderUseCase
+import com.example.inhabitroutine.domain.reminder.api.SetUpAllRemindersUseCase
 import com.example.inhabitroutine.domain.reminder.api.SetUpNextReminderUseCase
 import com.example.inhabitroutine.domain.reminder.api.SetUpTaskRemindersUseCase
 import com.example.inhabitroutine.domain.reminder.api.UpdateReminderUseCase
@@ -18,6 +19,7 @@ import com.example.inhabitroutine.domain.reminder.impl.use_case.DefaultReadRemin
 import com.example.inhabitroutine.domain.reminder.impl.use_case.DefaultReadRemindersByTaskIdUseCase
 import com.example.inhabitroutine.domain.reminder.impl.use_case.DefaultResetTaskRemindersUseCase
 import com.example.inhabitroutine.domain.reminder.impl.use_case.DefaultSaveReminderUseCase
+import com.example.inhabitroutine.domain.reminder.impl.use_case.DefaultSetUpAllRemindersUseCase
 import com.example.inhabitroutine.domain.reminder.impl.use_case.DefaultSetUpNextReminderUseCase
 import com.example.inhabitroutine.domain.reminder.impl.use_case.DefaultSetUpTaskRemindersUseCase
 import com.example.inhabitroutine.domain.reminder.impl.use_case.DefaultUpdateReminderUseCase
@@ -47,6 +49,18 @@ object LocalReminderDomainModule {
     ): ReadReminderCountByTaskIdUseCase {
         return DefaultReadReminderCountByTaskIdUseCase(
             reminderRepository = reminderRepository
+        )
+    }
+
+    fun provideSetUpAllRemindersUseCase(
+        reminderRepository: ReminderRepository,
+        setUpNextReminderUseCase: SetUpNextReminderUseCase,
+        defaultDispatcher: CoroutineDispatcher
+    ): SetUpAllRemindersUseCase {
+        return DefaultSetUpAllRemindersUseCase(
+            reminderRepository = reminderRepository,
+            setUpNextReminderUseCase = setUpNextReminderUseCase,
+            defaultDispatcher = defaultDispatcher
         )
     }
 

@@ -12,6 +12,7 @@ interface ReminderDataSource {
     fun readRemindersByDate(targetDate: LocalDate): Flow<List<ReminderDataModel>>
     fun readReminders(): Flow<List<ReminderDataModel>>
     fun readReminderIdsByTaskId(taskId: String): Flow<List<String>>
+    fun readReminderIds(): Flow<List<String>>
     suspend fun saveReminder(reminderDataModel: ReminderDataModel): ResultModel<Unit, Throwable>
     suspend fun updateReminder(reminderDataModel: ReminderDataModel): ResultModel<Unit, Throwable>
     suspend fun deleteReminderById(reminderId: String): ResultModel<Unit, Throwable>

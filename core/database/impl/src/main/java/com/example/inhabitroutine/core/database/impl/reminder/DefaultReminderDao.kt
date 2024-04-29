@@ -63,6 +63,9 @@ internal class DefaultReminderDao(
     override fun readReminderIdsByTaskId(taskId: String): Flow<List<String>> =
         reminderDao.selectReminderIdsByTaskId(taskId).readQueryList(ioDispatcher)
 
+    override fun readReminderIds(): Flow<List<String>> =
+        reminderDao.selectReminderIds().readQueryList(ioDispatcher)
+
     override suspend fun saveReminder(reminderEntity: ReminderEntity): ResultModel<Unit, Throwable> =
         runQuery(ioDispatcher) {
             reminderDao.insertReminder(reminderEntity.toReminderTable())

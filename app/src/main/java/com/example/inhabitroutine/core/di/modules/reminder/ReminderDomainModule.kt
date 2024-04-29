@@ -11,6 +11,7 @@ import com.example.inhabitroutine.domain.reminder.api.ReadReminderCountByTaskIdU
 import com.example.inhabitroutine.domain.reminder.api.ReadRemindersByTaskIdUseCase
 import com.example.inhabitroutine.domain.reminder.api.ResetTaskRemindersUseCase
 import com.example.inhabitroutine.domain.reminder.api.SaveReminderUseCase
+import com.example.inhabitroutine.domain.reminder.api.SetUpAllRemindersUseCase
 import com.example.inhabitroutine.domain.reminder.api.SetUpNextReminderUseCase
 import com.example.inhabitroutine.domain.reminder.api.SetUpTaskRemindersUseCase
 import com.example.inhabitroutine.domain.reminder.api.UpdateReminderUseCase
@@ -52,6 +53,19 @@ object ReminderDomainModule {
     ): ReadReminderCountByTaskIdUseCase {
         return LocalReminderDomainModule.provideReadReminderCountByTaskIdUseCase(
             reminderRepository = reminderRepository
+        )
+    }
+
+    @Provides
+    fun provideSetUpAllRemindersUseCase(
+        reminderRepository: ReminderRepository,
+        setUpNextReminderUseCase: SetUpNextReminderUseCase,
+        @DefaultDispatcherQualifier defaultDispatcher: CoroutineDispatcher
+    ): SetUpAllRemindersUseCase {
+        return LocalReminderDomainModule.provideSetUpAllRemindersUseCase(
+            reminderRepository = reminderRepository,
+            setUpNextReminderUseCase = setUpNextReminderUseCase,
+            defaultDispatcher = defaultDispatcher
         )
     }
 
