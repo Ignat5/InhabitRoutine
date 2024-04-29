@@ -24,7 +24,6 @@ class AndroidViewRemindersViewModel @Inject constructor(
     saveReminderUseCase: SaveReminderUseCase,
     updateReminderUseCase: UpdateReminderUseCase,
     deleteReminderByIdUseCase: DeleteReminderByIdUseCase,
-    setUpNextReminderUseCase: SetUpNextReminderUseCase
 ) : BaseAndroidViewModel<ViewRemindersScreenEvent, ViewRemindersScreenState, ViewRemindersScreenNavigation, ViewRemindersScreenConfig>() {
 
     override val delegateViewModel = ViewRemindersViewModel(

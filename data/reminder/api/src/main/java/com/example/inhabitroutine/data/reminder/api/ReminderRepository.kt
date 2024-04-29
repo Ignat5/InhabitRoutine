@@ -11,6 +11,7 @@ interface ReminderRepository {
     fun readReminderCountByTaskId(taskId: String): Flow<Int>
     fun readRemindersByDate(targetDate: LocalDate): Flow<List<ReminderModel>>
     fun readReminders(): Flow<List<ReminderModel>>
+    fun readReminderIdsByTaskId(taskId: String): Flow<List<String>>
     suspend fun saveReminder(reminderModel: ReminderModel): ResultModel<Unit, Throwable>
     suspend fun updateReminder(reminderModel: ReminderModel): ResultModel<Unit, Throwable>
     suspend fun deleteReminderById(reminderId: String): ResultModel<Unit, Throwable>

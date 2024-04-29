@@ -4,6 +4,8 @@ import com.example.inhabitroutine.core.di.qualifiers.DefaultDispatcherQualifier
 import com.example.inhabitroutine.data.record.api.RecordRepository
 import com.example.inhabitroutine.data.reminder.api.ReminderRepository
 import com.example.inhabitroutine.data.task.api.TaskRepository
+import com.example.inhabitroutine.domain.reminder.api.ResetTaskRemindersUseCase
+import com.example.inhabitroutine.domain.reminder.api.SetUpTaskRemindersUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ArchiveTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.DeleteTaskByIdUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ReadHabitsUseCase
@@ -112,10 +114,14 @@ object TaskDomainModule {
 
     @Provides
     fun provideUpdateTaskDateByIdUseCase(
-        taskRepository: TaskRepository
+        taskRepository: TaskRepository,
+        setUpTaskRemindersUseCase: SetUpTaskRemindersUseCase,
+        externalScope: CoroutineScope
     ): UpdateTaskDateByIdUseCase {
         return LocalTaskDomainModule.provideUpdateTaskDateByIdUseCase(
-            taskRepository = taskRepository
+            taskRepository = taskRepository,
+            setUpTaskRemindersUseCase = setUpTaskRemindersUseCase,
+            externalScope = externalScope
         )
     }
 
@@ -133,10 +139,14 @@ object TaskDomainModule {
     @Provides
     fun provideUpdateTaskFrequencyByIdUseCase(
         taskRepository: TaskRepository,
+        setUpTaskRemindersUseCase: SetUpTaskRemindersUseCase,
+        externalScope: CoroutineScope,
         @DefaultDispatcherQualifier defaultDispatcher: CoroutineDispatcher
     ): UpdateTaskFrequencyByIdUseCase {
         return LocalTaskDomainModule.provideUpdateTaskFrequencyByIdUseCase(
             taskRepository = taskRepository,
+            setUpTaskRemindersUseCase = setUpTaskRemindersUseCase,
+            externalScope = externalScope,
             defaultDispatcher = defaultDispatcher
         )
     }
@@ -153,10 +163,12 @@ object TaskDomainModule {
     @Provides
     fun provideSaveTaskByIdUseCase(
         taskRepository: TaskRepository,
+        setUpTaskRemindersUseCase: SetUpTaskRemindersUseCase,
         externalScope: CoroutineScope
     ): SaveTaskByIdUseCase {
         return LocalTaskDomainModule.provideSaveTaskByIdUseCase(
             taskRepository = taskRepository,
+            setUpTaskRemindersUseCase = setUpTaskRemindersUseCase,
             externalScope = externalScope
         )
     }
@@ -164,11 +176,15 @@ object TaskDomainModule {
     @Provides
     fun provideArchiveTaskByIdUseCase(
         taskRepository: TaskRepository,
+        setUpTaskRemindersUseCase: SetUpTaskRemindersUseCase,
+        resetTaskRemindersUseCase: ResetTaskRemindersUseCase,
         externalScope: CoroutineScope,
         @DefaultDispatcherQualifier defaultDispatcher: CoroutineDispatcher
     ): ArchiveTaskByIdUseCase {
         return LocalTaskDomainModule.provideArchiveTaskByIdUseCase(
             taskRepository = taskRepository,
+            setUpTaskRemindersUseCase = setUpTaskRemindersUseCase,
+            resetTaskRemindersUseCase = resetTaskRemindersUseCase,
             externalScope = externalScope,
             defaultDispatcher = defaultDispatcher
         )
@@ -205,10 +221,14 @@ object TaskDomainModule {
 
     @Provides
     fun provideDeleteTaskByIdUseCase(
-        taskRepository: TaskRepository
+        taskRepository: TaskRepository,
+        resetTaskRemindersUseCase: ResetTaskRemindersUseCase,
+        externalScope: CoroutineScope
     ): DeleteTaskByIdUseCase {
         return LocalTaskDomainModule.provideDeleteTaskByIdUseCase(
-            taskRepository = taskRepository
+            taskRepository = taskRepository,
+            resetTaskRemindersUseCase = resetTaskRemindersUseCase,
+            externalScope = externalScope
         )
     }
 

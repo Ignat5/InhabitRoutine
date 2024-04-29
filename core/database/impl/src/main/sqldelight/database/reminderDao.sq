@@ -21,6 +21,10 @@ tTask.endEpochDay >= :targetEpochDay
 selectReminders:
 SELECT * FROM ReminderTable;
 
+selectReminderIdsByTaskId:
+SELECT tReminder.id FROM ReminderTable tReminder
+WHERE tReminder.taskId = :taskId;
+
 insertReminder:
 INSERT OR REPLACE INTO ReminderTable
 VALUES ?;

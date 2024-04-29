@@ -62,6 +62,9 @@ internal class DefaultReminderDataSource(
             } else emptyList()
         }
 
+    override fun readReminderIdsByTaskId(taskId: String): Flow<List<String>> =
+        reminderDao.readReminderIdsByTaskId(taskId)
+
     override suspend fun saveReminder(reminderDataModel: ReminderDataModel): ResultModel<Unit, Throwable> =
         withContext(ioDispatcher) {
             reminderDataModel.toReminderEntity(json)?.let {

@@ -4,6 +4,8 @@ import com.example.inhabitroutine.core.util.ResultModel
 import com.example.inhabitroutine.core.util.todayDate
 import com.example.inhabitroutine.data.task.api.TaskRepository
 import com.example.inhabitroutine.domain.model.task.TaskModel
+import com.example.inhabitroutine.domain.reminder.api.ResetTaskRemindersUseCase
+import com.example.inhabitroutine.domain.reminder.api.SetUpTaskRemindersUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ArchiveTaskByIdUseCase
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -14,6 +16,8 @@ import kotlinx.datetime.Clock
 
 internal class DefaultArchiveTaskByIdUseCase(
     private val taskRepository: TaskRepository,
+    private val setUpTaskRemindersUseCase: SetUpTaskRemindersUseCase,
+    private val resetTaskRemindersUseCase: ResetTaskRemindersUseCase,
     private val externalScope: CoroutineScope,
     private val defaultDispatcher: CoroutineDispatcher
 ) : ArchiveTaskByIdUseCase {
@@ -75,7 +79,14 @@ internal class DefaultArchiveTaskByIdUseCase(
             val resultModel = taskRepository.saveTask(newTaskModel)
             if (resultModel is ResultModel.Success) {
                 externalScope.launch {
-//                    TODO(set/reset reminders)
+                    when (requestType) {
+                        is ArchiveTaskByIdUseCase.RequestType.Archive -> {
+                            resetTaskRemindersUseCase(taskId = taskId)
+                        }
+                        is ArchiveTaskByIdUseCase.RequestType.Unarchive -> {
+                            setUpTaskRemindersUseCase(taskId = taskId)
+                        }
+                    }
                 }
             }
             resultModel

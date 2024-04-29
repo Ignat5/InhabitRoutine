@@ -1,22 +1,20 @@
 package com.example.inhabitroutine.domain.reminder.impl.use_case
 
 import com.example.inhabitroutine.core.platform.reminder.api.ReminderManager
-import com.example.inhabitroutine.core.util.todayDate
 import com.example.inhabitroutine.data.reminder.api.ReminderRepository
 import com.example.inhabitroutine.data.task.api.TaskRepository
 import com.example.inhabitroutine.domain.model.reminder.ReminderModel
 import com.example.inhabitroutine.domain.model.reminder.type.ReminderType
 import com.example.inhabitroutine.domain.model.task.TaskModel
 import com.example.inhabitroutine.domain.model.task.content.TaskDate
-import com.example.inhabitroutine.domain.model.util.checkIfMatches
+import com.example.inhabitroutine.domain.model.util.checkIfCanSetReminder
+import com.example.inhabitroutine.domain.model.util.checkIfCanSetReminderForDate
 import com.example.inhabitroutine.domain.reminder.api.SetUpNextReminderUseCase
-import com.example.inhabitroutine.domain.reminder.impl.util.checkIfMatches
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.daysUntil
@@ -31,15 +29,12 @@ internal class DefaultSetUpNextReminderUseCase(
     private val defaultDispatcher: CoroutineDispatcher
 ) : SetUpNextReminderUseCase {
 
-    private val availableTypes: Set<ReminderType>
-        get() = setOf(ReminderType.Notification)
-
-    suspend operator fun invoke(reminderId: String) =
+    override suspend operator fun invoke(reminderId: String) {
         withContext(defaultDispatcher) {
             reminderRepository.readReminderById(reminderId).firstOrNull()?.let { reminderModel ->
+                if (reminderModel.checkIfCanSetReminder().not()) return@withContext
                 taskRepository.readTaskById(reminderModel.taskId).firstOrNull()?.let { taskModel ->
-                    if (taskModel.isDraft || taskModel.isArchived) return@withContext
-                    if (reminderModel.type !in availableTypes) return@withContext
+                    if (taskModel.checkIfCanSetReminder().not()) return@withContext
                     calculateNextReminderDateTime(taskModel, reminderModel)
                         ?.toInstant(TimeZone.currentSystemDefault())
                         ?.toEpochMilliseconds()?.let { millis ->
@@ -52,6 +47,7 @@ internal class DefaultSetUpNextReminderUseCase(
                 }
             }
         }
+    }
 
     private fun calculateNextReminderDateTime(
         taskModel: TaskModel,
@@ -71,11 +67,11 @@ internal class DefaultSetUpNextReminderUseCase(
             startDate.daysUntil(endDate).let { daysUntilEnd ->
                 (0..daysUntilEnd).forEach { offset ->
                     startDate.plus(offset, DateTimeUnit.DAY).let { nextDate ->
-                        val isTaskScheduled = if (taskModel is TaskModel.RecurringActivity) {
-                            taskModel.frequency.checkIfMatches(nextDate)
-                        } else true
-                        if (isTaskScheduled) {
-                            if (reminderModel.schedule.checkIfMatches(nextDate)) {
+                        reminderModel.checkIfCanSetReminderForDate(
+                            taskModel = taskModel,
+                            targetDate = nextDate
+                        ).let { canSetReminder ->
+                            if (canSetReminder) {
                                 LocalDateTime(
                                     date = nextDate,
                                     time = reminderModel.time

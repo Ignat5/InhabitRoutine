@@ -8,15 +8,20 @@ import com.example.inhabitroutine.domain.model.reminder.ReminderModel
 import com.example.inhabitroutine.domain.model.reminder.content.ReminderSchedule
 import com.example.inhabitroutine.domain.model.reminder.type.ReminderType
 import com.example.inhabitroutine.domain.reminder.api.SaveReminderUseCase
+import com.example.inhabitroutine.domain.reminder.api.SetUpNextReminderUseCase
 import com.example.inhabitroutine.domain.reminder.impl.util.checkOverlap
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalTime
 
 internal class DefaultSaveReminderUseCase(
     private val reminderRepository: ReminderRepository,
+    private val setUpNextReminderUseCase: SetUpNextReminderUseCase,
+    private val externalScope: CoroutineScope,
     private val defaultDispatcher: CoroutineDispatcher
 ) : SaveReminderUseCase {
 
@@ -38,7 +43,9 @@ internal class DefaultSaveReminderUseCase(
             if (!doesOverlap) {
                 val resultModel = reminderRepository.saveReminder(reminderModel)
                 if (resultModel is ResultModel.Success) {
-//                    TODO("set up reminders")
+                    externalScope.launch {
+                        setUpNextReminderUseCase(reminderModel.id)
+                    }
                 }
                 resultModel.mapFailure { SaveReminderUseCase.SaveReminderFailure.Other(it) }
             } else {
