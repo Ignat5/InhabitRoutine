@@ -20,6 +20,7 @@ import com.example.inhabitroutine.core.presentation.ui.dialog.base.BaseDialogDef
 import com.example.inhabitroutine.core.presentation.R
 import com.example.inhabitroutine.core.presentation.ui.common.BaseOutlinedDropdown
 import com.example.inhabitroutine.core.presentation.ui.common.BaseTimeInput
+import com.example.inhabitroutine.core.presentation.ui.common.BaseTimeInputV2
 import com.example.inhabitroutine.core.presentation.ui.dialog.base.BaseDialogActionType
 import com.example.inhabitroutine.core.presentation.ui.util.toTitleStringId
 import com.example.inhabitroutine.domain.model.task.type.ProgressLimitType

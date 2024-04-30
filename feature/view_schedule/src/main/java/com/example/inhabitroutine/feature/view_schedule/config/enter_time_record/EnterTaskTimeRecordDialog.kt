@@ -97,13 +97,6 @@ private fun EnterTaskTimeRecordDialogStateless(
                 onMinutesUpdate = { onEvent(EnterTaskTimeRecordScreenEvent.OnInputMinutesUpdate(it)) },
                 modifier = Modifier.fillMaxWidth()
             )
-//            BaseTimePicker(
-//                initHours = state.inputHours,
-//                initMinutes = state.inputMinutes,
-//                onHoursUpdate = { onEvent(EnterTaskTimeRecordScreenEvent.OnInputHoursUpdate(it)) },
-//                onMinutesUpdate = { onEvent(EnterTaskTimeRecordScreenEvent.OnInputMinutesUpdate(it)) },
-//                modifier = Modifier.fillMaxWidth()
-//            )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = goalText,
