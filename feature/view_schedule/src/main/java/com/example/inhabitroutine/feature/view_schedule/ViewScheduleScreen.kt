@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
@@ -155,6 +156,7 @@ fun ViewScheduleScreen(
                         Column(modifier = Modifier.fillMaxWidth()) {
                             ItemTask(
                                 item = item,
+                                isLocked = state.isLocked,
                                 context = context,
                                 onClick = {
                                     onEvent(ViewScheduleScreenEvent.OnTaskClick(item.task.id))
@@ -180,6 +182,7 @@ fun ViewScheduleScreen(
 @Composable
 private fun ItemTask(
     item: TaskWithExtrasAndRecordModel,
+    isLocked: Boolean,
     context: Context,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
@@ -207,7 +210,23 @@ private fun ItemTask(
                 TaskTitleRow(item, context)
                 TaskDetailRow(item)
             }
-            TaskProgressIndicator(item)
+            AnimatedVisibility(
+                visible = !isLocked,
+                enter = fadeIn(
+                    animationSpec = tween(
+                        durationMillis = 200,
+                        delayMillis = 100
+                    )
+                ),
+                exit = fadeOut(
+                    animationSpec = tween(
+                        durationMillis = 200,
+                        delayMillis = 100
+                    )
+                )
+            ) {
+                TaskProgressIndicator(item)
+            }
         }
     }
 }
