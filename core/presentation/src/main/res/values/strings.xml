@@ -84,7 +84,7 @@
     <string name="task_action_reset_success_message">Habit reset</string>
     <string name="task_action_delete_title">Delete activity</string>
     <string name="task_action_delete_message">Are you sure you want to delete the activity?</string>
-    <string name="task_action_reset_title">Reset activity</string>
+    <string name="task_action_reset_title">Reset habit</string>
     <string name="task_action_reset_message">Are you sure you want to reset the habit?</string>
     <string name="task_action_done">Mark as done</string>
     <string name="task_action_skip">Skip</string>

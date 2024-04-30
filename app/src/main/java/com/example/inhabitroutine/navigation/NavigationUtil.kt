@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.navigation.NavBackStackEntry
 
 /* TOP DESTINATION */
-private const val topDestinationEnterExitDurationMillis = 1000
+private const val topDestinationEnterExitDurationMillis = 800
 private const val topDestinationEnterExitDelayMillis = 200
 private val topDestinationEnterExitEasing = FastOutSlowInEasing
 
