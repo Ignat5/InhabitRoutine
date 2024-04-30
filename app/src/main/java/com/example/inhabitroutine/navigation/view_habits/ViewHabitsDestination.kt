@@ -10,6 +10,8 @@ import com.example.inhabitroutine.feature.view_habits.ViewHabitsScreen
 import com.example.inhabitroutine.feature.view_habits.components.ViewHabitsScreenNavigation
 import com.example.inhabitroutine.navigation.AppNavDest
 import com.example.inhabitroutine.navigation.TargetNavDest
+import com.example.inhabitroutine.navigation.backwardExitTransition
+import com.example.inhabitroutine.navigation.forwardPopEnterTransition
 import com.example.inhabitroutine.navigation.topDestinationEnterTransition
 import com.example.inhabitroutine.navigation.topDestinationExitTransition
 import com.example.inhabitroutine.presentation.base.BaseDestination
@@ -25,7 +27,54 @@ fun NavGraphBuilder.viewHabitsDestination(
             topDestinationEnterTransition()
         },
         exitTransition = {
-            topDestinationExitTransition()
+            when (targetState.destination.route) {
+                AppNavDest.ViewScheduleDestination.route,
+                AppNavDest.ViewTasksDestination.route -> {
+                    topDestinationExitTransition()
+                }
+
+                AppNavDest.EditTaskDestination.route -> {
+                    backwardExitTransition()
+                }
+
+                AppNavDest.CreateTaskDestination.route -> {
+                    backwardExitTransition()
+                }
+
+                AppNavDest.ViewTaskStatisticsDestination.route -> {
+                    backwardExitTransition()
+                }
+
+                AppNavDest.SearchTasksDestination.route -> {
+                    backwardExitTransition()
+                }
+
+                else -> ExitTransition.None
+            }
+        },
+        popEnterTransition = {
+            when (initialState.destination.route) {
+                AppNavDest.EditTaskDestination.route -> {
+                    forwardPopEnterTransition()
+                }
+
+                AppNavDest.CreateTaskDestination.route -> {
+                    forwardPopEnterTransition()
+                }
+
+                AppNavDest.ViewTaskStatisticsDestination.route -> {
+                    forwardPopEnterTransition()
+                }
+
+                AppNavDest.SearchTasksDestination.route -> {
+                    forwardPopEnterTransition()
+                }
+
+                else -> EnterTransition.None
+            }
+        },
+        popExitTransition = {
+            ExitTransition.None
         }
     ) {
         val viewModel: AndroidViewHabitsViewModel = hiltViewModel()

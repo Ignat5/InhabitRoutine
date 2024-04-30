@@ -24,19 +24,15 @@ fun NavGraphBuilder.viewScheduleDestination(
     composable(
         route = AppNavDest.ViewScheduleDestination.route,
         enterTransition = {
-            when (initialState.destination.route) {
-                AppNavDest.ViewHabitsDestination.route -> {
-                    topDestinationEnterTransition()
-                }
-                AppNavDest.ViewTasksDestination.route -> {
-                    topDestinationEnterTransition()
-                }
-                else -> ExitTransition.None
-            }
             topDestinationEnterTransition()
         },
         exitTransition = {
             when (targetState.destination.route) {
+                AppNavDest.ViewHabitsDestination.route,
+                AppNavDest.ViewTasksDestination.route -> {
+                    topDestinationExitTransition()
+                }
+
                 AppNavDest.EditTaskDestination.route -> {
                     backwardExitTransition()
                 }
@@ -47,10 +43,6 @@ fun NavGraphBuilder.viewScheduleDestination(
 
                 AppNavDest.SearchTasksDestination.route -> {
                     backwardExitTransition()
-                }
-
-                AppNavDest.ViewHabitsDestination.route -> {
-                    topDestinationExitTransition()
                 }
 
                 else -> ExitTransition.None
