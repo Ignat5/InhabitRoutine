@@ -31,6 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.example.inhabitroutine.core.presentation.R
+import com.example.inhabitroutine.core.presentation.ui.common.BaseAnimatedDaysOfWeekInput
 import com.example.inhabitroutine.core.presentation.ui.common.BaseDaysOfWeekInput
 import com.example.inhabitroutine.core.presentation.ui.common.BaseTimePicker
 import com.example.inhabitroutine.core.presentation.ui.dialog.base.BaseDialog
@@ -181,23 +182,12 @@ private fun DaysOfWeekRow(
     val scheduleDaysOfWeek = remember(schedule) {
         schedule as? ReminderSchedule.DaysOfWeek
     }
-    AnimatedVisibility(
-        visible = scheduleDaysOfWeek != null,
-        enter = fadeIn(
-            animationSpec = spring(stiffness = Spring.StiffnessHigh)
-        ),
-        exit = fadeOut(
-            animationSpec = spring(stiffness = Spring.StiffnessHigh)
-        )
-    ) {
-        scheduleDaysOfWeek?.daysOfWeek?.let { selectedDaysOfWeek ->
-            BaseDaysOfWeekInput(
-                selectedDaysOfWeek = selectedDaysOfWeek,
-                onDayOfWeekClick = onDayOfWeekClick,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-    }
+    BaseAnimatedDaysOfWeekInput(
+        isVisible = scheduleDaysOfWeek != null,
+        selectedDaysOfWeek = scheduleDaysOfWeek?.daysOfWeek ?: emptyList(),
+        onDayOfWeekClick = onDayOfWeekClick,
+        modifier = Modifier.fillMaxWidth()
+    )
 }
 
 @Composable

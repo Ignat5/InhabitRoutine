@@ -1,5 +1,11 @@
 package com.example.inhabitroutine.core.presentation.ui.common
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +27,49 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.inhabitroutine.core.presentation.ui.util.toDisplay
 import kotlinx.datetime.DayOfWeek
+
+private const val ANIMATION_DELAY_MILLIS = 50
+private const val ANIMATION_DURATION_MILLIS = 150
+
+@Composable
+fun BaseAnimatedDaysOfWeekInput(
+    isVisible: Boolean,
+    selectedDaysOfWeek: Collection<DayOfWeek>,
+    onDayOfWeekClick: (DayOfWeek) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = fadeIn(
+            animationSpec = tween(
+                durationMillis = ANIMATION_DURATION_MILLIS,
+                delayMillis = ANIMATION_DELAY_MILLIS
+            )
+        ) + scaleIn(animationSpec = tween(
+            durationMillis = ANIMATION_DURATION_MILLIS,
+            delayMillis = ANIMATION_DELAY_MILLIS
+        ),
+            initialScale = 0.92f
+        ),
+        exit = fadeOut(
+            animationSpec = tween(
+                durationMillis = ANIMATION_DURATION_MILLIS,
+                delayMillis = ANIMATION_DELAY_MILLIS
+            )
+        ) + scaleOut(
+            animationSpec =  tween(
+                durationMillis = ANIMATION_DURATION_MILLIS,
+                delayMillis = ANIMATION_DELAY_MILLIS
+            )
+        )
+    ) {
+        BaseDaysOfWeekInput(
+            selectedDaysOfWeek = selectedDaysOfWeek,
+            onDayOfWeekClick = onDayOfWeekClick,
+            modifier = modifier
+        )
+    }
+}
 
 @Composable
 fun BaseDaysOfWeekInput(

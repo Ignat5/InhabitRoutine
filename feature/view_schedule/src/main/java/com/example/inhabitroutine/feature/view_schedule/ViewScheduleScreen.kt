@@ -2,10 +2,18 @@ package com.example.inhabitroutine.feature.view_schedule
 
 import android.content.Context
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -433,14 +441,41 @@ private fun WeekRow(
             iconId = R.drawable.ic_previous,
             onClick = onPrevClick
         )
-        DaysOfWeekRow(
-            startOfWeekDate = startOfWeekDate,
-            currentDate = currentDate,
-            todayDate = todayDate,
-            context = context,
-            onDateClick = onDateClick,
+        AnimatedContent(
+            targetState = startOfWeekDate,
+            transitionSpec = {
+                val towards =
+                    if (targetState > initialState) AnimatedContentTransitionScope.SlideDirection.Start
+                    else AnimatedContentTransitionScope.SlideDirection.End
+                this.slideIntoContainer(
+                    towards = towards,
+                    animationSpec = tween(durationMillis = 200, delayMillis = 90)
+                ) + fadeIn(
+                    animationSpec = tween(durationMillis = 200, delayMillis = 90)
+                ) + scaleIn(
+                    animationSpec = tween(durationMillis = 200, delayMillis = 90),
+                    initialScale = 0.92f
+                ) togetherWith slideOutOfContainer(
+                    towards = towards,
+                    animationSpec = tween(durationMillis = 200, delayMillis = 90)
+                ) + fadeOut(
+                    animationSpec = tween(durationMillis = 200, delayMillis = 90)
+                ) + scaleOut(
+                    animationSpec = tween(durationMillis = 200, delayMillis = 90),
+                )
+            },
+            contentKey = { it.toEpochDays() },
             modifier = Modifier.weight(1f)
-        )
+        ) {
+            DaysOfWeekRow(
+                startOfWeekDate = it,
+                currentDate = currentDate,
+                todayDate = todayDate,
+                context = context,
+                onDateClick = onDateClick,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
         NextPrevButton(
             iconId = R.drawable.ic_next,
             onClick = onNextClick

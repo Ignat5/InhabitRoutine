@@ -4,9 +4,14 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandIn
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.shrinkOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -35,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.example.inhabitroutine.core.presentation.R
 import com.example.inhabitroutine.core.presentation.ui.base.BaseDialogWithResult
+import com.example.inhabitroutine.core.presentation.ui.common.BaseAnimatedDaysOfWeekInput
 import com.example.inhabitroutine.core.presentation.ui.common.BaseDaysOfWeekInput
 import com.example.inhabitroutine.core.presentation.ui.dialog.base.BaseDialog
 import com.example.inhabitroutine.core.presentation.ui.dialog.base.BaseDialogActionType
@@ -127,23 +133,12 @@ private fun DaysOfWeekRow(
     val freqDaysOfWeek = remember(frequency) {
         frequency as? TaskFrequency.DaysOfWeek
     }
-    AnimatedVisibility(
-        visible = freqDaysOfWeek != null,
-        enter = fadeIn(
-            animationSpec = spring(stiffness = Spring.StiffnessHigh)
-        ),
-        exit = fadeOut(
-            animationSpec = spring(stiffness = Spring.StiffnessHigh)
-        )
-    ) {
-        freqDaysOfWeek?.daysOfWeek?.let { selectedDaysOfWeek ->
-            BaseDaysOfWeekInput(
-                selectedDaysOfWeek = selectedDaysOfWeek,
-                onDayOfWeekClick = onDayOfWeekClick,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-    }
+    BaseAnimatedDaysOfWeekInput(
+        isVisible = freqDaysOfWeek != null,
+        selectedDaysOfWeek = freqDaysOfWeek?.daysOfWeek ?: emptySet(),
+        onDayOfWeekClick = onDayOfWeekClick,
+        modifier = Modifier.fillMaxWidth()
+    )
 }
 
 @Composable
