@@ -103,7 +103,7 @@ private fun EnterTaskNumberRecordDialogStateless(
                     .fillMaxWidth()
                     .focusRequester(focusRequester),
                 valueValidator = state.inputNumberValidator,
-                placeholder = {
+                label = {
                     Text(text = stringResource(id = R.string.task_enter_number_progress_label))
                 },
                 singleLine = true,

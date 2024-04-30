@@ -1,6 +1,7 @@
 package com.example.inhabitroutine.feature.view_schedule
 
 import com.example.inhabitroutine.core.presentation.base.BaseViewModel
+import com.example.inhabitroutine.core.presentation.model.UIResultModel
 import com.example.inhabitroutine.core.presentation.ui.dialog.pick_task_progress_type.PickTaskProgressTypeScreenResult
 import com.example.inhabitroutine.core.presentation.ui.dialog.pick_task_type.PickTaskTypeScreenResult
 import com.example.inhabitroutine.core.util.ResultModel
@@ -65,7 +66,6 @@ class ViewScheduleViewModel(
         )
 
     private val currentDateState = MutableStateFlow(todayDateState.value)
-
     private val startOfWeekDateState = MutableStateFlow(todayDateState.value.firstDayOfWeek)
 
     private val allTasksState = currentDateState.flatMapLatest { date ->
@@ -74,14 +74,14 @@ class ViewScheduleViewModel(
             .map { allTasks ->
                 if (allTasks.isNotEmpty()) {
                     withContext(defaultDispatcher) {
-                        allTasks.sortTasks()
+                        UIResultModel.Data(allTasks.sortTasks())
                     }
-                } else emptyList()
+                } else UIResultModel.Data(emptyList())
             }
     }.stateIn(
         viewModelScope,
         SharingStarted.Eagerly,
-        emptyList()
+        UIResultModel.Loading(emptyList())
     )
 
     override val uiScreenState: StateFlow<ViewScheduleScreenState> =
@@ -93,7 +93,7 @@ class ViewScheduleViewModel(
         ) { currentDate, allTasks, startOfWeekDate, todayDate ->
             ViewScheduleScreenState(
                 currentDate = currentDate,
-                allTasks = allTasks,
+                allTasksResult = allTasks,
                 startOfWeekDate = startOfWeekDate,
                 todayDate = todayDate
             )
@@ -102,7 +102,7 @@ class ViewScheduleViewModel(
             SharingStarted.Eagerly,
             ViewScheduleScreenState(
                 currentDate = currentDateState.value,
-                allTasks = allTasksState.value,
+                allTasksResult = allTasksState.value,
                 startOfWeekDate = startOfWeekDateState.value,
                 todayDate = todayDateState.value
             )
@@ -229,7 +229,7 @@ class ViewScheduleViewModel(
     }
 
     private fun onEnterTaskProgress(result: ViewTaskActionsScreenResult.OnActionClick.EnterProgress) {
-        allTasksState.value.find { it.task.id == result.taskId }
+        allTasksState.value.data?.find { it.task.id == result.taskId }
             ?.let { taskWithExtrasAndRecordModel ->
                 when (taskWithExtrasAndRecordModel) {
                     is TaskWithExtrasAndRecordModel.Habit.HabitContinuous.HabitNumber -> {
@@ -366,7 +366,7 @@ class ViewScheduleViewModel(
     }
 
     private fun onTaskClick(event: ViewScheduleScreenEvent.OnTaskClick) {
-        allTasksState.value.find { it.task.id == event.taskId }
+        allTasksState.value.data?.find { it.task.id == event.taskId }
             ?.let { taskWithExtrasAndRecord ->
                 when (taskWithExtrasAndRecord) {
                     is TaskWithExtrasAndRecordModel.Habit -> {
@@ -478,7 +478,7 @@ class ViewScheduleViewModel(
     }
 
     private fun onTaskLongClick(event: ViewScheduleScreenEvent.OnTaskLongClick) {
-        allTasksState.value.find { it.task.id == event.taskId }
+        allTasksState.value.data?.find { it.task.id == event.taskId }
             ?.let { taskWithExtrasAndRecordModel ->
                 setUpConfigState(
                     ViewScheduleScreenConfig.ViewTaskActions(

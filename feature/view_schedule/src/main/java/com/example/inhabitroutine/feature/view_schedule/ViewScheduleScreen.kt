@@ -7,12 +7,14 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -28,7 +30,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -40,19 +41,22 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.inhabitroutine.core.presentation.R
+import com.example.inhabitroutine.core.presentation.model.UIResultModel
 import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskProgressType
 import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskReminders
 import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskType
 import com.example.inhabitroutine.core.presentation.ui.common.CreateTaskFAB
+import com.example.inhabitroutine.core.presentation.ui.common.EmptyStateMessage
 import com.example.inhabitroutine.core.presentation.ui.common.TaskDivider
 import com.example.inhabitroutine.core.presentation.ui.dialog.pick_task_progress_type.PickTaskProgressTypeDialog
 import com.example.inhabitroutine.core.presentation.ui.dialog.pick_task_type.PickTaskTypeDialog
@@ -117,6 +121,8 @@ fun ViewScheduleScreen(
                 .padding(it)
         ) {
             val context = LocalContext.current
+            val allTasks =
+                remember(state.allTasksResult) { state.allTasksResult.data ?: emptyList() }
             Column(modifier = Modifier.fillMaxWidth()) {
                 WeekRow(
                     startOfWeekDate = state.startOfWeekDate,
@@ -135,7 +141,7 @@ fun ViewScheduleScreen(
                 Spacer(modifier = Modifier.height(8.dp))
                 LazyColumn(modifier = Modifier.fillMaxWidth()) {
                     itemsIndexed(
-                        items = state.allTasks,
+                        items = allTasks,
                         key = { _, item -> item.task.id }
                     ) { index, item ->
                         Column(modifier = Modifier.fillMaxWidth()) {
@@ -150,13 +156,14 @@ fun ViewScheduleScreen(
                                 },
                                 modifier = Modifier.animateItemPlacement()
                             )
-                            if (index != state.allTasks.lastIndex) {
+                            if (index != allTasks.lastIndex) {
                                 TaskDivider()
                             }
                         }
                     }
                 }
             }
+            NoTasksMessage(state.allTasksResult)
         }
     }
 }
@@ -553,6 +560,20 @@ private fun NextPrevButton(
             painter = painterResource(id = iconId),
             tint = MaterialTheme.colorScheme.onSurface,
             contentDescription = null
+        )
+    }
+}
+
+@Composable
+private fun BoxScope.NoTasksMessage(allTasksResult: UIResultModel<List<TaskWithExtrasAndRecordModel>>) {
+    val shouldShowNoTasksMessage = remember(allTasksResult) {
+        allTasksResult is UIResultModel.Data && allTasksResult.data.isEmpty()
+    }
+    if (shouldShowNoTasksMessage) {
+        EmptyStateMessage(
+            titleResId = R.string.no_tasks_scheduled_message_title,
+            subtitleResId = R.string.no_tasks_scheduled_message_subtitle,
+            modifier = Modifier.align(Alignment.Center)
         )
     }
 }

@@ -4,6 +4,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -39,6 +40,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalContext
@@ -47,6 +49,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.inhabitroutine.core.presentation.R
+import com.example.inhabitroutine.core.presentation.model.UIResultModel
 import com.example.inhabitroutine.core.presentation.ui.common.BaseSnackBar
 import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskEndDate
 import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskFrequency
@@ -54,6 +57,7 @@ import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskProgressTy
 import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskStartDate
 import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskType
 import com.example.inhabitroutine.core.presentation.ui.common.CreateTaskFAB
+import com.example.inhabitroutine.core.presentation.ui.common.EmptyStateMessage
 import com.example.inhabitroutine.core.presentation.ui.common.TaskDivider
 import com.example.inhabitroutine.core.presentation.ui.dialog.archive_task.ArchiveTaskDialog
 import com.example.inhabitroutine.core.presentation.ui.dialog.delete_task.DeleteTaskDialog
@@ -107,6 +111,9 @@ fun ViewHabitsScreen(
                 .fillMaxSize()
                 .padding(it)
         ) {
+            val allHabits = remember(state.allHabitsResult) {
+                state.allHabitsResult.data ?: emptyList()
+            }
             Column(modifier = Modifier.fillMaxWidth()) {
                 FilterSortRow(
                     sort = state.sort,
@@ -121,7 +128,7 @@ fun ViewHabitsScreen(
                 Spacer(modifier = Modifier.height(8.dp))
                 LazyColumn(modifier = Modifier.fillMaxWidth()) {
                     itemsIndexed(
-                        items = state.allHabits,
+                        items = allHabits,
                         key = { _, item -> item.id }
                     ) { index, item ->
                         Column(modifier = Modifier.fillMaxWidth()) {
@@ -132,13 +139,17 @@ fun ViewHabitsScreen(
                                 },
                                 modifier = Modifier.animateItemPlacement()
                             )
-                            if (index != state.allHabits.lastIndex) {
+                            if (index != allHabits.lastIndex) {
                                 TaskDivider()
                             }
                         }
                     }
                 }
             }
+            NoHabitsMessage(
+                allHabitsResult = state.allHabitsResult,
+                filterByStatus = state.filterByStatus
+            )
             SnackBarMessageHandler(
                 message = state.message,
                 snackBarHostState = snackBarHostState,
@@ -360,6 +371,31 @@ private fun SortChip(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun BoxScope.NoHabitsMessage(
+    allHabitsResult: UIResultModel<List<TaskModel.Habit>>,
+    filterByStatus: HabitFilterByStatus?
+) {
+    val shouldShowMessage = remember(allHabitsResult) {
+        allHabitsResult is UIResultModel.Data && allHabitsResult.data.isEmpty()
+    }
+    if (shouldShowMessage) {
+        val titleResId = remember(filterByStatus) {
+            if (filterByStatus == null) R.string.no_habits_message_title
+            else R.string.no_habits_after_filter_message_title
+        }
+        val subtitleResId = remember(filterByStatus) {
+            if (filterByStatus == null) R.string.no_habits_message_subtitle
+            else R.string.no_habits_after_filter_message_subtitle
+        }
+        EmptyStateMessage(
+            titleResId = titleResId,
+            subtitleResId = subtitleResId,
+            modifier = Modifier.align(Alignment.Center)
+        )
     }
 }
 

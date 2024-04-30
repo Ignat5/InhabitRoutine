@@ -1,6 +1,7 @@
 package com.example.inhabitroutine.feature.view_tasks
 
 import com.example.inhabitroutine.core.presentation.base.BaseViewModel
+import com.example.inhabitroutine.core.presentation.model.UIResultModel
 import com.example.inhabitroutine.core.presentation.ui.dialog.archive_task.ArchiveTaskStateHolder
 import com.example.inhabitroutine.core.presentation.ui.dialog.archive_task.components.ArchiveTaskScreenResult
 import com.example.inhabitroutine.core.presentation.ui.dialog.delete_task.DeleteTaskStateHolder
@@ -36,7 +37,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
-import kotlinx.datetime.LocalDate
 
 class ViewTasksViewModel(
     readTasksUseCase: ReadTasksUseCase,
@@ -60,17 +60,19 @@ class ViewTasksViewModel(
     ) { allTasks, filterByStatus, filterByType, sort ->
         if (allTasks.isNotEmpty()) {
             withContext(defaultDispatcher) {
-                allTasks
-                    .let { if (filterByStatus != null) it.filterByStatus(filterByStatus) else it }
-                    .let { if (filterByType != null) it.filterByType(filterByType) else it }
-                    .sortTasks(sort)
+                UIResultModel.Data(
+                    allTasks
+                        .let { if (filterByStatus != null) it.filterByStatus(filterByStatus) else it }
+                        .let { if (filterByType != null) it.filterByType(filterByType) else it }
+                        .sortTasks(sort)
+                )
             }
-        } else emptyList()
+        } else UIResultModel.Data(emptyList())
     }
         .stateIn(
             viewModelScope,
             SharingStarted.Eagerly,
-            emptyList()
+            UIResultModel.Loading(emptyList())
         )
 
     override val uiScreenState: StateFlow<ViewTasksScreenState> =
@@ -82,7 +84,7 @@ class ViewTasksViewModel(
             messageState
         ) { allTasks, filterByStatus, filterByType, sort, message ->
             ViewTasksScreenState(
-                allTasks = allTasks,
+                allTasksResult = allTasks,
                 filterByStatus = filterByStatus,
                 filterByType = filterByType,
                 sort = sort,
@@ -92,7 +94,7 @@ class ViewTasksViewModel(
             viewModelScope,
             SharingStarted.Eagerly,
             ViewTasksScreenState(
-                allTasks = allTasksState.value,
+                allTasksResult = allTasksState.value,
                 filterByStatus = filterByStatusState.value,
                 filterByType = filterByTypeState.value,
                 sort = sortState.value,
@@ -281,7 +283,7 @@ class ViewTasksViewModel(
     }
 
     private fun onTaskClick(event: ViewTasksScreenEvent.OnTaskClick) {
-        allTasksState.value.find { it.id == event.taskId }?.let { taskModel ->
+        allTasksState.value.data?.find { it.id == event.taskId }?.let { taskModel ->
             setUpConfigState(
                 ViewTasksScreenConfig.ViewTaskActions(
                     stateHolder = ViewTaskActionsStateHolder(
