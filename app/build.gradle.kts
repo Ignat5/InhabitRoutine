@@ -105,6 +105,9 @@ dependencies {
     ksp(libs.hilt.android.compiler)
     ksp(libs.hilt.compiler)
 
+    /* splash */
+    implementation(libs.androidx.core.splash)
+
     /* database */
     implementation(libs.bundles.sqldelight)
     implementation(libs.sqldelight.androidDriver)

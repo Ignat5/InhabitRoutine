@@ -87,11 +87,6 @@ private fun TimeInputLazyColumn(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_arrow_dropdown),
-            tint = MaterialTheme.colorScheme.outline,
-            contentDescription = null, modifier = Modifier.rotate(180f)
-        )
         Box(
             modifier = Modifier
                 .height(targetHeight),
@@ -119,11 +114,6 @@ private fun TimeInputLazyColumn(
                     }
             }
         }
-        Icon(
-            painter = painterResource(id = R.drawable.ic_arrow_dropdown),
-            tint = MaterialTheme.colorScheme.outline,
-            contentDescription = null, modifier = Modifier.rotate(0f)
-        )
     }
 }
 
