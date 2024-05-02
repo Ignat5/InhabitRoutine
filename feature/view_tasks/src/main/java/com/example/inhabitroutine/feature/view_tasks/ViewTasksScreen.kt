@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -57,7 +56,8 @@ import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskProgressTy
 import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskStartDate
 import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskType
 import com.example.inhabitroutine.core.presentation.ui.common.CreateTaskFAB
-import com.example.inhabitroutine.core.presentation.ui.common.EmptyStateMessage
+import com.example.inhabitroutine.core.presentation.ui.common.BaseEmptyStateMessage
+import com.example.inhabitroutine.core.presentation.ui.common.BaseTaskDefaults
 import com.example.inhabitroutine.core.presentation.ui.common.TaskDivider
 import com.example.inhabitroutine.core.presentation.ui.dialog.archive_task.ArchiveTaskDialog
 import com.example.inhabitroutine.core.presentation.ui.dialog.delete_task.DeleteTaskDialog
@@ -135,7 +135,7 @@ fun ViewTasksScreen(
                 LazyColumn(modifier = Modifier.fillMaxWidth()) {
                     itemsIndexed(
                         items = allTasks,
-                        key = { index, item -> item.id }
+                        key = { _, item -> item.id }
                     ) { index, item ->
                         Column(modifier = Modifier.fillMaxWidth()) {
                             ItemTask(
@@ -153,6 +153,9 @@ fun ViewTasksScreen(
                                 TaskDivider()
                             }
                         }
+                    }
+                    item {
+                        Spacer(modifier = Modifier.height(BaseTaskDefaults.TASK_LIST_FLOOR_SPACER_HEIGHT.dp))
                     }
                 }
             }
@@ -191,7 +194,7 @@ private fun BoxScope.NoTasksMessage(
         val subtitleResId = if (areFilterApplied) R.string.no_tasks_after_filter_message_subtitle
         else R.string.no_tasks_message_subtitle
 
-        EmptyStateMessage(
+        BaseEmptyStateMessage(
             titleResId = titleResId,
             subtitleResId = subtitleResId,
             modifier = Modifier.align(Alignment.Center)

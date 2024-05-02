@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import com.example.inhabitroutine.core.presentation.R
 import com.example.inhabitroutine.core.presentation.ui.common.BaseSnackBar
 import com.example.inhabitroutine.core.presentation.ui.dialog.archive_task.ArchiveTaskDialog
@@ -176,7 +177,11 @@ private fun ScreenTopBar(
 ) {
     TopAppBar(
         title = {
-            Text(text = taskTitle ?: "")
+            Text(
+                text = taskTitle ?: "",
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         },
         navigationIcon = {
             IconButton(onClick = onBack) {

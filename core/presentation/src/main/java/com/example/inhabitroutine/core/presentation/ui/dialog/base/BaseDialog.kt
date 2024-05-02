@@ -70,6 +70,7 @@ fun BaseDialog(
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
     properties: DialogProperties = DialogProperties(),
+    dialogPadding: PaddingValues = PaddingValues(DialogPadding),
     title: (@Composable () -> Unit)? = null,
     actionType: BaseDialogActionType = BaseDialogActionType.NoAction,
     content: @Composable ColumnScope.() -> Unit
@@ -77,7 +78,8 @@ fun BaseDialog(
     BaseDialog(
         onDismissRequest = onDismissRequest,
         modifier = modifier,
-        properties = properties
+        properties = properties,
+        dialogPadding = dialogPadding
     ) {
         title?.let {
             title()

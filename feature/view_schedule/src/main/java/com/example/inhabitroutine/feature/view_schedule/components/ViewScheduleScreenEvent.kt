@@ -2,6 +2,7 @@ package com.example.inhabitroutine.feature.view_schedule.components
 
 import com.example.inhabitroutine.core.presentation.components.event.ScreenEvent
 import com.example.inhabitroutine.core.presentation.components.result.ScreenResult
+import com.example.inhabitroutine.core.presentation.ui.dialog.pick_date.components.PickDateScreenResult
 import com.example.inhabitroutine.core.presentation.ui.dialog.pick_task_progress_type.PickTaskProgressTypeScreenResult
 import com.example.inhabitroutine.core.presentation.ui.dialog.pick_task_type.PickTaskTypeScreenResult
 import com.example.inhabitroutine.feature.view_schedule.config.enter_number_record.components.EnterTaskNumberRecordScreenResult
@@ -17,6 +18,7 @@ sealed interface ViewScheduleScreenEvent : ScreenEvent {
     data class OnDateClick(val date: LocalDate) : ViewScheduleScreenEvent
 
     data object OnCreateTaskClick : ViewScheduleScreenEvent
+    data object OnPickDateClick : ViewScheduleScreenEvent
     data object OnSearchClick : ViewScheduleScreenEvent
 
     sealed interface ResultEvent : ViewScheduleScreenEvent {
@@ -40,6 +42,10 @@ sealed interface ViewScheduleScreenEvent : ScreenEvent {
 
         data class ViewTaskActions(
             override val result: ViewTaskActionsScreenResult
+        ) : ResultEvent
+
+        data class PickDate(
+            override val result: PickDateScreenResult
         ) : ResultEvent
     }
 }

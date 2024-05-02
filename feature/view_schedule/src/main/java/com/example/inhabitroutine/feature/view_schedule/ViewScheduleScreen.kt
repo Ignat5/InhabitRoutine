@@ -2,21 +2,12 @@ package com.example.inhabitroutine.feature.view_schedule
 
 import android.content.Context
 import androidx.annotation.DrawableRes
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -51,13 +42,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.example.inhabitroutine.core.presentation.R
 import com.example.inhabitroutine.core.presentation.model.UIResultModel
@@ -65,8 +54,10 @@ import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskProgressTy
 import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskReminders
 import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskType
 import com.example.inhabitroutine.core.presentation.ui.common.CreateTaskFAB
-import com.example.inhabitroutine.core.presentation.ui.common.EmptyStateMessage
+import com.example.inhabitroutine.core.presentation.ui.common.BaseEmptyStateMessage
+import com.example.inhabitroutine.core.presentation.ui.common.BaseTaskDefaults
 import com.example.inhabitroutine.core.presentation.ui.common.TaskDivider
+import com.example.inhabitroutine.core.presentation.ui.dialog.pick_date.PickDateDialog
 import com.example.inhabitroutine.core.presentation.ui.dialog.pick_task_progress_type.PickTaskProgressTypeDialog
 import com.example.inhabitroutine.core.presentation.ui.dialog.pick_task_type.PickTaskTypeDialog
 import com.example.inhabitroutine.core.presentation.ui.util.limitNumberToDisplay
@@ -112,7 +103,9 @@ fun ViewScheduleScreen(
                 onSearchClick = {
                     onEvent(ViewScheduleScreenEvent.OnSearchClick)
                 },
-                onPickDateClick = {}
+                onPickDateClick = {
+                    onEvent(ViewScheduleScreenEvent.OnPickDateClick)
+                }
             )
         },
         floatingActionButton = {
@@ -151,12 +144,12 @@ fun ViewScheduleScreen(
                 LazyColumn(modifier = Modifier.fillMaxWidth()) {
                     itemsIndexed(
                         items = allTasks,
-                        key = { _, item -> item.task.id }
+                        key = { _, item -> item.task.id },
+                        contentType = { _, _ -> ItemType.Task }
                     ) { index, item ->
                         Column(modifier = Modifier.fillMaxWidth()) {
                             ItemTask(
                                 item = item,
-                                isLocked = state.isLocked,
                                 context = context,
                                 onClick = {
                                     onEvent(ViewScheduleScreenEvent.OnTaskClick(item.task.id))
@@ -164,12 +157,22 @@ fun ViewScheduleScreen(
                                 onLongClick = {
                                     onEvent(ViewScheduleScreenEvent.OnTaskLongClick(item.task.id))
                                 },
-                                modifier = Modifier.animateItemPlacement()
+                                modifier = Modifier.animateItemPlacement(
+                                    animationSpec = spring(
+                                        stiffness = Spring.StiffnessVeryLow,
+                                        visibilityThreshold = IntOffset.VisibilityThreshold
+                                    )
+                                )
                             )
                             if (index != allTasks.lastIndex) {
                                 TaskDivider()
                             }
                         }
+                    }
+                    item(
+                        contentType = { ItemType.FloorSpacer }
+                    ) {
+                        Spacer(modifier = Modifier.height(BaseTaskDefaults.TASK_LIST_FLOOR_SPACER_HEIGHT.dp))
                     }
                 }
             }
@@ -182,7 +185,6 @@ fun ViewScheduleScreen(
 @Composable
 private fun ItemTask(
     item: TaskWithExtrasAndRecordModel,
-    isLocked: Boolean,
     context: Context,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
@@ -210,23 +212,7 @@ private fun ItemTask(
                 TaskTitleRow(item, context)
                 TaskDetailRow(item)
             }
-            AnimatedVisibility(
-                visible = !isLocked,
-                enter = fadeIn(
-                    animationSpec = tween(
-                        durationMillis = 200,
-                        delayMillis = 100
-                    )
-                ),
-                exit = fadeOut(
-                    animationSpec = tween(
-                        durationMillis = 200,
-                        delayMillis = 100
-                    )
-                )
-            ) {
-                TaskProgressIndicator(item)
-            }
+            TaskProgressIndicator(item)
         }
     }
 }
@@ -600,12 +586,17 @@ private fun BoxScope.NoTasksMessage(allTasksResult: UIResultModel<List<TaskWithE
         allTasksResult is UIResultModel.Data && allTasksResult.data.isEmpty()
     }
     if (shouldShowNoTasksMessage) {
-        EmptyStateMessage(
+        BaseEmptyStateMessage(
             titleResId = R.string.no_tasks_scheduled_message_title,
             subtitleResId = R.string.no_tasks_scheduled_message_subtitle,
             modifier = Modifier.align(Alignment.Center)
         )
     }
+}
+
+private enum class ItemType {
+    Task,
+    FloorSpacer
 }
 
 @Composable
@@ -643,6 +634,12 @@ fun ViewScheduleScreenConfig(
                 onEvent(ViewScheduleScreenEvent.ResultEvent.ViewTaskActions(it))
             }
         }
+
+        is ViewScheduleScreenConfig.PickDate -> {
+            PickDateDialog(stateHolder = config.stateHolder) {
+                onEvent(ViewScheduleScreenEvent.ResultEvent.PickDate(it))
+            }
+        }
     }
 }
 
@@ -665,7 +662,7 @@ private fun ScreenTopBar(
         navigationIcon = {
             IconButton(onClick = onMenuClick) {
                 Icon(
-                    painter = painterResource(id = com.example.inhabitroutine.core.presentation.R.drawable.ic_menu),
+                    painter = painterResource(id = R.drawable.ic_menu),
                     contentDescription = null
                 )
             }
@@ -673,16 +670,16 @@ private fun ScreenTopBar(
         actions = {
             IconButton(onClick = onSearchClick) {
                 Icon(
-                    painter = painterResource(id = com.example.inhabitroutine.core.presentation.R.drawable.ic_search),
+                    painter = painterResource(id = R.drawable.ic_search),
                     contentDescription = null
                 )
             }
-//            IconButton(onClick = onPickDateClick) {
-//                Icon(
-//                    painter = painterResource(id = com.example.inhabitroutine.core.presentation.R.drawable.ic_pick_date),
-//                    contentDescription = null
-//                )
-//            }
+            IconButton(onClick = onPickDateClick) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_pick_date),
+                    contentDescription = null
+                )
+            }
         }
     )
 }

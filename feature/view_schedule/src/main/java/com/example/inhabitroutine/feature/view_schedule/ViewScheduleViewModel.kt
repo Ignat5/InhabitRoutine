@@ -2,6 +2,9 @@ package com.example.inhabitroutine.feature.view_schedule
 
 import com.example.inhabitroutine.core.presentation.base.BaseViewModel
 import com.example.inhabitroutine.core.presentation.model.UIResultModel
+import com.example.inhabitroutine.core.presentation.ui.dialog.pick_date.PickDateStateHolder
+import com.example.inhabitroutine.core.presentation.ui.dialog.pick_date.components.PickDateScreenResult
+import com.example.inhabitroutine.core.presentation.ui.dialog.pick_date.model.PickDateRequestModel
 import com.example.inhabitroutine.core.presentation.ui.dialog.pick_task_progress_type.PickTaskProgressTypeScreenResult
 import com.example.inhabitroutine.core.presentation.ui.dialog.pick_task_type.PickTaskTypeScreenResult
 import com.example.inhabitroutine.core.util.ResultModel
@@ -35,12 +38,14 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
+import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -62,7 +67,7 @@ class ViewScheduleViewModel(
     private val todayDateState = flow { emit(todayDate) }
         .stateIn(
             viewModelScope,
-            SharingStarted.WhileSubscribed(5000L),
+            SharingStarted.WhileSubscribed(),
             todayDate
         )
 
@@ -81,16 +86,8 @@ class ViewScheduleViewModel(
             }
     }.stateIn(
         viewModelScope,
-        SharingStarted.Eagerly,
+        SharingStarted.WhileSubscribed(),
         UIResultModel.Loading(emptyList())
-    )
-
-    private val isLockedState = currentDateState.zip(allTasksState) { currentDate, _ ->
-        currentDate > todayDateState.value
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.Eagerly,
-        false
     )
 
     override val uiScreenState: StateFlow<ViewScheduleScreenState> =
@@ -99,24 +96,21 @@ class ViewScheduleViewModel(
             allTasksState,
             startOfWeekDateState,
             todayDateState,
-            isLockedState
-        ) { currentDate, allTasks, startOfWeekDate, todayDate, isLocked ->
+        ) { currentDate, allTasks, startOfWeekDate, todayDate ->
             ViewScheduleScreenState(
                 currentDate = currentDate,
                 allTasksResult = allTasks,
                 startOfWeekDate = startOfWeekDate,
-                todayDate = todayDate,
-                isLocked = isLocked
+                todayDate = todayDate
             )
         }.stateIn(
             viewModelScope,
-            SharingStarted.Eagerly,
+            SharingStarted.WhileSubscribed(5000L),
             ViewScheduleScreenState(
                 currentDate = currentDateState.value,
                 allTasksResult = allTasksState.value,
                 startOfWeekDate = startOfWeekDateState.value,
                 todayDate = todayDateState.value,
-                isLocked = isLockedState.value
             )
         )
 
@@ -143,6 +137,9 @@ class ViewScheduleViewModel(
             is ViewScheduleScreenEvent.OnCreateTaskClick ->
                 onCreateTaskClick()
 
+            is ViewScheduleScreenEvent.OnPickDateClick ->
+                onPickDateClick()
+
             is ViewScheduleScreenEvent.OnSearchClick ->
                 onSearchClick()
         }
@@ -165,7 +162,24 @@ class ViewScheduleViewModel(
             is ViewScheduleScreenEvent.ResultEvent.ViewTaskActions ->
                 onViewTaskActionsResultEvent(event)
 
+            is ViewScheduleScreenEvent.ResultEvent.PickDate ->
+                onPickDateResultEvent(event)
+
         }
+    }
+
+    private fun onPickDateResultEvent(event: ViewScheduleScreenEvent.ResultEvent.PickDate) {
+        onIdleToAction {
+            when (val result = event.result) {
+                is PickDateScreenResult.Confirm -> onConfirmPickDate(result)
+                is PickDateScreenResult.Dismiss -> Unit
+            }
+        }
+    }
+
+    private fun onConfirmPickDate(result: PickDateScreenResult.Confirm) {
+        currentDateState.update { result.date }
+        startOfWeekDateState.update { result.date.firstDayOfWeek }
     }
 
     private fun onViewTaskActionsResultEvent(event: ViewScheduleScreenEvent.ResultEvent.ViewTaskActions) {
@@ -372,38 +386,34 @@ class ViewScheduleViewModel(
     }
 
     private fun onTaskClick(event: ViewScheduleScreenEvent.OnTaskClick) {
-        if (!isLockedState.value) {
-            allTasksState.value.data?.find { it.task.id == event.taskId }
-                ?.let { taskWithExtrasAndRecord ->
-                    when (taskWithExtrasAndRecord) {
-                        is TaskWithExtrasAndRecordModel.Habit -> {
-                            when (taskWithExtrasAndRecord) {
-                                is TaskWithExtrasAndRecordModel.Habit.HabitContinuous -> {
-                                    when (taskWithExtrasAndRecord) {
-                                        is TaskWithExtrasAndRecordModel.Habit.HabitContinuous.HabitNumber -> {
-                                            onHabitNumberClick(taskWithExtrasAndRecord)
-                                        }
+        allTasksState.value.data?.find { it.task.id == event.taskId }
+            ?.let { taskWithExtrasAndRecord ->
+                when (taskWithExtrasAndRecord) {
+                    is TaskWithExtrasAndRecordModel.Habit -> {
+                        when (taskWithExtrasAndRecord) {
+                            is TaskWithExtrasAndRecordModel.Habit.HabitContinuous -> {
+                                when (taskWithExtrasAndRecord) {
+                                    is TaskWithExtrasAndRecordModel.Habit.HabitContinuous.HabitNumber -> {
+                                        onHabitNumberClick(taskWithExtrasAndRecord)
+                                    }
 
-                                        is TaskWithExtrasAndRecordModel.Habit.HabitContinuous.HabitTime -> {
-                                            onHabitTimeClick(taskWithExtrasAndRecord)
-                                        }
+                                    is TaskWithExtrasAndRecordModel.Habit.HabitContinuous.HabitTime -> {
+                                        onHabitTimeClick(taskWithExtrasAndRecord)
                                     }
                                 }
+                            }
 
-                                is TaskWithExtrasAndRecordModel.Habit.HabitYesNo -> {
-                                    onHabitYesNoClick(taskWithExtrasAndRecord)
-                                }
+                            is TaskWithExtrasAndRecordModel.Habit.HabitYesNo -> {
+                                onHabitYesNoClick(taskWithExtrasAndRecord)
                             }
                         }
+                    }
 
-                        is TaskWithExtrasAndRecordModel.Task -> {
-                            onRecurringOrSingleTaskClick(taskWithExtrasAndRecord)
-                        }
+                    is TaskWithExtrasAndRecordModel.Task -> {
+                        onRecurringOrSingleTaskClick(taskWithExtrasAndRecord)
                     }
                 }
-        } else {
-            setUpNavigationState(ViewScheduleScreenNavigation.EditTask(event.taskId))
-        }
+            }
     }
 
     private fun onHabitNumberClick(taskWithExtrasAndRecordModel: TaskWithExtrasAndRecordModel.Habit.HabitContinuous.HabitNumber) {
@@ -488,22 +498,18 @@ class ViewScheduleViewModel(
     }
 
     private fun onTaskLongClick(event: ViewScheduleScreenEvent.OnTaskLongClick) {
-        if (!isLockedState.value) {
-            allTasksState.value.data?.find { it.task.id == event.taskId }
-                ?.let { taskWithExtrasAndRecordModel ->
-                    setUpConfigState(
-                        ViewScheduleScreenConfig.ViewTaskActions(
-                            stateHolder = ViewTaskActionsStateHolder(
-                                taskWithExtrasAndRecordModel = taskWithExtrasAndRecordModel,
-                                date = currentDateState.value,
-                                holderScope = provideChildScope()
-                            )
+        allTasksState.value.data?.find { it.task.id == event.taskId }
+            ?.let { taskWithExtrasAndRecordModel ->
+                setUpConfigState(
+                    ViewScheduleScreenConfig.ViewTaskActions(
+                        stateHolder = ViewTaskActionsStateHolder(
+                            taskWithExtrasAndRecordModel = taskWithExtrasAndRecordModel,
+                            date = currentDateState.value,
+                            holderScope = provideChildScope()
                         )
                     )
-                }
-        } else {
-            setUpNavigationState(ViewScheduleScreenNavigation.EditTask(event.taskId))
-        }
+                )
+            }
     }
 
     private fun onDateClick(event: ViewScheduleScreenEvent.OnDateClick) {
@@ -550,6 +556,24 @@ class ViewScheduleViewModel(
 
     private fun onCreateTaskClick() {
         setUpConfigState(ViewScheduleScreenConfig.PickTaskType(TaskType.entries))
+    }
+
+    private fun onPickDateClick() {
+        currentDateState.value.let { currentDate ->
+            setUpConfigState(
+                ViewScheduleScreenConfig.PickDate(
+                    stateHolder = PickDateStateHolder(
+                        requestModel = PickDateRequestModel(
+                            initDate = currentDate,
+                            minDate = currentDate.minus(1, DateTimeUnit.YEAR),
+                            maxDate = currentDate.plus(1, DateTimeUnit.YEAR)
+                        ),
+                        defaultDispatcher = defaultDispatcher,
+                        holderScope = provideChildScope()
+                    )
+                )
+            )
+        }
     }
 
     private fun onSearchClick() {

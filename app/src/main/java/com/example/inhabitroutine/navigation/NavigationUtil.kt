@@ -44,7 +44,7 @@ fun AnimatedContentTransitionScope<NavBackStackEntry>.topDestinationExitTransiti
 /* FORWARD/BACKWARD */
 
 /* ENTER/EXIT */
-private const val enterScreenDurationMillis = 400
+private const val enterScreenDurationMillis = 600
 private const val enterScreenDelayMillis = 100
 private val enterScreenEasing: Easing = FastOutSlowInEasing //CubicBezierEasing(0f, 0.2f, 0.5f, 1f)
 
