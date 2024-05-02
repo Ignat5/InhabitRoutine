@@ -147,7 +147,10 @@ fun ViewScheduleScreen(
                         key = { _, item -> item.task.id },
                         contentType = { _, _ -> ItemType.Task }
                     ) { index, item ->
-                        Column(modifier = Modifier.fillMaxWidth()) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        ) {
                             ItemTask(
                                 item = item,
                                 context = context,
@@ -158,10 +161,7 @@ fun ViewScheduleScreen(
                                     onEvent(ViewScheduleScreenEvent.OnTaskLongClick(item.task.id))
                                 },
                                 modifier = Modifier.animateItemPlacement(
-                                    animationSpec = spring(
-                                        stiffness = Spring.StiffnessVeryLow,
-                                        visibilityThreshold = IntOffset.VisibilityThreshold
-                                    )
+                                    animationSpec = BaseTaskDefaults.taskItemPlacementAnimationSpec
                                 )
                             )
                             if (index != allTasks.lastIndex) {
@@ -169,9 +169,7 @@ fun ViewScheduleScreen(
                             }
                         }
                     }
-                    item(
-                        contentType = { ItemType.FloorSpacer }
-                    ) {
+                    item {
                         Spacer(modifier = Modifier.height(BaseTaskDefaults.TASK_LIST_FLOOR_SPACER_HEIGHT.dp))
                     }
                 }

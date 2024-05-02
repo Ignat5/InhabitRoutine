@@ -45,7 +45,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalTime
 
 private val targetHeight get() = TextFieldDefaults.MinHeight
-private const val DEFAULT_DEBOUNCE_MILLIS = 200L
+private const val DEFAULT_DEBOUNCE_MILLIS = 100L
 
 @Composable
 fun BaseTimeInput(

@@ -1,10 +1,14 @@
 package com.example.inhabitroutine.feature.view_reminders
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.VisibilityThreshold
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,8 +24,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarData
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -38,8 +40,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.example.inhabitroutine.core.presentation.R
+import com.example.inhabitroutine.core.presentation.model.UIResultModel
+import com.example.inhabitroutine.core.presentation.ui.common.BaseEmptyStateMessage
 import com.example.inhabitroutine.core.presentation.ui.common.BaseSnackBar
 import com.example.inhabitroutine.core.presentation.ui.util.toDisplay
 import com.example.inhabitroutine.core.presentation.ui.util.toHourMinute
@@ -52,7 +57,6 @@ import com.example.inhabitroutine.feature.view_reminders.config.create_edit_remi
 import com.example.inhabitroutine.feature.view_reminders.config.create_edit_reminder.edit.EditReminderDialog
 import com.example.inhabitroutine.feature.view_reminders.config.delete_reminder.ConfirmDeleteReminderDialog
 import com.example.inhabitroutine.feature.view_reminders.model.ViewRemindersMessage
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -66,6 +70,9 @@ fun ViewRemindersScreen(
     Scaffold(
         topBar = {
             ScreenTopBar(
+                onCreateReminderClick = {
+                    onEvent(ViewRemindersScreenEvent.OnCreateReminderClick)
+                },
                 onBackClick = {
                     onEvent(ViewRemindersScreenEvent.OnLeaveRequest)
                 }
@@ -85,9 +92,12 @@ fun ViewRemindersScreen(
                 .fillMaxSize()
                 .padding(it)
         ) {
+            val allReminders = remember(state.allRemindersResult.data) {
+                state.allRemindersResult.data ?: emptyList()
+            }
             LazyColumn(modifier = Modifier.fillMaxWidth()) {
                 itemsIndexed(
-                    items = state.allReminders,
+                    items = allReminders,
                     key = { _, item -> item.id },
                     contentType = { _, _ -> ItemType.Reminder }
                 ) { index, item ->
@@ -100,25 +110,23 @@ fun ViewRemindersScreen(
                             onDeleteClick = {
                                 onEvent(ViewRemindersScreenEvent.OnDeleteReminderClick(item.id))
                             },
-                            modifier = Modifier.animateItemPlacement()
+                            modifier = Modifier.animateItemPlacement(
+                                animationSpec = spring(
+                                    stiffness = Spring.StiffnessVeryLow,
+                                    visibilityThreshold = IntOffset.VisibilityThreshold
+                                )
+                            )
                         )
-                        if (index != state.allReminders.lastIndex) {
+                        if (index != allReminders.lastIndex) {
                             HorizontalDivider()
                         }
                     }
                 }
-                item(
-                    key = ItemType.Create,
-                    contentType = { ItemType.Create }
-                ) {
-                    ItemCreateReminder(
-                        onClick = {
-                            onEvent(ViewRemindersScreenEvent.OnCreateReminderClick)
-                        },
-                        modifier = Modifier.animateItemPlacement()
-                    )
-                }
             }
+            NoRemindersMessage(
+                allRemindersResult = state.allRemindersResult,
+                modifier = Modifier.align(Alignment.Center)
+            )
         }
         SnackBarMessageHandler(
             message = state.message,
@@ -126,6 +134,23 @@ fun ViewRemindersScreen(
             onMessageShown = {
                 onEvent(ViewRemindersScreenEvent.OnMessageShown)
             }
+        )
+    }
+}
+
+@Composable
+private fun NoRemindersMessage(
+    allRemindersResult: UIResultModel<List<ReminderModel>>,
+    modifier: Modifier = Modifier
+) {
+    val shouldShowMessage = remember(allRemindersResult) {
+        allRemindersResult is UIResultModel.Data && allRemindersResult.data.isEmpty()
+    }
+    if (shouldShowMessage) {
+        BaseEmptyStateMessage(
+            titleResId = R.string.no_reminders_message_title,
+            subtitleResId = R.string.no_reminders_message_subtitle ,
+            modifier = modifier.fillMaxWidth()
         )
     }
 }
@@ -288,6 +313,7 @@ private enum class ItemType {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ScreenTopBar(
+    onCreateReminderClick: () -> Unit,
     onBackClick: () -> Unit
 ) {
     TopAppBar(
@@ -297,6 +323,14 @@ private fun ScreenTopBar(
         navigationIcon = {
             IconButton(onClick = onBackClick) {
                 Icon(painter = painterResource(id = R.drawable.ic_back), contentDescription = null)
+            }
+        },
+        actions = {
+            IconButton(onClick = onCreateReminderClick) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_add),
+                    contentDescription = null
+                )
             }
         }
     )

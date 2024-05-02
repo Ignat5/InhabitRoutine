@@ -35,6 +35,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.inhabitroutine.core.presentation.R
+import com.example.inhabitroutine.core.presentation.ui.common.BaseTaskDefaults
 import com.example.inhabitroutine.domain.model.task.TaskModel
 import com.example.inhabitroutine.feature.search_tasks.components.SearchTasksScreenEvent
 import com.example.inhabitroutine.feature.search_tasks.components.SearchTasksScreenState
@@ -97,7 +98,9 @@ fun SearchTasksScreen(
             ) { item ->
                 ItemTask(
                     item = item,
-                    modifier = Modifier.animateItemPlacement(),
+                    modifier = Modifier.animateItemPlacement(
+                        animationSpec = BaseTaskDefaults.taskItemPlacementAnimationSpec
+                    ),
                     onClick = {
                         focusManager.clearFocus(true)
                         onEvent(SearchTasksScreenEvent.OnTaskClick(item.id))

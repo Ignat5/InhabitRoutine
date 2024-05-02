@@ -2,6 +2,10 @@ package com.example.inhabitroutine.core.presentation.ui.common
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.animation.core.FiniteAnimationSpec
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.VisibilityThreshold
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,6 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.example.inhabitroutine.core.presentation.R
 import com.example.inhabitroutine.core.presentation.ui.util.toDayMonthYearDisplay
@@ -46,6 +51,11 @@ import kotlinx.datetime.LocalDate
 
 object BaseTaskDefaults {
     const val TASK_LIST_FLOOR_SPACER_HEIGHT = 100
+    val taskItemPlacementAnimationSpec: FiniteAnimationSpec<IntOffset>
+        get() = spring(
+            stiffness = Spring.StiffnessVeryLow,
+            visibilityThreshold = IntOffset.VisibilityThreshold
+        )
 }
 
 @Composable

@@ -137,7 +137,9 @@ fun ViewHabitsScreen(
                                 onClick = {
                                     onEvent(ViewHabitsScreenEvent.OnHabitClick(item.id))
                                 },
-                                modifier = Modifier.animateItemPlacement()
+                                modifier = Modifier.animateItemPlacement(
+                                    animationSpec = BaseTaskDefaults.taskItemPlacementAnimationSpec
+                                )
                             )
                             if (index != allHabits.lastIndex) {
                                 TaskDivider()

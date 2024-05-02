@@ -147,7 +147,9 @@ fun ViewTasksScreen(
                                         )
                                     )
                                 },
-                                modifier = Modifier.animateItemPlacement()
+                                modifier = Modifier.animateItemPlacement(
+                                    animationSpec = BaseTaskDefaults.taskItemPlacementAnimationSpec
+                                )
                             )
                             if (index != allTasks.lastIndex) {
                                 TaskDivider()
