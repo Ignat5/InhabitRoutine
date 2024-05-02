@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <string name="app_title" translatable="false">Inhabit Routine</string>
-
     <!--  drawer  -->
     <string name="drawer_view_schedule_title">Schedule</string>
     <string name="drawer_view_habits_title">Habits</string>
@@ -23,6 +20,8 @@
     <string name="habit_progress_type_yes_no_description">Daily record is either success or failure</string>
     <string name="habit_progress_type_number_description">Daily record is a number value</string>
     <string name="habit_progress_type_time_description">Daily record is a time value</string>
+    <string name="no_tasks_scheduled_message_title">There is nothing scheduled for the day</string>
+    <string name="no_tasks_scheduled_message_subtitle">Try adding new activities</string>
 
     <!-- task schedule -->
     <string name="task_status_pending">Pending</string>
@@ -41,9 +40,17 @@
     <string name="task_filter_by_type_title">Type</string>
     <string name="task_filter_by_type_recurring_tasks_title">Only recurring</string>
     <string name="task_filter_by_type_single_tasks_title">Only single</string>
+    <string name="no_tasks_message_title">There are no tasks</string>
+    <string name="no_tasks_message_subtitle">Try adding a new one today</string>
+    <string name="no_tasks_after_filter_message_title">No task matches specified filters</string>
+    <string name="no_tasks_after_filter_message_subtitle">Try changing the filters</string>
 
     <!--  view habits  -->
     <string name="view_habits_screen_title">Habits</string>
+    <string name="no_habits_message_title">There are no habits</string>
+    <string name="no_habits_message_subtitle">Try adding a new one today</string>
+    <string name="no_habits_after_filter_message_title">No habit matches specified filters</string>
+    <string name="no_habits_after_filter_message_subtitle">Try changing the filters</string>
 
     <!-- task config (create/edit task)   -->
     <string name="task_config_title">Activity name</string>
@@ -74,7 +81,7 @@
     <string name="task_action_reset_success_message">Habit reset</string>
     <string name="task_action_delete_title">Delete activity</string>
     <string name="task_action_delete_message">Are you sure you want to delete the activity?</string>
-    <string name="task_action_reset_title">Reset activity</string>
+    <string name="task_action_reset_title">Reset habit</string>
     <string name="task_action_reset_message">Are you sure you want to reset the habit?</string>
     <string name="task_action_done">Mark as done</string>
     <string name="task_action_skip">Skip</string>

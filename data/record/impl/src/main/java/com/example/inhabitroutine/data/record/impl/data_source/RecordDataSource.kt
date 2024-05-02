@@ -13,4 +13,10 @@ interface RecordDataSource {
         taskId: String,
         targetDate: LocalDate
     ): ResultModel<Unit, Throwable>
+    suspend fun deleteRecordsByTaskIdAndPeriod(
+        taskId: String,
+        minDate: LocalDate,
+        maxDate: LocalDate?
+    ): ResultModel<Unit, Throwable>
+    suspend fun deleteRecordsByTaskId(taskId: String): ResultModel<Unit, Throwable>
 }

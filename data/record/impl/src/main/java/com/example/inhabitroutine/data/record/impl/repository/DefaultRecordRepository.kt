@@ -52,4 +52,17 @@ internal class DefaultRecordRepository(
         targetDate = targetDate
     )
 
+    override suspend fun deleteRecordByTaskIdAndPeriod(
+        taskId: String,
+        minDate: LocalDate,
+        maxDate: LocalDate?
+    ): ResultModel<Unit, Throwable> = recordDataSource.deleteRecordsByTaskIdAndPeriod(
+        taskId = taskId,
+        minDate = minDate,
+        maxDate = maxDate
+    )
+
+    override suspend fun deleteRecordsByTaskId(taskId: String): ResultModel<Unit, Throwable> =
+        recordDataSource.deleteRecordsByTaskId(taskId)
+
 }

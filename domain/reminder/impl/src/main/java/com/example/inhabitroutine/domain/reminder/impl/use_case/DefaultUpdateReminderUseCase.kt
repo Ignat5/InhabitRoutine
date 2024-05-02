@@ -27,7 +27,7 @@ internal class DefaultUpdateReminderUseCase(
             if (!doesOverlap) {
                 val resultModel = reminderRepository.updateReminder(reminderModel)
                 if (resultModel is ResultModel.Success) {
-//                    TODO("set up reminder")
+                    setUpNextReminderUseCase(reminderId = reminderModel.id)
                 }
                 resultModel.mapFailure { UpdateReminderUseCase.UpdateReminderFailure.Other(it) }
             } else {

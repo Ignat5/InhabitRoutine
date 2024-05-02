@@ -1,5 +1,7 @@
 package com.example.inhabitroutine.navigation.view_task_statistics
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -7,6 +9,8 @@ import com.example.inhabitroutine.feature.view_task_statistics.ViewTaskStatistic
 import com.example.inhabitroutine.feature.view_task_statistics.components.ViewTaskStatisticsScreenNavigation
 import com.example.inhabitroutine.navigation.AppNavDest
 import com.example.inhabitroutine.navigation.TargetNavDest
+import com.example.inhabitroutine.navigation.backwardPopExitTransition
+import com.example.inhabitroutine.navigation.forwardEnterTransition
 import com.example.inhabitroutine.presentation.base.BaseDestination
 import com.example.inhabitroutine.presentation.view_task_statistics.AndroidViewTaskStatisticsViewModel
 
@@ -15,7 +19,15 @@ fun NavGraphBuilder.viewTaskStatisticsDestination(
 ) {
     composable(
         route = AppNavDest.ViewTaskStatisticsDestination.route,
-        arguments = listOf(AppNavDest.taskIdNavArg)
+        arguments = listOf(AppNavDest.taskIdNavArg),
+        enterTransition = {
+            forwardEnterTransition()
+        },
+        exitTransition = { ExitTransition.None },
+        popEnterTransition = { EnterTransition.None },
+        popExitTransition = {
+            backwardPopExitTransition()
+        }
     ) {
         val viewModel: AndroidViewTaskStatisticsViewModel = hiltViewModel()
         BaseDestination(

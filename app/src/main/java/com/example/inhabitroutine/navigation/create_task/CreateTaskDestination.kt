@@ -9,13 +9,29 @@ import com.example.inhabitroutine.feature.create_edit_task.create.CreateTaskScre
 import com.example.inhabitroutine.feature.create_edit_task.create.components.CreateTaskScreenNavigation
 import com.example.inhabitroutine.navigation.AppNavDest
 import com.example.inhabitroutine.navigation.TargetNavDest
+import com.example.inhabitroutine.navigation.backwardExitTransition
+import com.example.inhabitroutine.navigation.backwardPopExitTransition
+import com.example.inhabitroutine.navigation.forwardEnterTransition
+import com.example.inhabitroutine.navigation.forwardPopEnterTransition
 import com.example.inhabitroutine.presentation.base.BaseDestination
 import com.example.inhabitroutine.presentation.create_task.AndroidCreateTaskViewModel
 
 fun NavGraphBuilder.createTaskDestination(onNavigate: (TargetNavDest) -> Unit) {
     composable(
         route = AppNavDest.CreateTaskDestination.route,
-        arguments = listOf(AppNavDest.taskIdNavArg)
+        arguments = listOf(AppNavDest.taskIdNavArg),
+        enterTransition = {
+            forwardEnterTransition()
+        },
+        exitTransition = {
+            backwardExitTransition()
+        },
+        popEnterTransition = {
+            forwardPopEnterTransition()
+        },
+        popExitTransition = {
+            backwardPopExitTransition()
+        }
     ) {
         val viewModel: AndroidCreateTaskViewModel = hiltViewModel()
         BaseDestination(
@@ -33,6 +49,7 @@ fun NavGraphBuilder.createTaskDestination(onNavigate: (TargetNavDest) -> Unit) {
                             }
                         }
                     }
+
                     is CreateTaskScreenNavigation.Back -> {
                         onNavigate(TargetNavDest.Back)
                     }

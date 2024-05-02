@@ -1,6 +1,9 @@
 package com.example.inhabitroutine.navigation.root
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.fadeIn
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberDrawerState
@@ -83,7 +86,9 @@ fun RootGraph() {
             NavHost(
                 navController = navController,
                 startDestination = AppNavDest.ViewScheduleDestination.route,
-                route = AppNavDest.RootGraphDestination.route
+                route = AppNavDest.RootGraphDestination.route,
+                enterTransition = { EnterTransition.None },
+                exitTransition = { ExitTransition.None }
             ) {
                 viewScheduleDestination(
                     onNavigate = onNavigate,

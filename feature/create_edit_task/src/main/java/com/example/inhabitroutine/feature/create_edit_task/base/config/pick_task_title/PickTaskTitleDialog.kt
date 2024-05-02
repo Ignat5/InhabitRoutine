@@ -76,7 +76,7 @@ private fun PickTaskTitleDialogStateless(
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.Sentences
             ),
-            placeholder = {
+            label = {
                 Text(text = stringResource(id = com.example.inhabitroutine.core.presentation.R.string.task_config_title_label))
             }
         )

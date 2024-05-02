@@ -3,19 +3,19 @@
 agp = "8.3.2"
 
 # kotlin
-kotlin = "1.9.22"
+kotlin = "1.9.23"
 kotlin-coroutines = "1.8.0"
 kotlin-datetime = "0.4.0"
 kotlin-serialization = "1.5.1"
 
 # ksp
-ksp = "1.9.22-1.0.17"
+ksp = "1.9.23-1.0.20"
 # db
 sqldelight = "2.0.0"
 
 # android
 # dagger
-hilt = "2.48"
+hilt = "2.49"
 hilt-compiler = "1.2.0"
 
 # preferences
@@ -25,14 +25,17 @@ datastore = "1.0.0"
 lifecycle = "2.7.0"
 
 # compose
-compose = "1.6.2"
-compose-compiler = "1.5.10"
-compose-material3 = "1.2.0"
-androidx-activityCompose = "1.8.2"
+compose = "1.6.6"
+compose-compiler = "1.5.12"
+compose-material3 = "1.2.1"
+androidx-activityCompose = "1.9.0"
 compose-lifecycle-viewmodel = "2.7.0"
 compose-navigation = "2.7.7"
-accompanist-permissions = "0.34.0"
-coreKtx = "1.12.0"
+
+# splash
+splash = "1.0.1"
+
+coreKtx = "1.13.0"
 junit = "4.13.2"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
@@ -77,7 +80,9 @@ compose-material3 = { module = "androidx.compose.material3:material3", version.r
 compose-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "compose-lifecycle-viewmodel" }
 compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "compose-navigation" }
 compose-compiler = { module = "androidx.compose.compiler:compiler", version.ref = "compose-compiler" }
-accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist-permissions" }
+
+# splash
+androidx-core-splash = { module = "androidx.core:core-splashscreen", version.ref = "splash"}
 
 # auto
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }

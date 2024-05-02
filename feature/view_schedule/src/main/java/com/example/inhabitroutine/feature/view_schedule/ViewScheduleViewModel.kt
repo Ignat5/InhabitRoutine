@@ -1,6 +1,7 @@
 package com.example.inhabitroutine.feature.view_schedule
 
 import com.example.inhabitroutine.core.presentation.base.BaseViewModel
+import com.example.inhabitroutine.core.presentation.model.UIResultModel
 import com.example.inhabitroutine.core.presentation.ui.dialog.pick_task_progress_type.PickTaskProgressTypeScreenResult
 import com.example.inhabitroutine.core.presentation.ui.dialog.pick_task_type.PickTaskTypeScreenResult
 import com.example.inhabitroutine.core.util.ResultModel
@@ -36,6 +37,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
@@ -65,7 +67,6 @@ class ViewScheduleViewModel(
         )
 
     private val currentDateState = MutableStateFlow(todayDateState.value)
-
     private val startOfWeekDateState = MutableStateFlow(todayDateState.value.firstDayOfWeek)
 
     private val allTasksState = currentDateState.flatMapLatest { date ->
@@ -74,14 +75,22 @@ class ViewScheduleViewModel(
             .map { allTasks ->
                 if (allTasks.isNotEmpty()) {
                     withContext(defaultDispatcher) {
-                        allTasks.sortTasks()
+                        UIResultModel.Data(allTasks.sortTasks())
                     }
-                } else emptyList()
+                } else UIResultModel.Data(emptyList())
             }
     }.stateIn(
         viewModelScope,
         SharingStarted.Eagerly,
-        emptyList()
+        UIResultModel.Loading(emptyList())
+    )
+
+    private val isLockedState = currentDateState.zip(allTasksState) { currentDate, _ ->
+        currentDate > todayDateState.value
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.Eagerly,
+        false
     )
 
     override val uiScreenState: StateFlow<ViewScheduleScreenState> =
@@ -89,22 +98,25 @@ class ViewScheduleViewModel(
             currentDateState,
             allTasksState,
             startOfWeekDateState,
-            todayDateState
-        ) { currentDate, allTasks, startOfWeekDate, todayDate ->
+            todayDateState,
+            isLockedState
+        ) { currentDate, allTasks, startOfWeekDate, todayDate, isLocked ->
             ViewScheduleScreenState(
                 currentDate = currentDate,
-                allTasks = allTasks,
+                allTasksResult = allTasks,
                 startOfWeekDate = startOfWeekDate,
-                todayDate = todayDate
+                todayDate = todayDate,
+                isLocked = isLocked
             )
         }.stateIn(
             viewModelScope,
             SharingStarted.Eagerly,
             ViewScheduleScreenState(
                 currentDate = currentDateState.value,
-                allTasks = allTasksState.value,
+                allTasksResult = allTasksState.value,
                 startOfWeekDate = startOfWeekDateState.value,
-                todayDate = todayDateState.value
+                todayDate = todayDateState.value,
+                isLocked = isLockedState.value
             )
         )
 
@@ -229,7 +241,7 @@ class ViewScheduleViewModel(
     }
 
     private fun onEnterTaskProgress(result: ViewTaskActionsScreenResult.OnActionClick.EnterProgress) {
-        allTasksState.value.find { it.task.id == result.taskId }
+        allTasksState.value.data?.find { it.task.id == result.taskId }
             ?.let { taskWithExtrasAndRecordModel ->
                 when (taskWithExtrasAndRecordModel) {
                     is TaskWithExtrasAndRecordModel.Habit.HabitContinuous.HabitNumber -> {
@@ -366,34 +378,38 @@ class ViewScheduleViewModel(
     }
 
     private fun onTaskClick(event: ViewScheduleScreenEvent.OnTaskClick) {
-        allTasksState.value.find { it.task.id == event.taskId }
-            ?.let { taskWithExtrasAndRecord ->
-                when (taskWithExtrasAndRecord) {
-                    is TaskWithExtrasAndRecordModel.Habit -> {
-                        when (taskWithExtrasAndRecord) {
-                            is TaskWithExtrasAndRecordModel.Habit.HabitContinuous -> {
-                                when (taskWithExtrasAndRecord) {
-                                    is TaskWithExtrasAndRecordModel.Habit.HabitContinuous.HabitNumber -> {
-                                        onHabitNumberClick(taskWithExtrasAndRecord)
-                                    }
+        if (!isLockedState.value) {
+            allTasksState.value.data?.find { it.task.id == event.taskId }
+                ?.let { taskWithExtrasAndRecord ->
+                    when (taskWithExtrasAndRecord) {
+                        is TaskWithExtrasAndRecordModel.Habit -> {
+                            when (taskWithExtrasAndRecord) {
+                                is TaskWithExtrasAndRecordModel.Habit.HabitContinuous -> {
+                                    when (taskWithExtrasAndRecord) {
+                                        is TaskWithExtrasAndRecordModel.Habit.HabitContinuous.HabitNumber -> {
+                                            onHabitNumberClick(taskWithExtrasAndRecord)
+                                        }
 
-                                    is TaskWithExtrasAndRecordModel.Habit.HabitContinuous.HabitTime -> {
-                                        onHabitTimeClick(taskWithExtrasAndRecord)
+                                        is TaskWithExtrasAndRecordModel.Habit.HabitContinuous.HabitTime -> {
+                                            onHabitTimeClick(taskWithExtrasAndRecord)
+                                        }
                                     }
                                 }
-                            }
 
-                            is TaskWithExtrasAndRecordModel.Habit.HabitYesNo -> {
-                                onHabitYesNoClick(taskWithExtrasAndRecord)
+                                is TaskWithExtrasAndRecordModel.Habit.HabitYesNo -> {
+                                    onHabitYesNoClick(taskWithExtrasAndRecord)
+                                }
                             }
                         }
-                    }
 
-                    is TaskWithExtrasAndRecordModel.Task -> {
-                        onRecurringOrSingleTaskClick(taskWithExtrasAndRecord)
+                        is TaskWithExtrasAndRecordModel.Task -> {
+                            onRecurringOrSingleTaskClick(taskWithExtrasAndRecord)
+                        }
                     }
                 }
-            }
+        } else {
+            setUpNavigationState(ViewScheduleScreenNavigation.EditTask(event.taskId))
+        }
     }
 
     private fun onHabitNumberClick(taskWithExtrasAndRecordModel: TaskWithExtrasAndRecordModel.Habit.HabitContinuous.HabitNumber) {
@@ -478,18 +494,22 @@ class ViewScheduleViewModel(
     }
 
     private fun onTaskLongClick(event: ViewScheduleScreenEvent.OnTaskLongClick) {
-        allTasksState.value.find { it.task.id == event.taskId }
-            ?.let { taskWithExtrasAndRecordModel ->
-                setUpConfigState(
-                    ViewScheduleScreenConfig.ViewTaskActions(
-                        stateHolder = ViewTaskActionsStateHolder(
-                            taskWithExtrasAndRecordModel = taskWithExtrasAndRecordModel,
-                            date = currentDateState.value,
-                            holderScope = provideChildScope()
+        if (!isLockedState.value) {
+            allTasksState.value.data?.find { it.task.id == event.taskId }
+                ?.let { taskWithExtrasAndRecordModel ->
+                    setUpConfigState(
+                        ViewScheduleScreenConfig.ViewTaskActions(
+                            stateHolder = ViewTaskActionsStateHolder(
+                                taskWithExtrasAndRecordModel = taskWithExtrasAndRecordModel,
+                                date = currentDateState.value,
+                                holderScope = provideChildScope()
+                            )
                         )
                     )
-                )
-            }
+                }
+        } else {
+            setUpNavigationState(ViewScheduleScreenNavigation.EditTask(event.taskId))
+        }
     }
 
     private fun onDateClick(event: ViewScheduleScreenEvent.OnDateClick) {

@@ -116,7 +116,7 @@ private fun ItemRootDestination(
 @Composable
 private fun AppTitle() {
     Text(
-        text = stringResource(id = R.string.app_title),
+        text = stringResource(id = com.example.inhabitroutine.R.string.app_name),
         style = MaterialTheme.typography.titleLarge,
         color = MaterialTheme.colorScheme.onSurface
     )

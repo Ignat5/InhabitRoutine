@@ -1,6 +1,7 @@
 package com.example.inhabitroutine.feature.view_habits
 
 import com.example.inhabitroutine.core.presentation.base.BaseViewModel
+import com.example.inhabitroutine.core.presentation.model.UIResultModel
 import com.example.inhabitroutine.core.presentation.ui.dialog.archive_task.ArchiveTaskStateHolder
 import com.example.inhabitroutine.core.presentation.ui.dialog.archive_task.components.ArchiveTaskScreenResult
 import com.example.inhabitroutine.core.presentation.ui.dialog.delete_task.DeleteTaskStateHolder
@@ -53,15 +54,17 @@ class ViewHabitsViewModel(
     ) { allHabits, filterByStatus, sort ->
         if (allHabits.isNotEmpty()) {
             withContext(defaultDispatcher) {
-                allHabits
-                    .let { if (filterByStatus != null) it.filterByStatus(filterByStatus) else it }
-                    .sortHabits(sort)
+                UIResultModel.Data(
+                    allHabits
+                        .let { if (filterByStatus != null) it.filterByStatus(filterByStatus) else it }
+                        .sortHabits(sort)
+                )
             }
-        } else emptyList()
+        } else UIResultModel.Data(emptyList())
     }.stateIn(
         viewModelScope,
         SharingStarted.Eagerly,
-        emptyList()
+        UIResultModel.Loading(emptyList())
     )
 
     override val uiScreenState: StateFlow<ViewHabitsScreenState> =
@@ -72,7 +75,7 @@ class ViewHabitsViewModel(
             messageState
         ) { allHabits, filterByStatus, sort, message ->
             ViewHabitsScreenState(
-                allHabits = allHabits,
+                allHabitsResult = allHabits,
                 filterByStatus = filterByStatus,
                 sort = sort,
                 message = message
@@ -81,7 +84,7 @@ class ViewHabitsViewModel(
             viewModelScope,
             SharingStarted.Eagerly,
             ViewHabitsScreenState(
-                allHabits = allHabitsState.value,
+                allHabitsResult = allHabitsState.value,
                 filterByStatus = filterByStatusState.value,
                 sort = sortState.value,
                 message = messageState.value
@@ -158,12 +161,14 @@ class ViewHabitsViewModel(
     }
 
     private fun onDeleteTask(taskId: String) {
-        setUpConfigState(ViewHabitsScreenConfig.DeleteTask(
-            stateHolder = DeleteTaskStateHolder(
-                taskId = taskId,
-                holderScope = provideChildScope()
+        setUpConfigState(
+            ViewHabitsScreenConfig.DeleteTask(
+                stateHolder = DeleteTaskStateHolder(
+                    taskId = taskId,
+                    holderScope = provideChildScope()
+                )
             )
-        ))
+        )
     }
 
     private fun onUnarchiveTask(taskId: String) {
@@ -264,7 +269,7 @@ class ViewHabitsViewModel(
     }
 
     private fun onHabitClick(event: ViewHabitsScreenEvent.OnHabitClick) {
-        allHabitsState.value.find { it.id == event.habitId }?.let { taskModel ->
+        allHabitsState.value.data?.find { it.id == event.habitId }?.let { taskModel ->
             setUpConfigState(
                 ViewHabitsScreenConfig.ViewHabitActions(
                     stateHolder = ViewHabitActionsStateHolder(

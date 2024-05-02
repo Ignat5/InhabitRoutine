@@ -98,5 +98,5 @@ fun TaskModel.checkIfCanSetReminder() = this.let { taskModel ->
 }
 
 fun ReminderModel.checkIfCanSetReminder() = this.let { reminderModel ->
-    reminderModel.type in setOf(ReminderType.Notification)
+    reminderModel.type in ReminderType.allNotifiableTypes
 }

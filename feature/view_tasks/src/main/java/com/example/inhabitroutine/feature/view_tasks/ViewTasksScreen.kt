@@ -1,10 +1,10 @@
 package com.example.inhabitroutine.feature.view_tasks
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -24,7 +24,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -41,6 +40,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalContext
@@ -49,14 +49,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.inhabitroutine.core.presentation.R
+import com.example.inhabitroutine.core.presentation.model.UIResultModel
 import com.example.inhabitroutine.core.presentation.ui.common.BaseSnackBar
-import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskArchived
 import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskEndDate
 import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskFrequency
 import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskProgressType
 import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskStartDate
 import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskType
 import com.example.inhabitroutine.core.presentation.ui.common.CreateTaskFAB
+import com.example.inhabitroutine.core.presentation.ui.common.EmptyStateMessage
 import com.example.inhabitroutine.core.presentation.ui.common.TaskDivider
 import com.example.inhabitroutine.core.presentation.ui.dialog.archive_task.ArchiveTaskDialog
 import com.example.inhabitroutine.core.presentation.ui.dialog.delete_task.DeleteTaskDialog
@@ -112,6 +113,9 @@ fun ViewTasksScreen(
                 .fillMaxSize()
                 .padding(it)
         ) {
+            val allTasks = remember(state.allTasksResult) {
+                state.allTasksResult.data ?: emptyList()
+            }
             Column(modifier = Modifier.fillMaxWidth()) {
                 FilterSortChipRow(
                     sort = state.sort,
@@ -130,7 +134,7 @@ fun ViewTasksScreen(
                 Spacer(modifier = Modifier.height(8.dp))
                 LazyColumn(modifier = Modifier.fillMaxWidth()) {
                     itemsIndexed(
-                        items = state.allTasks,
+                        items = allTasks,
                         key = { index, item -> item.id }
                     ) { index, item ->
                         Column(modifier = Modifier.fillMaxWidth()) {
@@ -145,13 +149,18 @@ fun ViewTasksScreen(
                                 },
                                 modifier = Modifier.animateItemPlacement()
                             )
-                            if (index != state.allTasks.lastIndex) {
+                            if (index != allTasks.lastIndex) {
                                 TaskDivider()
                             }
                         }
                     }
                 }
             }
+            NoTasksMessage(
+                allTasksResult = state.allTasksResult,
+                filterByStatus = state.filterByStatus,
+                filterByType = state.filterByType
+            )
             SnackBarMessageHandler(
                 message = state.message,
                 snackBarHostState = snackBarHostState,
@@ -160,6 +169,33 @@ fun ViewTasksScreen(
                 }
             )
         }
+    }
+}
+
+@Composable
+private fun BoxScope.NoTasksMessage(
+    allTasksResult: UIResultModel<List<TaskModel.Task>>,
+    filterByStatus: TaskFilterByStatus?,
+    filterByType: TaskFilterByType?
+) {
+    val shouldShowMessage = remember(allTasksResult) {
+        allTasksResult is UIResultModel.Data && allTasksResult.data.isEmpty()
+    }
+    if (shouldShowMessage) {
+        val areFilterApplied = remember(filterByStatus, filterByType) {
+            filterByStatus != null || filterByType != null
+        }
+        val titleResId = if (areFilterApplied) R.string.no_tasks_after_filter_message_title
+        else R.string.no_tasks_message_title
+
+        val subtitleResId = if (areFilterApplied) R.string.no_tasks_after_filter_message_subtitle
+        else R.string.no_tasks_message_subtitle
+
+        EmptyStateMessage(
+            titleResId = titleResId,
+            subtitleResId = subtitleResId,
+            modifier = Modifier.align(Alignment.Center)
+        )
     }
 }
 

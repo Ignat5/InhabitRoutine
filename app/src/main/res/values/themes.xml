@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <style name="Theme.InhabitRoutine" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.InhabitRoutine.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="postSplashScreenTheme">@style/Theme.InhabitRoutine</item>
+    </style>
 </resources>

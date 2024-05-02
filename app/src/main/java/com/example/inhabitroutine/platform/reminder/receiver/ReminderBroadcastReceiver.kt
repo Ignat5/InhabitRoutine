@@ -91,7 +91,7 @@ class ReminderBroadcastReceiver : BroadcastReceiver() {
                 )
             }
             NotificationCompat.Builder(context, channel.id)
-                .setSmallIcon(com.example.inhabitroutine.R.mipmap.ic_launcher_round)
+                .setSmallIcon(com.example.inhabitroutine.R.drawable.ic_app_notification)
                 .setContentTitle(reminderTaskModel.taskModel.title)
                 .setContentText(reminderTaskModel.reminderModel.time.toHourMinute())
                 .setPriority(NotificationManager.IMPORTANCE_HIGH)
