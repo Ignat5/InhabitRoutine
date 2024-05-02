@@ -114,7 +114,8 @@ fun ViewRemindersScreen(
                     ItemCreateReminder(
                         onClick = {
                             onEvent(ViewRemindersScreenEvent.OnCreateReminderClick)
-                        }
+                        },
+                        modifier = Modifier.animateItemPlacement()
                     )
                 }
             }
@@ -256,11 +257,12 @@ private fun ItemReminder(
 
 @Composable
 private fun ItemCreateReminder(
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     TextButton(
         onClick = onClick,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
     ) {

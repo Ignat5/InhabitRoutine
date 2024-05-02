@@ -442,6 +442,9 @@ private fun getTaskProgress(
     }
 }
 
+private const val WEEK_ROW_ANIMATION_DURATION = 200
+private const val WEEK_ROW_ANIMATION_DELAY = 0
+
 @Composable
 private fun WeekRow(
     startOfWeekDate: LocalDate,
@@ -460,41 +463,14 @@ private fun WeekRow(
             iconId = R.drawable.ic_previous,
             onClick = onPrevClick
         )
-        AnimatedContent(
-            targetState = startOfWeekDate,
-            transitionSpec = {
-                val towards =
-                    if (targetState > initialState) AnimatedContentTransitionScope.SlideDirection.Start
-                    else AnimatedContentTransitionScope.SlideDirection.End
-                this.slideIntoContainer(
-                    towards = towards,
-                    animationSpec = tween(durationMillis = 200, delayMillis = 90)
-                ) + fadeIn(
-                    animationSpec = tween(durationMillis = 200, delayMillis = 90)
-                ) + scaleIn(
-                    animationSpec = tween(durationMillis = 200, delayMillis = 90),
-                    initialScale = 0.92f
-                ) togetherWith slideOutOfContainer(
-                    towards = towards,
-                    animationSpec = tween(durationMillis = 200, delayMillis = 90)
-                ) + fadeOut(
-                    animationSpec = tween(durationMillis = 200, delayMillis = 90)
-                ) + scaleOut(
-                    animationSpec = tween(durationMillis = 200, delayMillis = 90),
-                )
-            },
-            contentKey = { it.toEpochDays() },
+        DaysOfWeekRow(
+            startOfWeekDate = startOfWeekDate,
+            currentDate = currentDate,
+            todayDate = todayDate,
+            context = context,
+            onDateClick = onDateClick,
             modifier = Modifier.weight(1f)
-        ) {
-            DaysOfWeekRow(
-                startOfWeekDate = it,
-                currentDate = currentDate,
-                todayDate = todayDate,
-                context = context,
-                onDateClick = onDateClick,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
+        )
         NextPrevButton(
             iconId = R.drawable.ic_next,
             onClick = onNextClick

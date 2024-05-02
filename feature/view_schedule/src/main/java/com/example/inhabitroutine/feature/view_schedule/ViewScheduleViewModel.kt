@@ -345,16 +345,10 @@ class ViewScheduleViewModel(
 
     private fun onConfirmPickTaskProgressType(result: PickTaskProgressTypeScreenResult.Confirm) {
         viewModelScope.launch {
-            saveTaskDraftUseCase(SaveTaskDraftUseCase.RequestType.CreateHabit(result.taskProgressType)).let { result ->
-                when (result) {
-                    is ResultModel.Success -> {
-                        val taskId = result.value
-                        setUpNavigationState(ViewScheduleScreenNavigation.CreateTask(taskId))
-                    }
-
-                    is ResultModel.Failure -> {
-                        /* TODO */
-                    }
+            saveTaskDraftUseCase(SaveTaskDraftUseCase.RequestType.CreateHabit(result.taskProgressType)).let { resultModel ->
+                if (resultModel is ResultModel.Success) {
+                    val taskId = resultModel.value
+                    setUpNavigationState(ViewScheduleScreenNavigation.CreateTask(taskId))
                 }
             }
         }
@@ -534,16 +528,10 @@ class ViewScheduleViewModel(
 
     private fun onPickRecurringTaskType() {
         viewModelScope.launch {
-            saveTaskDraftUseCase(SaveTaskDraftUseCase.RequestType.CreateRecurringTask).let { result ->
-                when (result) {
-                    is ResultModel.Success -> {
-                        val taskId = result.value
-                        setUpNavigationState(ViewScheduleScreenNavigation.CreateTask(taskId))
-                    }
-
-                    is ResultModel.Failure -> {
-                        /* TODO */
-                    }
+            saveTaskDraftUseCase(SaveTaskDraftUseCase.RequestType.CreateRecurringTask).let { resultModel ->
+                if (resultModel is ResultModel.Success) {
+                    val taskId = resultModel.value
+                    setUpNavigationState(ViewScheduleScreenNavigation.CreateTask(taskId))
                 }
             }
         }
@@ -551,16 +539,10 @@ class ViewScheduleViewModel(
 
     private fun onPickSingleTaskType() {
         viewModelScope.launch {
-            saveTaskDraftUseCase(SaveTaskDraftUseCase.RequestType.CreateSingleTask).let { result ->
-                when (result) {
-                    is ResultModel.Success -> {
-                        val taskId = result.value
-                        setUpNavigationState(ViewScheduleScreenNavigation.CreateTask(taskId))
-                    }
-
-                    is ResultModel.Failure -> {
-                        /* TODO */
-                    }
+            saveTaskDraftUseCase(SaveTaskDraftUseCase.RequestType.CreateSingleTask).let { resultModel ->
+                if (resultModel is ResultModel.Success) {
+                    val taskId = resultModel.value
+                    setUpNavigationState(ViewScheduleScreenNavigation.CreateTask(taskId))
                 }
             }
         }
