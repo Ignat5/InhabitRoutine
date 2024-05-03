@@ -131,15 +131,18 @@ fun ViewHabitsScreen(
                         items = allHabits,
                         key = { _, item -> item.id }
                     ) { index, item ->
-                        Column(modifier = Modifier.fillMaxWidth()) {
+                        Column(
+                            modifier = Modifier
+                                .animateItemPlacement(
+                                    animationSpec = BaseTaskDefaults.taskItemPlacementAnimationSpec
+                                )
+                                .fillMaxWidth()
+                        ) {
                             ItemHabit(
                                 item = item,
                                 onClick = {
                                     onEvent(ViewHabitsScreenEvent.OnHabitClick(item.id))
-                                },
-                                modifier = Modifier.animateItemPlacement(
-                                    animationSpec = BaseTaskDefaults.taskItemPlacementAnimationSpec
-                                )
+                                }
                             )
                             if (index != allHabits.lastIndex) {
                                 TaskDivider()

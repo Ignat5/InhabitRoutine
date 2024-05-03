@@ -149,6 +149,9 @@ fun ViewScheduleScreen(
                     ) { index, item ->
                         Column(
                             modifier = Modifier
+                                .animateItemPlacement(
+                                    animationSpec = BaseTaskDefaults.taskItemPlacementAnimationSpec
+                                )
                                 .fillMaxWidth()
                         ) {
                             ItemTask(
@@ -160,9 +163,6 @@ fun ViewScheduleScreen(
                                 onLongClick = {
                                     onEvent(ViewScheduleScreenEvent.OnTaskLongClick(item.task.id))
                                 },
-                                modifier = Modifier.animateItemPlacement(
-                                    animationSpec = BaseTaskDefaults.taskItemPlacementAnimationSpec
-                                )
                             )
                             if (index != allTasks.lastIndex) {
                                 TaskDivider()
@@ -310,7 +310,7 @@ private fun getProgressTextOrNull(
 
                 is TaskWithExtrasAndRecordModel.Habit.HabitYesNo -> {
                     when (item.status) {
-                        is TaskStatus.Completed -> null //context.getString(R.string.task_status_done)
+                        is TaskStatus.Completed -> context.getString(R.string.task_status_done)
                         is TaskStatus.NotCompleted.Pending -> null
                         is TaskStatus.NotCompleted.Skipped -> context.getString(R.string.task_status_skipped)
                         is TaskStatus.NotCompleted.Failed -> context.getString(R.string.task_status_failed)
@@ -320,11 +320,10 @@ private fun getProgressTextOrNull(
         }
 
         is TaskWithExtrasAndRecordModel.Task -> {
-            null
-//            when (item.status) {
-//                is TaskStatus.Completed -> context.getString(R.string.task_status_done)
-//                is TaskStatus.NotCompleted.Pending -> null
-//            }
+            when (item.status) {
+                is TaskStatus.Completed -> context.getString(R.string.task_status_done)
+                is TaskStatus.NotCompleted.Pending -> null
+            }
         }
     }
 }

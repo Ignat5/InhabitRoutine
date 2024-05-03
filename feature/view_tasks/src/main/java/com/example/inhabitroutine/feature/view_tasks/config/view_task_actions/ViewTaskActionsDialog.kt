@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -34,6 +35,7 @@ import com.example.inhabitroutine.feature.view_tasks.config.view_task_actions.co
 import com.example.inhabitroutine.feature.view_tasks.config.view_task_actions.components.ViewTaskActionsScreenResult
 import com.example.inhabitroutine.feature.view_tasks.config.view_task_actions.components.ViewTaskActionsScreenState
 import com.example.inhabitroutine.feature.view_tasks.config.view_task_actions.model.ItemTaskAction
+import kotlinx.coroutines.launch
 
 @Composable
 fun ViewTaskActionsDialog(
@@ -52,6 +54,7 @@ private fun ViewTaskActionsDialogStateless(
     onEvent: (ViewTaskActionsScreenEvent) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
     BaseModalBottomSheetDialog(
         sheetState = sheetState,
         dragHandle = null,
@@ -69,11 +72,10 @@ private fun ViewTaskActionsDialogStateless(
                 items(state.allTaskActionItems) { item ->
                     val onClick: () -> Unit = remember {
                         val callback: () -> Unit = {
-                            onEvent(
-                                ViewTaskActionsScreenEvent.OnItemActionClick(
-                                    item
-                                )
-                            )
+                            scope.launch {
+                                sheetState.hide()
+                                onEvent(ViewTaskActionsScreenEvent.OnItemActionClick(item))
+                            }
                         }
                         callback
                     }

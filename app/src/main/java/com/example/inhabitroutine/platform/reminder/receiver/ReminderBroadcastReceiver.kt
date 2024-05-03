@@ -100,7 +100,7 @@ class ReminderBroadcastReceiver : BroadcastReceiver() {
                 .build()
                 .let { notification ->
                     showNotification(
-                        notificationId = ReminderUtil.stringToInteger(reminderTaskModel.reminderModel.id),
+                        notificationId = ReminderUtil.stringToInteger(reminderTaskModel.reminderModel.taskId),
                         notification = notification,
                         context = context
                     )

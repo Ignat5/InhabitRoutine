@@ -119,7 +119,7 @@ fun NavGraphBuilder.viewScheduleDestination(
         LaunchedEffect(Unit) {
             viewModel.uiScreenState.collectLatest { state ->
                 if (state.allTasksResult is UIResultModel.Data) {
-                    delay(READY_ADDITIONAL_DELAY_MILLIS) // be sure that ui is ready as well
+//                    delay(READY_ADDITIONAL_DELAY_MILLIS) // be sure that ui is ready as well
                     onReady()
                     this.cancel()
                 }

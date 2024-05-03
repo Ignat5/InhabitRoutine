@@ -137,7 +137,13 @@ fun ViewTasksScreen(
                         items = allTasks,
                         key = { _, item -> item.id }
                     ) { index, item ->
-                        Column(modifier = Modifier.fillMaxWidth()) {
+                        Column(
+                            modifier = Modifier
+                                .animateItemPlacement(
+                                    animationSpec = BaseTaskDefaults.taskItemPlacementAnimationSpec
+                                )
+                                .fillMaxWidth()
+                        ) {
                             ItemTask(
                                 item = item,
                                 onClick = {
@@ -146,10 +152,7 @@ fun ViewTasksScreen(
                                             item.id
                                         )
                                     )
-                                },
-                                modifier = Modifier.animateItemPlacement(
-                                    animationSpec = BaseTaskDefaults.taskItemPlacementAnimationSpec
-                                )
+                                }
                             )
                             if (index != allTasks.lastIndex) {
                                 TaskDivider()

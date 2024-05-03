@@ -6,6 +6,7 @@ import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -98,10 +99,18 @@ fun ViewRemindersScreen(
             LazyColumn(modifier = Modifier.fillMaxWidth()) {
                 itemsIndexed(
                     items = allReminders,
-                    key = { _, item -> item.id },
-                    contentType = { _, _ -> ItemType.Reminder }
+                    key = { _, item -> item.id }
                 ) { index, item ->
-                    Column(modifier = Modifier.fillMaxWidth()) {
+                    Column(
+                        modifier = Modifier
+                            .animateItemPlacement(
+                                animationSpec = spring(
+                                    stiffness = Spring.StiffnessLow,
+                                    visibilityThreshold = IntOffset.VisibilityThreshold
+                                )
+                            )
+                            .fillMaxWidth()
+                    ) {
                         ItemReminder(
                             item = item,
                             onClick = {
@@ -109,13 +118,7 @@ fun ViewRemindersScreen(
                             },
                             onDeleteClick = {
                                 onEvent(ViewRemindersScreenEvent.OnDeleteReminderClick(item.id))
-                            },
-                            modifier = Modifier.animateItemPlacement(
-                                animationSpec = spring(
-                                    stiffness = Spring.StiffnessVeryLow,
-                                    visibilityThreshold = IntOffset.VisibilityThreshold
-                                )
-                            )
+                            }
                         )
                         if (index != allReminders.lastIndex) {
                             HorizontalDivider()
@@ -149,7 +152,7 @@ private fun NoRemindersMessage(
     if (shouldShowMessage) {
         BaseEmptyStateMessage(
             titleResId = R.string.no_reminders_message_title,
-            subtitleResId = R.string.no_reminders_message_subtitle ,
+            subtitleResId = R.string.no_reminders_message_subtitle,
             modifier = modifier.fillMaxWidth()
         )
     }
@@ -218,6 +221,7 @@ fun ViewRemindersConfig(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ItemReminder(
     item: ReminderModel,
@@ -229,7 +233,10 @@ private fun ItemReminder(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .clickable { onClick() }
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onClick
+            )
     ) {
         Row(
             modifier = Modifier
@@ -303,11 +310,6 @@ private fun ItemCreateReminder(
             color = MaterialTheme.colorScheme.primary
         )
     }
-}
-
-private enum class ItemType {
-    Reminder,
-    Create
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
