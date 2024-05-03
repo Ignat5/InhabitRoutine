@@ -7,6 +7,7 @@ import com.example.inhabitroutine.domain.model.task.TaskModel
 import com.example.inhabitroutine.domain.reminder.api.ResetTaskRemindersUseCase
 import com.example.inhabitroutine.domain.reminder.api.SetUpTaskRemindersUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.ArchiveTaskByIdUseCase
+import com.example.inhabitroutine.domain.task.impl.util.getTaskVersionStartDate
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.firstOrNull
@@ -28,68 +29,26 @@ internal class DefaultArchiveTaskByIdUseCase(
     ): ResultModel<Unit, Throwable> = withContext(defaultDispatcher) {
         taskRepository.readTaskById(taskId).firstOrNull()?.let { taskModel ->
             val isArchived = requestType is ArchiveTaskByIdUseCase.RequestType.Archive
-            val newTaskModel: TaskModel = when (taskModel) {
-                is TaskModel.Habit -> {
-                    when (taskModel) {
-                        is TaskModel.Habit.HabitContinuous -> {
-                            when (taskModel) {
-                                is TaskModel.Habit.HabitContinuous.HabitNumber -> {
-                                    taskModel.copy(
-                                        isArchived = isArchived,
-                                        versionStartDate = Clock.System.todayDate
-                                    )
-                                }
+            taskModel.copy(
+                isArchived = isArchived,
+                versionStartDate = taskModel.getTaskVersionStartDate()
+            ).let { newTaskModel ->
+                val resultModel = taskRepository.saveTask(newTaskModel)
+                if (resultModel is ResultModel.Success) {
+                    externalScope.launch {
+                        when (requestType) {
+                            is ArchiveTaskByIdUseCase.RequestType.Archive -> {
+                                resetTaskRemindersUseCase(taskId = taskId)
+                            }
 
-                                is TaskModel.Habit.HabitContinuous.HabitTime -> {
-                                    taskModel.copy(
-                                        isArchived = isArchived,
-                                        versionStartDate = Clock.System.todayDate
-                                    )
-                                }
+                            is ArchiveTaskByIdUseCase.RequestType.Unarchive -> {
+                                setUpTaskRemindersUseCase(taskId = taskId)
                             }
                         }
-
-                        is TaskModel.Habit.HabitYesNo -> {
-                            taskModel.copy(
-                                isArchived = isArchived,
-                                versionStartDate = Clock.System.todayDate
-                            )
-                        }
                     }
                 }
-
-                is TaskModel.Task -> {
-                    when (taskModel) {
-                        is TaskModel.Task.RecurringTask -> {
-                            taskModel.copy(
-                                isArchived = isArchived,
-                                versionStartDate = Clock.System.todayDate
-                            )
-                        }
-
-                        is TaskModel.Task.SingleTask -> {
-                            taskModel.copy(
-                                isArchived = isArchived,
-                                versionStartDate = Clock.System.todayDate
-                            )
-                        }
-                    }
-                }
+                resultModel
             }
-            val resultModel = taskRepository.saveTask(newTaskModel)
-            if (resultModel is ResultModel.Success) {
-                externalScope.launch {
-                    when (requestType) {
-                        is ArchiveTaskByIdUseCase.RequestType.Archive -> {
-                            resetTaskRemindersUseCase(taskId = taskId)
-                        }
-                        is ArchiveTaskByIdUseCase.RequestType.Unarchive -> {
-                            setUpTaskRemindersUseCase(taskId = taskId)
-                        }
-                    }
-                }
-            }
-            resultModel
         } ?: ResultModel.failure(NoSuchElementException())
     }
 

@@ -7,6 +7,7 @@ import com.example.inhabitroutine.domain.model.task.TaskModel
 import com.example.inhabitroutine.domain.model.task.content.TaskFrequency
 import com.example.inhabitroutine.domain.reminder.api.SetUpTaskRemindersUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskFrequencyByIdUseCase
+import com.example.inhabitroutine.domain.task.impl.util.getTaskVersionStartDate
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.filterIsInstance
@@ -26,46 +27,11 @@ internal class DefaultUpdateTaskFrequencyByIdUseCase(
         taskId: String,
         taskFrequency: TaskFrequency
     ): ResultModel<Unit, Throwable> = withContext(defaultDispatcher) {
-        taskRepository.readTaskById(taskId)
-            .filterIsInstance<TaskModel.RecurringActivity>()
-            .firstOrNull()?.let { recurringActivity ->
-                val newTaskModel = when (recurringActivity) {
-                    is TaskModel.Habit -> {
-                        when (recurringActivity) {
-                            is TaskModel.Habit.HabitYesNo -> {
-                                recurringActivity.copy(
-                                    frequency = taskFrequency,
-                                    versionStartDate = Clock.System.todayDate
-                                )
-                            }
-
-                            is TaskModel.Habit.HabitContinuous -> {
-                                when (recurringActivity) {
-                                    is TaskModel.Habit.HabitContinuous.HabitNumber -> {
-                                        recurringActivity.copy(
-                                            frequency = taskFrequency,
-                                            versionStartDate = Clock.System.todayDate
-                                        )
-                                    }
-
-                                    is TaskModel.Habit.HabitContinuous.HabitTime -> {
-                                        recurringActivity.copy(
-                                            frequency = taskFrequency,
-                                            versionStartDate = Clock.System.todayDate
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    is TaskModel.Task.RecurringTask -> {
-                        recurringActivity.copy(
-                            frequency = taskFrequency,
-                            versionStartDate = Clock.System.todayDate
-                        )
-                    }
-                }
+        taskRepository.readTaskById(taskId).firstOrNull()?.let { taskModel ->
+            taskModel.copy(
+                frequency = taskFrequency,
+                versionStartDate = taskModel.getTaskVersionStartDate()
+            ).let { newTaskModel ->
                 val resultModel = taskRepository.saveTask(newTaskModel)
                 if (resultModel is ResultModel.Success) {
                     externalScope.launch {
@@ -73,7 +39,8 @@ internal class DefaultUpdateTaskFrequencyByIdUseCase(
                     }
                 }
                 resultModel
-            } ?: ResultModel.failure(NoSuchElementException())
+            }
+        } ?: ResultModel.failure(NoSuchElementException())
     }
 
 }

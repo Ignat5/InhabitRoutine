@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.navigation.NavBackStackEntry
 
 /* TOP DESTINATION */
-private const val topDestinationEnterExitDurationMillis = 600
+private const val topDestinationEnterExitDurationMillis = 800
 private const val topDestinationEnterExitDelayMillis = 100
 private val topDestinationEnterExitEasing = FastOutSlowInEasing
 
@@ -44,9 +44,9 @@ fun AnimatedContentTransitionScope<NavBackStackEntry>.topDestinationExitTransiti
 /* FORWARD/BACKWARD */
 
 /* ENTER/EXIT */
-private const val enterScreenDurationMillis = 400
+private const val enterScreenDurationMillis = 600
 private const val enterScreenDelayMillis = 100
-private val enterScreenEasing: Easing = FastOutSlowInEasing //CubicBezierEasing(0f, 0.2f, 0.5f, 1f)
+private val enterScreenEasing: Easing = FastOutSlowInEasing
 
 fun AnimatedContentTransitionScope<NavBackStackEntry>.forwardEnterTransition(): EnterTransition {
     return slideIntoContainer(
@@ -85,7 +85,7 @@ fun AnimatedContentTransitionScope<NavBackStackEntry>.backwardExitTransition(): 
 /* POP */
 private const val popScreenDurationMillis = enterScreenDurationMillis / 2
 private const val popScreenDelayMillis = enterScreenDelayMillis / 2
-private val popScreenEasing: Easing = FastOutSlowInEasing //CubicBezierEasing(0.3f, 0f, 1f, 1f)
+private val popScreenEasing: Easing = FastOutSlowInEasing
 
 fun AnimatedContentTransitionScope<NavBackStackEntry>.forwardPopEnterTransition(): EnterTransition {
     return slideIntoContainer(

@@ -100,4 +100,108 @@ sealed interface TaskModel {
             override val createdAt: Long
         ) : Task(TaskType.SingleTask)
     }
+
+    fun copy(
+        id: String? = null,
+        type: TaskType? = null,
+        progressType: TaskProgressType? = null,
+        title: String? = null,
+        description: String? = null,
+        date: TaskDate? = null,
+        isArchived: Boolean? = null,
+        versionStartDate: LocalDate? = null,
+        isDraft: Boolean? = null,
+        createdAt: Long? = null,
+        progress: TaskProgress? = null,
+        frequency: TaskFrequency? = null
+    ) = this.let { taskModel ->
+        when (taskModel) {
+            is TaskModel.Habit -> {
+                when (taskModel) {
+                    is TaskModel.Habit.HabitContinuous -> {
+                        when (taskModel) {
+                            is TaskModel.Habit.HabitContinuous.HabitNumber -> {
+                                TaskModel.Habit.HabitContinuous.HabitNumber(
+                                    id = id ?: taskModel.id,
+                                    title = title ?: taskModel.title,
+                                    description = description ?: taskModel.description,
+                                    date = (date as? TaskDate.Period) ?: taskModel.date,
+                                    isArchived = isArchived ?: taskModel.isArchived,
+                                    versionStartDate = versionStartDate
+                                        ?: taskModel.versionStartDate,
+                                    isDraft = isDraft ?: taskModel.isDraft,
+                                    createdAt = createdAt ?: taskModel.createdAt,
+                                    frequency = frequency ?: taskModel.frequency,
+                                    progress = (progress as? TaskProgress.Number)
+                                        ?: taskModel.progress
+                                )
+                            }
+
+                            is TaskModel.Habit.HabitContinuous.HabitTime -> {
+                                TaskModel.Habit.HabitContinuous.HabitTime(
+                                    id = id ?: taskModel.id,
+                                    title = title ?: taskModel.title,
+                                    description = description ?: taskModel.description,
+                                    date = (date as? TaskDate.Period) ?: taskModel.date,
+                                    isArchived = isArchived ?: taskModel.isArchived,
+                                    versionStartDate = versionStartDate
+                                        ?: taskModel.versionStartDate,
+                                    isDraft = isDraft ?: taskModel.isDraft,
+                                    createdAt = createdAt ?: taskModel.createdAt,
+                                    frequency = frequency ?: taskModel.frequency,
+                                    progress = (progress as? TaskProgress.Time)
+                                        ?: taskModel.progress
+                                )
+                            }
+                        }
+                    }
+
+                    is TaskModel.Habit.HabitYesNo -> {
+                        TaskModel.Habit.HabitYesNo(
+                            id = id ?: taskModel.id,
+                            title = title ?: taskModel.title,
+                            description = description ?: taskModel.description,
+                            date = (date as? TaskDate.Period) ?: taskModel.date,
+                            isArchived = isArchived ?: taskModel.isArchived,
+                            versionStartDate = versionStartDate ?: taskModel.versionStartDate,
+                            isDraft = isDraft ?: taskModel.isDraft,
+                            createdAt = createdAt ?: taskModel.createdAt,
+                            frequency = frequency ?: taskModel.frequency
+                        )
+                    }
+                }
+            }
+
+            is TaskModel.Task -> {
+                when (taskModel) {
+                    is TaskModel.Task.SingleTask -> {
+                        TaskModel.Task.SingleTask(
+                            id = id ?: taskModel.id,
+                            title = title ?: taskModel.title,
+                            description = description ?: taskModel.description,
+                            date = (date as? TaskDate.Day) ?: taskModel.date,
+                            isArchived = isArchived ?: taskModel.isArchived,
+                            versionStartDate = versionStartDate ?: taskModel.versionStartDate,
+                            isDraft = isDraft ?: taskModel.isDraft,
+                            createdAt = createdAt ?: taskModel.createdAt
+                        )
+                    }
+
+                    is TaskModel.Task.RecurringTask -> {
+                        TaskModel.Task.RecurringTask(
+                            id = id ?: taskModel.id,
+                            title = title ?: taskModel.title,
+                            description = description ?: taskModel.description,
+                            date = (date as? TaskDate.Period) ?: taskModel.date,
+                            isArchived = isArchived ?: taskModel.isArchived,
+                            versionStartDate = versionStartDate ?: taskModel.versionStartDate,
+                            isDraft = isDraft ?: taskModel.isDraft,
+                            createdAt = createdAt ?: taskModel.createdAt,
+                            frequency = frequency ?: taskModel.frequency
+                        )
+                    }
+                }
+            }
+        }
+    }
 }
