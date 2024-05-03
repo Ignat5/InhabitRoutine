@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -56,6 +58,7 @@ import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskType
 import com.example.inhabitroutine.core.presentation.ui.common.CreateTaskFAB
 import com.example.inhabitroutine.core.presentation.ui.common.BaseEmptyStateMessage
 import com.example.inhabitroutine.core.presentation.ui.common.BaseTaskDefaults
+import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskReminder
 import com.example.inhabitroutine.core.presentation.ui.common.TaskDivider
 import com.example.inhabitroutine.core.presentation.ui.dialog.pick_date.PickDateDialog
 import com.example.inhabitroutine.core.presentation.ui.dialog.pick_task_progress_type.PickTaskProgressTypeDialog
@@ -251,22 +254,25 @@ private fun TaskTitleRow(
     }
 }
 
+private const val MAX_DISPLAYED_REMINDER_COUNT = 5
+
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun TaskDetailRow(
     item: TaskWithExtrasAndRecordModel
 ) {
-    Row(
+    FlowRow(
         modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         ChipTaskType(item.task.type)
         ChipTaskProgressType(item.task.progressType)
         val allReminders = remember(item.taskExtras.allReminders) {
-            item.taskExtras.allReminders
+            item.taskExtras.allReminders.take(MAX_DISPLAYED_REMINDER_COUNT)
         }
-        if (allReminders.isNotEmpty()) {
-            ChipTaskReminders(allReminders = allReminders)
+        allReminders.forEach { reminderModel ->
+            ChipTaskReminder(reminderModel)
         }
     }
 }

@@ -44,6 +44,7 @@ import com.example.inhabitroutine.core.presentation.ui.util.toDayMonthYearDispla
 import com.example.inhabitroutine.core.presentation.ui.util.toDisplay
 import com.example.inhabitroutine.core.presentation.ui.util.toHourMinute
 import com.example.inhabitroutine.core.presentation.ui.util.toIconId
+import com.example.inhabitroutine.core.presentation.ui.util.toIconResId
 import com.example.inhabitroutine.domain.model.reminder.ReminderModel
 import com.example.inhabitroutine.domain.model.task.content.TaskFrequency
 import com.example.inhabitroutine.domain.model.task.type.TaskProgressType
@@ -129,6 +130,14 @@ fun ChipTaskReminders(allReminders: List<ReminderModel>) {
         }
     }
     BaseDataItem(text = text)
+}
+
+@Composable
+fun ChipTaskReminder(reminder: ReminderModel) {
+    BaseIconDataItem(
+        iconResId = reminder.type.toIconResId(),
+        text = reminder.time.toHourMinute()
+    )
 }
 
 @Composable
