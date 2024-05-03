@@ -10,6 +10,7 @@ import com.example.inhabitroutine.domain.reminder.impl.util.checkOverlap
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 internal class DefaultUpdateReminderUseCase(
@@ -25,9 +26,11 @@ internal class DefaultUpdateReminderUseCase(
         withContext(defaultDispatcher) {
             val doesOverlap = checkIfOverlaps(reminderModel)
             if (!doesOverlap) {
-                val resultModel = reminderRepository.updateReminder(reminderModel)
+                val resultModel = reminderRepository.saveReminder(reminderModel)
                 if (resultModel is ResultModel.Success) {
-                    setUpNextReminderUseCase(reminderId = reminderModel.id)
+                    externalScope.launch {
+                        setUpNextReminderUseCase(reminderId = reminderModel.id)
+                    }
                 }
                 resultModel.mapFailure { UpdateReminderUseCase.UpdateReminderFailure.Other(it) }
             } else {

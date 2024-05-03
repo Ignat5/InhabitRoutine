@@ -82,50 +82,6 @@ internal class DefaultTaskRepository(
             taskDataSource.saveTask(taskDataModel)
         }
 
-    override suspend fun updateTaskTitleById(
-        taskId: String,
-        title: String
-    ): ResultModel<Unit, Throwable> = taskDataSource.updateTaskTitleById(
-        taskId = taskId,
-        title = title
-    )
-
-    override suspend fun updateTaskDateById(
-        taskId: String,
-        taskDate: TaskDate
-    ): ResultModel<Unit, Throwable> {
-        val startDate = when (taskDate) {
-            is TaskDate.Day -> taskDate.date
-            is TaskDate.Period -> taskDate.startDate
-        }
-        val endDate = when (taskDate) {
-            is TaskDate.Day -> taskDate.date
-            is TaskDate.Period -> taskDate.endDate
-        }
-
-        return taskDataSource.updateTaskStartEndDateById(
-            taskId = taskId,
-            startDate = startDate,
-            endDate = endDate
-        )
-    }
-
-    override suspend fun updateTaskDescriptionById(
-        taskId: String,
-        description: String
-    ): ResultModel<Unit, Throwable> = taskDataSource.updateTaskDescriptionById(
-        taskId = taskId,
-        description = description
-    )
-
-    override suspend fun updateTaskIsDraftById(
-        taskId: String,
-        isDraft: Boolean
-    ): ResultModel<Unit, Throwable> = taskDataSource.updateTaskIsDraftById(
-        taskId = taskId,
-        isDraft = isDraft
-    )
-
     override suspend fun deleteTaskById(taskId: String): ResultModel<Unit, Throwable> =
         taskDataSource.deleteTaskById(taskId)
 

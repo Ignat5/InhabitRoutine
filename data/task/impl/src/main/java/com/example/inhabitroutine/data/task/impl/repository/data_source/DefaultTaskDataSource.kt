@@ -82,42 +82,6 @@ internal class DefaultTaskDataSource(
             } ?: ResultModel.failure(IllegalStateException())
         }
 
-    override suspend fun updateTaskTitleById(
-        taskId: String,
-        title: String
-    ): ResultModel<Unit, Throwable> = taskDao.updateTaskTitleById(
-        taskId = taskId,
-        title = title
-    )
-
-    override suspend fun updateTaskStartEndDateById(
-        taskId: String,
-        startDate: LocalDate,
-        endDate: LocalDate?
-    ): ResultModel<Unit, Throwable> = taskDao.updateTaskStartEndDateById(
-        taskId = taskId,
-        startEpochDay = startDate.encodeToEpochDay(),
-        endEpochDay = endDate.encodeToEpochDay()
-    )
-
-    override suspend fun updateTaskDescriptionById(
-        taskId: String,
-        description: String
-    ): ResultModel<Unit, Throwable> = taskDao.updateTaskDescriptionById(
-        taskId = taskId,
-        description = description
-    )
-
-    override suspend fun updateTaskIsDraftById(
-        taskId: String,
-        isDraft: Boolean
-    ): ResultModel<Unit, Throwable> = isDraft.encodeToString(json)?.let { encodedIsDraft ->
-        taskDao.updateTaskIsDraftById(
-            taskId = taskId,
-            isDraft = encodedIsDraft
-        )
-    } ?: ResultModel.failure(IllegalStateException())
-
     override suspend fun deleteTaskById(taskId: String): ResultModel<Unit, Throwable> =
         taskDao.deleteTaskById(taskId)
 }

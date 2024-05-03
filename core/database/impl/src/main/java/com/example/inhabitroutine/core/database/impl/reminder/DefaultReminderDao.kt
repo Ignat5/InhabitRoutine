@@ -71,9 +71,6 @@ internal class DefaultReminderDao(
             reminderDao.insertReminder(reminderEntity.toReminderTable())
         }
 
-    override suspend fun updateReminder(reminderEntity: ReminderEntity): ResultModel<Unit, Throwable> =
-        saveReminder(reminderEntity)
-
     override suspend fun deleteReminderById(reminderId: String): ResultModel<Unit, Throwable> =
         runQuery(ioDispatcher) {
             reminderDao.deleteReminderById(reminderId)

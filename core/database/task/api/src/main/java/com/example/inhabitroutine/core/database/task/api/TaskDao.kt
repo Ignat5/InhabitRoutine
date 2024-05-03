@@ -10,26 +10,5 @@ interface TaskDao {
     fun readTasksById(taskId: String): Flow<List<TaskEntity>>
     fun readTasksByTaskType(targetTaskTypes: Set<String>): Flow<List<TaskEntity>>
     suspend fun saveTask(taskEntity: TaskEntity): ResultModel<Unit, Throwable>
-    suspend fun updateTaskTitleById(
-        taskId: String,
-        title: String
-    ): ResultModel<Unit, Throwable>
-
-    suspend fun updateTaskStartEndDateById(
-        taskId: String,
-        startEpochDay: Long,
-        endEpochDay: Long
-    ): ResultModel<Unit, Throwable>
-
-    suspend fun updateTaskDescriptionById(
-        taskId: String,
-        description: String
-    ): ResultModel<Unit, Throwable>
-
-    suspend fun updateTaskIsDraftById(
-        taskId: String,
-        isDraft: String
-    ): ResultModel<Unit, Throwable>
-
     suspend fun deleteTaskById(taskId: String): ResultModel<Unit, Throwable>
 }

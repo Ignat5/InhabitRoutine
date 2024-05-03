@@ -7,7 +7,8 @@ CREATE TABLE IF NOT EXISTS TaskTable(
     startEpochDay INTEGER NOT NULL,
     endEpochDay INTEGER NOT NULL,
     isDraft TEXT NOT NULL,
-    createdAt INTEGER NOT NULL
+    createdAt INTEGER NOT NULL,
+    CHECK (startEpochDay <= endEpochDay)
 );
 
 CREATE TABLE IF NOT EXISTS TaskContentTable(
@@ -58,6 +59,14 @@ CREATE INDEX IF NOT EXISTS TaskVersionDateIndex
 ON TaskContentTable(versionStartEpochDay);
 
 -- trigger
+
+CREATE TRIGGER IF NOT EXISTS OnTaskInsert_DeleteRecordsOutOfBounds
+AFTER INSERT ON TaskTable
+BEGIN
+DELETE FROM RecordTable
+WHERE RecordTable.taskId = new.id AND
+(RecordTable.entryEpochDay < new.startEpochDay OR RecordTable.entryEpochDay > new.endEpochDay);
+END;
 
 CREATE TRIGGER IF NOT EXISTS OnTaskDelete_DeleteTaskContentTrigger
 AFTER DELETE ON TaskTable

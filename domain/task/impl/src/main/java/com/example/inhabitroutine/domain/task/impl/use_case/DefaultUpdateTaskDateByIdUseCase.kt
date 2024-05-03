@@ -1,13 +1,17 @@
 package com.example.inhabitroutine.domain.task.impl.use_case
 
 import com.example.inhabitroutine.core.util.ResultModel
+import com.example.inhabitroutine.core.util.todayDate
 import com.example.inhabitroutine.data.record.api.RecordRepository
 import com.example.inhabitroutine.data.task.api.TaskRepository
+import com.example.inhabitroutine.domain.model.task.TaskModel
 import com.example.inhabitroutine.domain.model.task.content.TaskDate
 import com.example.inhabitroutine.domain.reminder.api.SetUpTaskRemindersUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.UpdateTaskDateByIdUseCase
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
 
 internal class DefaultUpdateTaskDateByIdUseCase(
     private val taskRepository: TaskRepository,
@@ -20,31 +24,16 @@ internal class DefaultUpdateTaskDateByIdUseCase(
         taskId: String,
         taskDate: TaskDate
     ): ResultModel<Unit, Throwable> {
-        val resultModel = taskRepository.updateTaskDateById(
-            taskId = taskId,
-            taskDate = taskDate
-        )
-        if (resultModel is ResultModel.Success) {
-            externalScope.launch {
-                val minDate = when (taskDate) {
-                    is TaskDate.Period -> taskDate.startDate
-                    is TaskDate.Day -> taskDate.date
+        return taskRepository.readTaskById(taskId).firstOrNull()?.let { taskModel ->
+            taskModel.copy(date = taskDate).let { newTaskModel ->
+                val resultModel = taskRepository.saveTask(newTaskModel)
+                if (resultModel is ResultModel.Success) {
+                    externalScope.launch {
+                        setUpTaskRemindersUseCase(taskId = taskId)
+                    }
                 }
-                val maxDate = when (taskDate) {
-                    is TaskDate.Period -> taskDate.endDate
-                    is TaskDate.Day -> taskDate.date
-                }
-                recordRepository.deleteRecordByTaskIdAndPeriod(
-                    taskId = taskId,
-                    minDate = minDate,
-                    maxDate = maxDate
-                )
+                resultModel
             }
-            externalScope.launch {
-                setUpTaskRemindersUseCase(taskId = taskId)
-            }
-        }
-        return resultModel
+        } ?: ResultModel.failure(NoSuchElementException())
     }
-
 }

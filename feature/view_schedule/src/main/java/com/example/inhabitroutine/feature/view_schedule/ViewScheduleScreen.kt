@@ -46,8 +46,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.example.inhabitroutine.core.presentation.R
@@ -227,7 +229,7 @@ private fun TaskTitleRow(
         modifier = Modifier
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
             text = item.task.title,
@@ -237,7 +239,7 @@ private fun TaskTitleRow(
             overflow = TextOverflow.Ellipsis
         )
         val progressText = remember(item) {
-            getProgressTextOrNull(item, context)
+            getProgressTextOrNull(item, context)?.toLowerCase(Locale.current)
         }
 
         if (progressText != null) {

@@ -63,9 +63,6 @@ internal class DefaultReminderRepository(
     override suspend fun saveReminder(reminderModel: ReminderModel): ResultModel<Unit, Throwable> =
         reminderDataSource.saveReminder(reminderModel.toReminderDataModel())
 
-    override suspend fun updateReminder(reminderModel: ReminderModel): ResultModel<Unit, Throwable> =
-        reminderDataSource.updateReminder(reminderModel.toReminderDataModel())
-
     override suspend fun deleteReminderById(reminderId: String): ResultModel<Unit, Throwable> =
         reminderDataSource.deleteReminderById(reminderId)
 

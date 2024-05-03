@@ -60,16 +60,6 @@ internal class DefaultRecordDataSource(
         targetEpochDay = targetDate.encodeToEpochDay()
     )
 
-    override suspend fun deleteRecordsByTaskIdAndPeriod(
-        taskId: String,
-        minDate: LocalDate,
-        maxDate: LocalDate?
-    ): ResultModel<Unit, Throwable> = recordDao.deleteRecordsByTaskIdAndPeriod(
-        taskId = taskId,
-        minEpochDay = minDate.encodeToEpochDay(),
-        maxEpochDay = (maxDate ?: distantFutureDate).encodeToEpochDay()
-    )
-
     override suspend fun deleteRecordsByTaskId(taskId: String): ResultModel<Unit, Throwable> =
         recordDao.deleteRecordsByTaskId(taskId)
 

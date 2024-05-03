@@ -3,6 +3,7 @@ package com.example.inhabitroutine.domain.task.impl.use_case
 import com.example.inhabitroutine.core.util.ResultModel
 import com.example.inhabitroutine.core.util.mapSuccess
 import com.example.inhabitroutine.core.util.randomUUID
+import com.example.inhabitroutine.core.util.todayDate
 import com.example.inhabitroutine.data.task.api.TaskRepository
 import com.example.inhabitroutine.domain.model.task.TaskModel
 import com.example.inhabitroutine.domain.model.task.content.TaskDate
@@ -24,8 +25,7 @@ internal class DefaultSaveTaskDraftUseCase(
 
     override suspend operator fun invoke(requestType: SaveTaskDraftUseCase.RequestType): ResultModel<String, Throwable> =
         withContext(defaultDispatcher) {
-            Clock.System.now()
-                .toLocalDateTime(TimeZone.currentSystemDefault()).date.let { todayDate ->
+            Clock.System.todayDate.let { todayDate ->
                 buildTaskModel(
                     requestType = requestType,
                     versionStartDate = todayDate

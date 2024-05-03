@@ -12,6 +12,5 @@ interface ReminderDao {
     fun readReminderIdsByTaskId(taskId: String): Flow<List<String>>
     fun readReminderIds(): Flow<List<String>>
     suspend fun saveReminder(reminderEntity: ReminderEntity): ResultModel<Unit, Throwable>
-    suspend fun updateReminder(reminderEntity: ReminderEntity): ResultModel<Unit, Throwable>
     suspend fun deleteReminderById(reminderId: String): ResultModel<Unit, Throwable>
 }

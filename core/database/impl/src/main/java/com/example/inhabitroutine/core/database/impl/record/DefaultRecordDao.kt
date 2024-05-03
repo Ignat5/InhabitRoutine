@@ -56,18 +56,6 @@ internal class DefaultRecordDao(
             )
         }
 
-    override suspend fun deleteRecordsByTaskIdAndPeriod(
-        taskId: String,
-        minEpochDay: Long,
-        maxEpochDay: Long
-    ): ResultModel<Unit, Throwable> = runQuery(ioDispatcher) {
-        recordDao.deleteRecordsByTaskIdAndPeriod(
-            taskId = taskId,
-            minEpochDay = minEpochDay,
-            maxEpochDay = maxEpochDay
-        )
-    }
-
     override suspend fun deleteRecordsByTaskId(taskId: String): ResultModel<Unit, Throwable> =
         runQuery(ioDispatcher) {
             recordDao.deleteRecordsByTaskId(taskId)
