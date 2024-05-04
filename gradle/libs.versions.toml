@@ -1,6 +1,9 @@
 [versions]
 # gradle
 agp = "8.3.2"
+minSdk = "28"
+compileSdk = "34"
+targetSdk = "34"
 
 # kotlin
 kotlin = "1.9.23"
