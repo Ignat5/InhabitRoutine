@@ -160,7 +160,7 @@ class ViewTaskActionsStateHolder(
             if (taskWithExtrasAndRecordModel.status != TaskStatus.NotCompleted.Failed) {
                 add(ItemTaskAction.Fail)
             }
-            if (taskWithExtrasAndRecordModel.status != TaskStatus.NotCompleted.Pending) {
+            if (taskWithExtrasAndRecordModel.recordEntry != null) {
                 add(ItemTaskAction.Reset)
             }
         }

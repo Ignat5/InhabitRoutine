@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun RootGraph() {
+fun RootGraph(onReady: () -> Unit = {}) {
     val navController = rememberNavController()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -91,6 +91,7 @@ fun RootGraph() {
                 exitTransition = { ExitTransition.None }
             ) {
                 viewScheduleDestination(
+                    onReady = onReady,
                     onNavigate = onNavigate,
                     onMenuClick = onMenuClick
                 )

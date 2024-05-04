@@ -31,7 +31,6 @@ import kotlinx.datetime.Clock
 
 class ReminderBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
-        Log.d("myTag", "onReceive...")
         if (context == null || intent == null) return
         intent.getStringExtra(ReminderUtil.REMINDER_ID_KEY)?.let { reminderId ->
             val pendingResult = goAsync()
@@ -101,7 +100,7 @@ class ReminderBroadcastReceiver : BroadcastReceiver() {
                 .build()
                 .let { notification ->
                     showNotification(
-                        notificationId = ReminderUtil.stringToInteger(reminderTaskModel.reminderModel.id),
+                        notificationId = ReminderUtil.stringToInteger(reminderTaskModel.reminderModel.taskId),
                         notification = notification,
                         context = context
                     )

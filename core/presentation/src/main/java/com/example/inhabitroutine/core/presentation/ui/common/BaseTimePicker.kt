@@ -31,7 +31,7 @@ import kotlinx.coroutines.flow.map
 private const val VISIBLE_ITEMS_COUNT = 3
 private val targetHeight = TextFieldDefaults.MinHeight * 2
 private val itemHeight = targetHeight / VISIBLE_ITEMS_COUNT
-private const val DEFAULT_DEBOUNCE_MILLIS = 200L
+private const val DEFAULT_DEBOUNCE_MILLIS = 100L
 
 @Composable
 fun BaseTimePicker(

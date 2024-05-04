@@ -1,9 +1,11 @@
 package com.example.inhabitroutine.domain.task.impl.util
 
+import com.example.inhabitroutine.core.util.todayDate
 import com.example.inhabitroutine.domain.model.derived.TaskStatus
 import com.example.inhabitroutine.domain.model.record.content.RecordEntry
 import com.example.inhabitroutine.domain.model.task.TaskModel
 import com.example.inhabitroutine.domain.model.util.checkIfCompleted
+import kotlinx.datetime.Clock
 
 internal fun TaskModel.getTaskStatusByRecordEntry(entry: RecordEntry?): TaskStatus =
     this.let { taskModel ->
@@ -86,3 +88,10 @@ internal fun TaskModel.getTaskStatusByRecordEntry(entry: RecordEntry?): TaskStat
             }
         }
     }
+
+internal fun TaskModel.getTaskVersionStartDate() = this.let { taskModel ->
+    if (taskModel.isDraft) taskModel.versionStartDate
+    else Clock.System.todayDate.let { today ->
+        maxOf(today, taskModel.versionStartDate)
+    }
+}

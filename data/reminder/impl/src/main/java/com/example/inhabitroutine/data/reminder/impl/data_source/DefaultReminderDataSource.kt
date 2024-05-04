@@ -75,13 +75,6 @@ internal class DefaultReminderDataSource(
             } ?: ResultModel.failure(IllegalStateException())
         }
 
-    override suspend fun updateReminder(reminderDataModel: ReminderDataModel): ResultModel<Unit, Throwable> =
-        withContext(ioDispatcher) {
-            reminderDataModel.toReminderEntity(json)?.let {
-                reminderDao.updateReminder(it)
-            } ?: ResultModel.failure(IllegalStateException())
-        }
-
     override suspend fun deleteReminderById(reminderId: String): ResultModel<Unit, Throwable> =
         reminderDao.deleteReminderById(reminderId)
 }

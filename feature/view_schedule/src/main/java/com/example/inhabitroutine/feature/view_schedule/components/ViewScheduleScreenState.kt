@@ -12,5 +12,4 @@ data class ViewScheduleScreenState(
     val allTasksResult: UIResultModel<List<TaskWithExtrasAndRecordModel>>,
     val startOfWeekDate: LocalDate,
     val todayDate: LocalDate,
-    val isLocked: Boolean
 ): ScreenState

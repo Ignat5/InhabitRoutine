@@ -46,12 +46,10 @@ class ViewTasksViewModel(
     private val defaultDispatcher: CoroutineDispatcher,
     override val viewModelScope: CoroutineScope
 ) : BaseViewModel<ViewTasksScreenEvent, ViewTasksScreenState, ViewTasksScreenNavigation, ViewTasksScreenConfig>() {
-
     private val filterByStatusState = MutableStateFlow<TaskFilterByStatus?>(null)
     private val filterByTypeState = MutableStateFlow<TaskFilterByType?>(null)
     private val sortState = MutableStateFlow<TaskSort>(TaskSort.ByDate)
     private val messageState = MutableStateFlow<ViewTasksMessage>(ViewTasksMessage.Idle)
-
     private val allTasksState = combine(
         readTasksUseCase(),
         filterByStatusState,
@@ -68,12 +66,11 @@ class ViewTasksViewModel(
                 )
             }
         } else UIResultModel.Data(emptyList())
-    }
-        .stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            UIResultModel.Loading(emptyList())
-        )
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(),
+        UIResultModel.Loading(emptyList())
+    )
 
     override val uiScreenState: StateFlow<ViewTasksScreenState> =
         combine(
@@ -92,7 +89,7 @@ class ViewTasksViewModel(
             )
         }.stateIn(
             viewModelScope,
-            SharingStarted.Eagerly,
+            SharingStarted.WhileSubscribed(5000L),
             ViewTasksScreenState(
                 allTasksResult = allTasksState.value,
                 filterByStatus = filterByStatusState.value,

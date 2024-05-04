@@ -1,6 +1,7 @@
 package com.example.inhabitroutine.feature.view_reminders
 
 import com.example.inhabitroutine.core.presentation.base.BaseViewModel
+import com.example.inhabitroutine.core.presentation.model.UIResultModel
 import com.example.inhabitroutine.core.util.ResultModel
 import com.example.inhabitroutine.domain.reminder.api.DeleteReminderByIdUseCase
 import com.example.inhabitroutine.domain.reminder.api.ReadRemindersByTaskIdUseCase
@@ -17,14 +18,17 @@ import com.example.inhabitroutine.feature.view_reminders.config.create_edit_remi
 import com.example.inhabitroutine.feature.view_reminders.config.delete_reminder.DeleteReminderStateHolder
 import com.example.inhabitroutine.feature.view_reminders.config.delete_reminder.components.DeleteReminderScreenResult
 import com.example.inhabitroutine.feature.view_reminders.model.ViewRemindersMessage
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ViewRemindersViewModel(
     private val taskId: String,
@@ -32,14 +36,24 @@ class ViewRemindersViewModel(
     private val saveReminderUseCase: SaveReminderUseCase,
     private val updateReminderUseCase: UpdateReminderUseCase,
     private val deleteReminderByIdUseCase: DeleteReminderByIdUseCase,
+    private val defaultDispatcher: CoroutineDispatcher,
     override val viewModelScope: CoroutineScope
 ) : BaseViewModel<ViewRemindersScreenEvent, ViewRemindersScreenState, ViewRemindersScreenNavigation, ViewRemindersScreenConfig>() {
 
     private val allRemindersState = readRemindersByTaskIdUseCase(taskId)
+        .map { allReminders ->
+            UIResultModel.Data(
+                if (allReminders.isNotEmpty()) {
+                    withContext(defaultDispatcher) {
+                        allReminders.sortedBy { it.time }
+                    }
+                } else emptyList()
+            )
+        }
         .stateIn(
             viewModelScope,
             SharingStarted.Eagerly,
-            emptyList()
+            UIResultModel.Loading(emptyList())
         )
 
     private val messageState = MutableStateFlow<ViewRemindersMessage>(ViewRemindersMessage.Idle)
@@ -50,14 +64,14 @@ class ViewRemindersViewModel(
             messageState
         ) { allReminders, message ->
             ViewRemindersScreenState(
-                allReminders = allReminders,
+                allRemindersResult = allReminders,
                 message = message
             )
         }.stateIn(
             viewModelScope,
             SharingStarted.Eagerly,
             ViewRemindersScreenState(
-                allReminders = allRemindersState.value,
+                allRemindersResult = allRemindersState.value,
                 message = messageState.value
             )
         )
@@ -181,7 +195,7 @@ class ViewRemindersViewModel(
     }
 
     private fun onReminderClick(event: ViewRemindersScreenEvent.OnReminderClick) {
-        allRemindersState.value.find { it.id == event.reminderId }?.let { reminderModel ->
+        allRemindersState.value.data?.find { it.id == event.reminderId }?.let { reminderModel ->
             setUpConfigState(
                 ViewRemindersScreenConfig.EditReminder(
                     stateHolder = EditReminderStateHolder(

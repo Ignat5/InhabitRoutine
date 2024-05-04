@@ -1,13 +1,23 @@
 package com.example.inhabitroutine.core.presentation.ui.common
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
+import androidx.compose.animation.core.FiniteAnimationSpec
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.VisibilityThreshold
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
@@ -23,20 +33,72 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.example.inhabitroutine.core.presentation.R
 import com.example.inhabitroutine.core.presentation.ui.util.toDayMonthYearDisplay
 import com.example.inhabitroutine.core.presentation.ui.util.toDisplay
 import com.example.inhabitroutine.core.presentation.ui.util.toHourMinute
 import com.example.inhabitroutine.core.presentation.ui.util.toIconId
-import com.example.inhabitroutine.core.presentation.ui.util.toMonthDayYearDisplay
+import com.example.inhabitroutine.core.presentation.ui.util.toIconResId
 import com.example.inhabitroutine.domain.model.reminder.ReminderModel
 import com.example.inhabitroutine.domain.model.task.content.TaskFrequency
 import com.example.inhabitroutine.domain.model.task.type.TaskProgressType
 import com.example.inhabitroutine.domain.model.task.type.TaskType
 import kotlinx.datetime.LocalDate
+
+object BaseTaskDefaults {
+    const val TASK_LIST_FLOOR_SPACER_HEIGHT = 100
+    val taskItemPlacementAnimationSpec: FiniteAnimationSpec<IntOffset>
+        get() = spring(
+            stiffness = Spring.StiffnessLow,
+            visibilityThreshold = IntOffset.VisibilityThreshold
+        )
+}
+
+@Composable
+fun CreateTaskFAB(onClick: () -> Unit) {
+    FloatingActionButton(onClick = onClick) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_add),
+            contentDescription = null
+        )
+    }
+}
+
+@Composable
+fun BaseEmptyStateMessage(
+    @StringRes titleResId: Int,
+    @StringRes subtitleResId: Int?,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = stringResource(id = titleResId),
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
+        )
+        if (subtitleResId != null) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = stringResource(id = subtitleResId),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+    }
+}
 
 @Composable
 fun ChipTaskType(taskType: TaskType) {
@@ -68,6 +130,14 @@ fun ChipTaskReminders(allReminders: List<ReminderModel>) {
         }
     }
     BaseDataItem(text = text)
+}
+
+@Composable
+fun ChipTaskReminder(reminder: ReminderModel) {
+    BaseIconDataItem(
+        iconResId = reminder.type.toIconResId(),
+        text = reminder.time.toHourMinute()
+    )
 }
 
 @Composable

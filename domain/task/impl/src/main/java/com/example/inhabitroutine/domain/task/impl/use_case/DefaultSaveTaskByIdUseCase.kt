@@ -5,6 +5,7 @@ import com.example.inhabitroutine.data.task.api.TaskRepository
 import com.example.inhabitroutine.domain.reminder.api.SetUpTaskRemindersUseCase
 import com.example.inhabitroutine.domain.task.api.use_case.SaveTaskByIdUseCase
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 internal class DefaultSaveTaskByIdUseCase(
@@ -14,16 +15,17 @@ internal class DefaultSaveTaskByIdUseCase(
 ) : SaveTaskByIdUseCase {
 
     override suspend operator fun invoke(taskId: String): ResultModel<Unit, Throwable> {
-        val resultModel = taskRepository.updateTaskIsDraftById(
-            taskId = taskId,
-            isDraft = false
-        )
-        if (resultModel is ResultModel.Success) {
-            externalScope.launch {
-                setUpTaskRemindersUseCase(taskId = taskId)
+        return taskRepository.readTaskById(taskId).firstOrNull()?.let { taskModel ->
+            taskModel.copy(isDraft = false).let { newTaskModel ->
+                val resultModel = taskRepository.saveTask(newTaskModel)
+                if (resultModel is ResultModel.Success) {
+                    externalScope.launch {
+                        setUpTaskRemindersUseCase(taskId = taskId)
+                    }
+                }
+                resultModel
             }
-        }
-        return resultModel
+        } ?: ResultModel.failure(NoSuchElementException())
     }
 
 }

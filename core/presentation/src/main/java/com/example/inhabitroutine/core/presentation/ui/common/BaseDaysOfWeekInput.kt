@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.example.inhabitroutine.core.presentation.ui.util.toDisplay
 import kotlinx.datetime.DayOfWeek
 
-private const val ANIMATION_DELAY_MILLIS = 50
+private const val ANIMATION_DELAY_MILLIS = 0
 private const val ANIMATION_DURATION_MILLIS = 150
 
 @Composable

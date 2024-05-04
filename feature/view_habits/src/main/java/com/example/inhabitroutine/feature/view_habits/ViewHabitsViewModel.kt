@@ -47,6 +47,7 @@ class ViewHabitsViewModel(
     private val filterByStatusState = MutableStateFlow<HabitFilterByStatus?>(null)
     private val sortState = MutableStateFlow<HabitSort>(HabitSort.ByDate)
     private val messageState = MutableStateFlow<ViewHabitsMessage>(ViewHabitsMessage.Idle)
+
     private val allHabitsState = combine(
         readHabitsUseCase(),
         filterByStatusState,
@@ -63,7 +64,7 @@ class ViewHabitsViewModel(
         } else UIResultModel.Data(emptyList())
     }.stateIn(
         viewModelScope,
-        SharingStarted.Eagerly,
+        SharingStarted.WhileSubscribed(),
         UIResultModel.Loading(emptyList())
     )
 
@@ -82,7 +83,7 @@ class ViewHabitsViewModel(
             )
         }.stateIn(
             viewModelScope,
-            SharingStarted.Eagerly,
+            SharingStarted.WhileSubscribed(5000L),
             ViewHabitsScreenState(
                 allHabitsResult = allHabitsState.value,
                 filterByStatus = filterByStatusState.value,

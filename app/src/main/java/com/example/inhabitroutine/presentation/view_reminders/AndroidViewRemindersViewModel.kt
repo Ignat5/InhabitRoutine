@@ -2,6 +2,7 @@ package com.example.inhabitroutine.presentation.view_reminders
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.example.inhabitroutine.core.di.qualifiers.DefaultDispatcherQualifier
 import com.example.inhabitroutine.domain.model.reminder.type.ReminderType
 import com.example.inhabitroutine.domain.reminder.api.DeleteReminderByIdUseCase
 import com.example.inhabitroutine.domain.reminder.api.ReadRemindersByTaskIdUseCase
@@ -17,6 +18,7 @@ import com.example.inhabitroutine.feature.view_reminders.config.create_edit_remi
 import com.example.inhabitroutine.navigation.AppNavDest
 import com.example.inhabitroutine.presentation.base.BaseAndroidViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.launch
@@ -29,6 +31,7 @@ class AndroidViewRemindersViewModel @Inject constructor(
     saveReminderUseCase: SaveReminderUseCase,
     updateReminderUseCase: UpdateReminderUseCase,
     deleteReminderByIdUseCase: DeleteReminderByIdUseCase,
+    @DefaultDispatcherQualifier defaultDispatcher: CoroutineDispatcher
 ) : BaseAndroidViewModel<ViewRemindersScreenEvent, ViewRemindersScreenState, ViewRemindersScreenNavigation, ViewRemindersScreenConfig>() {
 
     private val _checkNotificationPermissionChannel = Channel<Unit>()
@@ -41,6 +44,7 @@ class AndroidViewRemindersViewModel @Inject constructor(
         saveReminderUseCase = saveReminderUseCase,
         updateReminderUseCase = updateReminderUseCase,
         deleteReminderByIdUseCase = deleteReminderByIdUseCase,
+        defaultDispatcher = defaultDispatcher,
         viewModelScope = viewModelScope
     )
 

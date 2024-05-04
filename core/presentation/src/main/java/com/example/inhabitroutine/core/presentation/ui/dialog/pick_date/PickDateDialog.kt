@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -69,9 +70,11 @@ private fun PickDateDialogStateless(
     val context = LocalContext.current
     BaseDialog(
         onDismissRequest = { onEvent(PickDateScreenEvent.OnDismissRequest) },
+        dialogPadding = PaddingValues(horizontal = 12.dp, vertical = 24.dp),
         title = {
             BaseDialogDefaults.BaseDialogTitle(
-                titleText = state.currentPickedDate.toDayOfWeekMonthMonthDayDisplay(context)
+                titleText = state.currentPickedDate.toDayOfWeekMonthMonthDayDisplay(context),
+                modifier = Modifier.padding(horizontal = 12.dp)
             )
         },
         actionType = BaseDialogActionType.ConfirmDismiss(
@@ -151,7 +154,8 @@ private fun MonthGrid(
     val allDaysOfWeek = remember { DayOfWeek.entries }
     LazyVerticalGrid(
         columns = GridCells.Fixed(allDaysOfWeek.size),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         items(
             items = allDaysOfWeek,

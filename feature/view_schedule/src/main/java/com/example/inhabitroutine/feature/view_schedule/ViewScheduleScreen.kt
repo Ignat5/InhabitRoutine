@@ -2,21 +2,12 @@ package com.example.inhabitroutine.feature.view_schedule
 
 import android.content.Context
 import androidx.annotation.DrawableRes
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -25,6 +16,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -51,13 +44,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.toLowerCase
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.example.inhabitroutine.core.presentation.R
 import com.example.inhabitroutine.core.presentation.model.UIResultModel
@@ -65,8 +58,11 @@ import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskProgressTy
 import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskReminders
 import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskType
 import com.example.inhabitroutine.core.presentation.ui.common.CreateTaskFAB
-import com.example.inhabitroutine.core.presentation.ui.common.EmptyStateMessage
+import com.example.inhabitroutine.core.presentation.ui.common.BaseEmptyStateMessage
+import com.example.inhabitroutine.core.presentation.ui.common.BaseTaskDefaults
+import com.example.inhabitroutine.core.presentation.ui.common.ChipTaskReminder
 import com.example.inhabitroutine.core.presentation.ui.common.TaskDivider
+import com.example.inhabitroutine.core.presentation.ui.dialog.pick_date.PickDateDialog
 import com.example.inhabitroutine.core.presentation.ui.dialog.pick_task_progress_type.PickTaskProgressTypeDialog
 import com.example.inhabitroutine.core.presentation.ui.dialog.pick_task_type.PickTaskTypeDialog
 import com.example.inhabitroutine.core.presentation.ui.util.limitNumberToDisplay
@@ -112,7 +108,9 @@ fun ViewScheduleScreen(
                 onSearchClick = {
                     onEvent(ViewScheduleScreenEvent.OnSearchClick)
                 },
-                onPickDateClick = {}
+                onPickDateClick = {
+                    onEvent(ViewScheduleScreenEvent.OnPickDateClick)
+                }
             )
         },
         floatingActionButton = {
@@ -151,12 +149,18 @@ fun ViewScheduleScreen(
                 LazyColumn(modifier = Modifier.fillMaxWidth()) {
                     itemsIndexed(
                         items = allTasks,
-                        key = { _, item -> item.task.id }
+                        key = { _, item -> item.task.id },
+                        contentType = { _, _ -> ItemType.Task }
                     ) { index, item ->
-                        Column(modifier = Modifier.fillMaxWidth()) {
+                        Column(
+                            modifier = Modifier
+                                .animateItemPlacement(
+                                    animationSpec = BaseTaskDefaults.taskItemPlacementAnimationSpec
+                                )
+                                .fillMaxWidth()
+                        ) {
                             ItemTask(
                                 item = item,
-                                isLocked = state.isLocked,
                                 context = context,
                                 onClick = {
                                     onEvent(ViewScheduleScreenEvent.OnTaskClick(item.task.id))
@@ -164,12 +168,14 @@ fun ViewScheduleScreen(
                                 onLongClick = {
                                     onEvent(ViewScheduleScreenEvent.OnTaskLongClick(item.task.id))
                                 },
-                                modifier = Modifier.animateItemPlacement()
                             )
                             if (index != allTasks.lastIndex) {
                                 TaskDivider()
                             }
                         }
+                    }
+                    item {
+                        Spacer(modifier = Modifier.height(BaseTaskDefaults.TASK_LIST_FLOOR_SPACER_HEIGHT.dp))
                     }
                 }
             }
@@ -182,7 +188,6 @@ fun ViewScheduleScreen(
 @Composable
 private fun ItemTask(
     item: TaskWithExtrasAndRecordModel,
-    isLocked: Boolean,
     context: Context,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
@@ -210,23 +215,7 @@ private fun ItemTask(
                 TaskTitleRow(item, context)
                 TaskDetailRow(item)
             }
-            AnimatedVisibility(
-                visible = !isLocked,
-                enter = fadeIn(
-                    animationSpec = tween(
-                        durationMillis = 200,
-                        delayMillis = 100
-                    )
-                ),
-                exit = fadeOut(
-                    animationSpec = tween(
-                        durationMillis = 200,
-                        delayMillis = 100
-                    )
-                )
-            ) {
-                TaskProgressIndicator(item)
-            }
+            TaskProgressIndicator(item)
         }
     }
 }
@@ -240,7 +229,7 @@ private fun TaskTitleRow(
         modifier = Modifier
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
             text = item.task.title,
@@ -250,7 +239,7 @@ private fun TaskTitleRow(
             overflow = TextOverflow.Ellipsis
         )
         val progressText = remember(item) {
-            getProgressTextOrNull(item, context)
+            getProgressTextOrNull(item, context)?.toLowerCase(Locale.current)
         }
 
         if (progressText != null) {
@@ -267,22 +256,25 @@ private fun TaskTitleRow(
     }
 }
 
+private const val MAX_DISPLAYED_REMINDER_COUNT = 5
+
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun TaskDetailRow(
     item: TaskWithExtrasAndRecordModel
 ) {
-    Row(
+    FlowRow(
         modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         ChipTaskType(item.task.type)
         ChipTaskProgressType(item.task.progressType)
         val allReminders = remember(item.taskExtras.allReminders) {
-            item.taskExtras.allReminders
+            item.taskExtras.allReminders.take(MAX_DISPLAYED_REMINDER_COUNT)
         }
-        if (allReminders.isNotEmpty()) {
-            ChipTaskReminders(allReminders = allReminders)
+        allReminders.forEach { reminderModel ->
+            ChipTaskReminder(reminderModel)
         }
     }
 }
@@ -326,7 +318,7 @@ private fun getProgressTextOrNull(
 
                 is TaskWithExtrasAndRecordModel.Habit.HabitYesNo -> {
                     when (item.status) {
-                        is TaskStatus.Completed -> null //context.getString(R.string.task_status_done)
+                        is TaskStatus.Completed -> context.getString(R.string.task_status_done)
                         is TaskStatus.NotCompleted.Pending -> null
                         is TaskStatus.NotCompleted.Skipped -> context.getString(R.string.task_status_skipped)
                         is TaskStatus.NotCompleted.Failed -> context.getString(R.string.task_status_failed)
@@ -336,11 +328,10 @@ private fun getProgressTextOrNull(
         }
 
         is TaskWithExtrasAndRecordModel.Task -> {
-            null
-//            when (item.status) {
-//                is TaskStatus.Completed -> context.getString(R.string.task_status_done)
-//                is TaskStatus.NotCompleted.Pending -> null
-//            }
+            when (item.status) {
+                is TaskStatus.Completed -> context.getString(R.string.task_status_done)
+                is TaskStatus.NotCompleted.Pending -> null
+            }
         }
     }
 }
@@ -442,6 +433,9 @@ private fun getTaskProgress(
     }
 }
 
+private const val WEEK_ROW_ANIMATION_DURATION = 200
+private const val WEEK_ROW_ANIMATION_DELAY = 0
+
 @Composable
 private fun WeekRow(
     startOfWeekDate: LocalDate,
@@ -460,41 +454,14 @@ private fun WeekRow(
             iconId = R.drawable.ic_previous,
             onClick = onPrevClick
         )
-        AnimatedContent(
-            targetState = startOfWeekDate,
-            transitionSpec = {
-                val towards =
-                    if (targetState > initialState) AnimatedContentTransitionScope.SlideDirection.Start
-                    else AnimatedContentTransitionScope.SlideDirection.End
-                this.slideIntoContainer(
-                    towards = towards,
-                    animationSpec = tween(durationMillis = 200, delayMillis = 90)
-                ) + fadeIn(
-                    animationSpec = tween(durationMillis = 200, delayMillis = 90)
-                ) + scaleIn(
-                    animationSpec = tween(durationMillis = 200, delayMillis = 90),
-                    initialScale = 0.92f
-                ) togetherWith slideOutOfContainer(
-                    towards = towards,
-                    animationSpec = tween(durationMillis = 200, delayMillis = 90)
-                ) + fadeOut(
-                    animationSpec = tween(durationMillis = 200, delayMillis = 90)
-                ) + scaleOut(
-                    animationSpec = tween(durationMillis = 200, delayMillis = 90),
-                )
-            },
-            contentKey = { it.toEpochDays() },
+        DaysOfWeekRow(
+            startOfWeekDate = startOfWeekDate,
+            currentDate = currentDate,
+            todayDate = todayDate,
+            context = context,
+            onDateClick = onDateClick,
             modifier = Modifier.weight(1f)
-        ) {
-            DaysOfWeekRow(
-                startOfWeekDate = it,
-                currentDate = currentDate,
-                todayDate = todayDate,
-                context = context,
-                onDateClick = onDateClick,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
+        )
         NextPrevButton(
             iconId = R.drawable.ic_next,
             onClick = onNextClick
@@ -624,12 +591,17 @@ private fun BoxScope.NoTasksMessage(allTasksResult: UIResultModel<List<TaskWithE
         allTasksResult is UIResultModel.Data && allTasksResult.data.isEmpty()
     }
     if (shouldShowNoTasksMessage) {
-        EmptyStateMessage(
+        BaseEmptyStateMessage(
             titleResId = R.string.no_tasks_scheduled_message_title,
             subtitleResId = R.string.no_tasks_scheduled_message_subtitle,
             modifier = Modifier.align(Alignment.Center)
         )
     }
+}
+
+private enum class ItemType {
+    Task,
+    FloorSpacer
 }
 
 @Composable
@@ -667,6 +639,12 @@ fun ViewScheduleScreenConfig(
                 onEvent(ViewScheduleScreenEvent.ResultEvent.ViewTaskActions(it))
             }
         }
+
+        is ViewScheduleScreenConfig.PickDate -> {
+            PickDateDialog(stateHolder = config.stateHolder) {
+                onEvent(ViewScheduleScreenEvent.ResultEvent.PickDate(it))
+            }
+        }
     }
 }
 
@@ -689,7 +667,7 @@ private fun ScreenTopBar(
         navigationIcon = {
             IconButton(onClick = onMenuClick) {
                 Icon(
-                    painter = painterResource(id = com.example.inhabitroutine.core.presentation.R.drawable.ic_menu),
+                    painter = painterResource(id = R.drawable.ic_menu),
                     contentDescription = null
                 )
             }
@@ -697,16 +675,16 @@ private fun ScreenTopBar(
         actions = {
             IconButton(onClick = onSearchClick) {
                 Icon(
-                    painter = painterResource(id = com.example.inhabitroutine.core.presentation.R.drawable.ic_search),
+                    painter = painterResource(id = R.drawable.ic_search),
                     contentDescription = null
                 )
             }
-//            IconButton(onClick = onPickDateClick) {
-//                Icon(
-//                    painter = painterResource(id = com.example.inhabitroutine.core.presentation.R.drawable.ic_pick_date),
-//                    contentDescription = null
-//                )
-//            }
+            IconButton(onClick = onPickDateClick) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_pick_date),
+                    contentDescription = null
+                )
+            }
         }
     )
 }
