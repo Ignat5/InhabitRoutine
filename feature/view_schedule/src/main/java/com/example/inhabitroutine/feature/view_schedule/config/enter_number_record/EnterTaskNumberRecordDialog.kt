@@ -23,6 +23,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.example.inhabitroutine.core.presentation.R
 import com.example.inhabitroutine.core.presentation.ui.base.BaseDialogWithResult
+import com.example.inhabitroutine.core.presentation.ui.common.BaseFocusedOutlinedTextField
 import com.example.inhabitroutine.core.presentation.ui.common.BaseOutlinedTextField
 import com.example.inhabitroutine.core.presentation.ui.dialog.base.BaseDialog
 import com.example.inhabitroutine.core.presentation.ui.dialog.base.BaseDialogActionType
@@ -67,7 +68,6 @@ private fun EnterTaskNumberRecordDialogStateless(
         )
     ) {
         val context = LocalContext.current
-        val focusRequester = remember { FocusRequester() }
         val dateText = remember(state.date) {
             state.date.toDayMonthYearDisplay()
         }
@@ -96,12 +96,11 @@ private fun EnterTaskNumberRecordDialogStateless(
                 overflow = TextOverflow.Ellipsis
             )
             Spacer(modifier = Modifier.height(8.dp))
-            BaseOutlinedTextField(
+            BaseFocusedOutlinedTextField(
                 value = state.inputNumber,
                 onValueChange = { onEvent(EnterTaskNumberRecordScreenEvent.OnInputNumberUpdate(it)) },
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .focusRequester(focusRequester),
+                    .fillMaxWidth(),
                 valueValidator = state.inputNumberValidator,
                 label = {
                     Text(text = stringResource(id = R.string.task_enter_number_progress_label))
@@ -120,9 +119,6 @@ private fun EnterTaskNumberRecordDialogStateless(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-            LaunchedEffect(Unit) {
-                focusRequester.requestFocus()
-            }
         }
     }
 }

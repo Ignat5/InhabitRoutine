@@ -13,6 +13,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import com.example.inhabitroutine.core.presentation.R
 import com.example.inhabitroutine.core.presentation.ui.base.BaseDialogWithResult
+import com.example.inhabitroutine.core.presentation.ui.common.BaseFocusedOutlinedTextField
 import com.example.inhabitroutine.core.presentation.ui.common.BaseOutlinedTextField
 import com.example.inhabitroutine.core.presentation.ui.dialog.base.BaseDialog
 import com.example.inhabitroutine.core.presentation.ui.dialog.base.BaseDialogActionType
@@ -56,13 +57,11 @@ private fun PickTaskDescriptionDialogStateless(
             }
         )
     ) {
-        val focusRequester = remember { FocusRequester() }
-        BaseOutlinedTextField(
+        BaseFocusedOutlinedTextField(
             value = state.inputDescription,
             onValueChange = { onEvent(PickTaskDescriptionScreenEvent.OnInputDescriptionUpdate(it)) },
             modifier = Modifier
-                .fillMaxWidth()
-                .focusRequester(focusRequester),
+                .fillMaxWidth(),
             label = {
                 Text(text = stringResource(id = R.string.task_config_description))
             },
@@ -70,8 +69,5 @@ private fun PickTaskDescriptionDialogStateless(
             minLines = MIN_LINES,
             maxLines = MAX_LINES
         )
-        LaunchedEffect(Unit) {
-            focusRequester.requestFocus()
-        }
     }
 }

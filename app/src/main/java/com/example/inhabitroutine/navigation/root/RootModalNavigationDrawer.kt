@@ -39,7 +39,7 @@ fun RootModalNavigationDrawer(
     val gesturesEnabled = remember(currentBackStackEntry) {
         currentBackStackEntry?.destination?.route in allMainDestinationRoutes
     }
-    val allOtherDestinations = remember { RootDestination.allOtherDestinations }
+//    val allOtherDestinations = remember { RootDestination.allOtherDestinations }
     ModalNavigationDrawer(
         drawerState = drawerState,
         gesturesEnabled = gesturesEnabled,
@@ -60,12 +60,12 @@ fun RootModalNavigationDrawer(
                         currentBackStackEntry = currentBackStackEntry,
                         onClick = onRootDestinationClick
                     )
-                    ItemDivider()
-                    ItemsRootDestination(
-                        items = allOtherDestinations,
-                        currentBackStackEntry = currentBackStackEntry,
-                        onClick = onRootDestinationClick
-                    )
+//                    ItemDivider()
+//                    ItemsRootDestination(
+//                        items = allOtherDestinations,
+//                        currentBackStackEntry = currentBackStackEntry,
+//                        onClick = onRootDestinationClick
+//                    )
                 }
             }
         },

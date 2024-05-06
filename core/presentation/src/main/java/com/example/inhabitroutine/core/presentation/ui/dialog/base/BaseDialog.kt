@@ -22,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
@@ -191,12 +192,13 @@ object BaseDialogDefaults {
     @Composable
     fun BaseDialogTitle(
         titleText: String,
-        modifier: Modifier = Modifier
+        modifier: Modifier = Modifier,
+        style: TextStyle = MaterialTheme.typography.headlineSmall,
     ) {
         Text(
             text = titleText,
             color = AlertDialogDefaults.titleContentColor,
-            style = MaterialTheme.typography.headlineSmall,
+            style = style,
             modifier = modifier,
             textAlign = TextAlign.Start
         )

@@ -67,6 +67,7 @@ import com.example.inhabitroutine.core.presentation.ui.dialog.pick_task_progress
 import com.example.inhabitroutine.core.presentation.ui.dialog.pick_task_type.PickTaskTypeDialog
 import com.example.inhabitroutine.core.presentation.ui.util.limitNumberToDisplay
 import com.example.inhabitroutine.core.presentation.ui.util.toDisplay
+import com.example.inhabitroutine.core.presentation.ui.util.toDisplayShort
 import com.example.inhabitroutine.core.presentation.ui.util.toHourMinute
 import com.example.inhabitroutine.core.presentation.ui.util.toMonthDayYearDisplay
 import com.example.inhabitroutine.domain.model.derived.TaskStatus
@@ -514,7 +515,7 @@ private fun ItemDayOfWeek(
     onClick: () -> Unit
 ) {
     val dayOfWeekText = remember(date) {
-        date.dayOfWeek.toDisplay(context).take(WEEK_ITEM_TITLE_LENGTH)
+        date.dayOfWeek.toDisplayShort(context)
     }
     val dayOfMonthText = remember(date) {
         "${date.dayOfMonth}"

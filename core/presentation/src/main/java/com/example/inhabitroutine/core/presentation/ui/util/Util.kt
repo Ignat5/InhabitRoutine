@@ -69,11 +69,20 @@ fun LocalDate.toDayMonthYearDisplay() = this.let { date ->
     }
 }
 
+fun LocalDate.toDayMonthYearFullDisplay(context: Context) = this.let { date ->
+    buildString {
+        append(date.toDayOfMonthDisplay(context))
+        append(", ")
+        append(date.year.toString())
+    }
+}
+
 fun LocalDate.toMonthDayYearDisplay(context: Context) = this.let { date ->
     buildString {
-        append(date.month.toDisplay(context).take(3))
-        append(" ")
-        append(date.dayOfMonth)
+//        append(date.month.toDisplay(context).take(3))
+//        append(" ")
+//        append(date.dayOfMonth)
+        append(date.toDayOfMonthDisplay(context))
         append(", ")
         append(date.year)
     }
@@ -91,19 +100,19 @@ fun LocalDate.toDayOfWeekMonthMonthDayDisplay(context: Context) = this.let { dat
     buildString {
         append(date.dayOfWeek.toDisplay(context))
         append(", ")
-        append(date.month.toDisplay(context))
-        append(" ")
-        append(date.dayOfMonth.toString())
+        append(date.toDayOfMonthDisplay(context))
+//        append(date.month.toDisplay(context))
+//        append(" ")
+//        append(date.dayOfMonth.toString())
     }
 }
 
 private fun Collection<DayOfWeek>.toDisplay(
-    context: Context,
-    maxLettersPerDayCount: Int = 3
+    context: Context
 ) = this.sortedBy { it.ordinal }.let { allDaysOfWeek ->
     buildString {
         allDaysOfWeek.forEachIndexed { index, dayOfWeek ->
-            append(dayOfWeek.toDisplay(context).take(maxLettersPerDayCount))
+            append(dayOfWeek.toDisplayShort(context))
             if (index != allDaysOfWeek.lastIndex) {
                 append(" • ")
             }
@@ -123,6 +132,18 @@ fun DayOfWeek.toDisplay(context: Context) = context.getString(
     }
 )
 
+fun DayOfWeek.toDisplayShort(context: Context) = context.getString(
+    when (this) {
+        DayOfWeek.MONDAY -> R.string.day_of_week_monday_short
+        DayOfWeek.TUESDAY -> R.string.day_of_week_tuesday_short
+        DayOfWeek.WEDNESDAY -> R.string.day_of_week_wednesday_short
+        DayOfWeek.THURSDAY -> R.string.day_of_week_thursday_short
+        DayOfWeek.FRIDAY -> R.string.day_of_week_friday_short
+        DayOfWeek.SATURDAY -> R.string.day_of_week_saturday_short
+        DayOfWeek.SUNDAY -> R.string.day_of_week_sunday_short
+    }
+)
+
 private fun Month.toDisplay(context: Context) = context.getString(
     when (this) {
         Month.JANUARY -> R.string.month_january
@@ -138,6 +159,24 @@ private fun Month.toDisplay(context: Context) = context.getString(
         Month.NOVEMBER -> R.string.month_november
         Month.DECEMBER -> R.string.month_december
     }
+)
+
+private fun LocalDate.toDayOfMonthDisplay(context: Context) = context.getString(
+    when (this.month) {
+        Month.JANUARY -> R.string.day_of_month_january
+        Month.FEBRUARY -> R.string.day_of_month_february
+        Month.MARCH -> R.string.day_of_month_march
+        Month.APRIL -> R.string.day_of_month_april
+        Month.MAY -> R.string.day_of_month_may
+        Month.JUNE -> R.string.day_of_month_june
+        Month.JULY -> R.string.day_of_month_july
+        Month.AUGUST -> R.string.day_of_month_august
+        Month.SEPTEMBER -> R.string.day_of_month_september
+        Month.OCTOBER -> R.string.day_of_month_october
+        Month.NOVEMBER -> R.string.day_of_month_november
+        Month.DECEMBER -> R.string.day_of_month_december
+    },
+    this.dayOfMonth
 )
 
 fun TaskProgress.Number.toDisplay(context: Context): String =

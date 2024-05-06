@@ -153,7 +153,9 @@ private fun NoRemindersMessage(
         BaseEmptyStateMessage(
             titleResId = R.string.no_reminders_message_title,
             subtitleResId = R.string.no_reminders_message_subtitle,
-            modifier = modifier.fillMaxWidth()
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
         )
     }
 }
