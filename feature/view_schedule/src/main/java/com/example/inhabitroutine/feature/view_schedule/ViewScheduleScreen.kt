@@ -150,8 +150,7 @@ fun ViewScheduleScreen(
                 LazyColumn(modifier = Modifier.fillMaxWidth()) {
                     itemsIndexed(
                         items = allTasks,
-                        key = { _, item -> item.task.id },
-                        contentType = { _, _ -> ItemType.Task }
+                        key = { _, item -> item.task.id }
                     ) { index, item ->
                         Column(
                             modifier = Modifier
@@ -595,14 +594,11 @@ private fun BoxScope.NoTasksMessage(allTasksResult: UIResultModel<List<TaskWithE
         BaseEmptyStateMessage(
             titleResId = R.string.no_tasks_scheduled_message_title,
             subtitleResId = R.string.no_tasks_scheduled_message_subtitle,
-            modifier = Modifier.align(Alignment.Center)
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(horizontal = 16.dp)
         )
     }
-}
-
-private enum class ItemType {
-    Task,
-    FloorSpacer
 }
 
 @Composable

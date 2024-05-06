@@ -402,7 +402,9 @@ private fun BoxScope.NoHabitsMessage(
         BaseEmptyStateMessage(
             titleResId = titleResId,
             subtitleResId = subtitleResId,
-            modifier = Modifier.align(Alignment.Center)
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(horizontal = 16.dp)
         )
     }
 }

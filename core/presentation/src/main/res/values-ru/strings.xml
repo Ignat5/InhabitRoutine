@@ -43,15 +43,15 @@
     <string name="task_filter_by_type_single_tasks_title">Только одиночные</string>
     <string name="no_tasks_message_title">У вас нет задач</string>
     <string name="no_tasks_message_subtitle">Попробуйте добавить новую задачу сегодня</string>
-    <string name="no_tasks_after_filter_message_title">Ни одна задача не соответствует указанным фильрам</string>
-    <string name="no_tasks_after_filter_message_subtitle">Попробуйте изменить фильтры</string>
+    <string name="no_tasks_after_filter_message_title">Ни одна задача не соответствует фильтрам</string>
+    <string name="no_tasks_after_filter_message_subtitle">Попробуйте изменить параметры поиска</string>
 
     <!--  view habits  -->
     <string name="view_habits_screen_title">Привычки</string>
     <string name="no_habits_message_title">У вас нет привычек</string>
     <string name="no_habits_message_subtitle">Попробуйте начать новую привычку сегодня</string>
-    <string name="no_habits_after_filter_message_title">Ни одна привычка не соответствует указанным фильрам</string>
-    <string name="no_habits_after_filter_message_subtitle">Попробуйте изменить фильтры</string>
+    <string name="no_habits_after_filter_message_title">Ни одна привычка не соответствует фильрам</string>
+    <string name="no_habits_after_filter_message_subtitle">Попробуйте изменить параметры поиска</string>
 
     <!-- task config (create/edit task)   -->
     <string name="task_config_title">Название</string>
@@ -65,7 +65,6 @@
     <string name="daily_goal_suffix">в день</string>
     <string name="frequency_every_day">Каждый день</string>
     <string name="frequency_days_of_week">Дни недели</string>
-<!--    <string name="create_task_title">Новая активность</string>-->
     <string name="create_task_title">Новая задача</string>
     <string name="create_habit_title">Новая привычка</string>
     <string name="task_config_title_label">Название</string>
@@ -119,8 +118,8 @@
     <string name="goal">Цель</string>
 
     <!-- discard activity -->
-    <string name="confirm_discard_activity_title">Сброс</string>
-    <string name="confirm_discard_activity_message">Вы уверены, что хотите сбросить создание активности?</string>
+    <string name="confirm_discard_activity_title">Несохраненные изменения</string>
+    <string name="confirm_discard_activity_message">Вы уверены, что хотите покинуть экран создания активности?</string>
 
     <!--  search tasks  -->
     <string name="search_label">Поиск</string>
@@ -144,7 +143,7 @@
     <string name="reminder_confirm_delete_title">Удаление</string>
     <string name="reminder_confirm_delete_message">Вы уверены, что хотите удалить оповещение?</string>
     <string name="no_reminders_message_title">Нет оповещений</string>
-    <string name="no_reminders_message_subtitle">Добавьте новое оповещение</string>
+    <string name="no_reminders_message_subtitle">Попробуйте добавить новое оповещение</string>
 
     <!--  notification  -->
     <string name="notification_reminder_channel_name">Уведомления оповещений</string>

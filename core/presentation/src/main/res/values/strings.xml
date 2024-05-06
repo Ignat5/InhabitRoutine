@@ -43,7 +43,7 @@
     <string name="no_tasks_message_title">You have no tasks</string>
     <string name="no_tasks_message_subtitle">Try adding a new one today</string>
     <string name="no_tasks_after_filter_message_title">No task matches specified filters</string>
-    <string name="no_tasks_after_filter_message_subtitle">Try changing the filters</string>
+    <string name="no_tasks_after_filter_message_subtitle">Try changing search parameters</string>
 
     <!--  view habits  -->
     <string name="view_habits_screen_title">Habits</string>
