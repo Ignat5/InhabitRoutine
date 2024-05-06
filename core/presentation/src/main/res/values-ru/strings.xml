@@ -65,24 +65,26 @@
     <string name="daily_goal_suffix">в день</string>
     <string name="frequency_every_day">Каждый день</string>
     <string name="frequency_days_of_week">Дни недели</string>
-    <string name="create_task_title">Новая активность</string>
+<!--    <string name="create_task_title">Новая активность</string>-->
+    <string name="create_task_title">Новая задача</string>
+    <string name="create_habit_title">Новая привычка</string>
     <string name="task_config_title_label">Название</string>
 
     <!--  task actions  -->
     <string name="task_action_view_statistics">Статистика</string>
     <string name="task_action_archive">Поместить в архив</string>
-    <string name="task_action_unarchive">Вытащить из архива</string>
+    <string name="task_action_unarchive">Убрать из архива</string>
     <string name="task_action_restart">Сбросить прогресс</string>
     <string name="task_action_delete">Удалить</string>
-    <string name="task_action_archive_confirm_title">Архивация активности</string>
+    <string name="task_action_archive_confirm_title">Архивация</string>
     <string name="task_action_archive_confirm_message">Вы уверены, что хотите поместить активность в архив?</string>
     <string name="task_action_archive_success_message">Активность помещена в архив</string>
-    <string name="task_action_unarchive_success_message">Активность вытащена из архива</string>
+    <string name="task_action_unarchive_success_message">Активность убрана из архива</string>
     <string name="task_action_delete_success_message">Активность удалена</string>
     <string name="task_action_reset_success_message">Прогресс сброшен</string>
-    <string name="task_action_delete_title">Удаление активности</string>
+    <string name="task_action_delete_title">Удаление</string>
     <string name="task_action_delete_message">Вы уверены, что хотите удалить активность?</string>
-    <string name="task_action_reset_title">Сбросить прогресс</string>
+    <string name="task_action_reset_title">Сброс прогресса</string>
     <string name="task_action_reset_message">Вы уверены, что хотите сбросить прогресс?</string>
     <string name="task_action_done">Пометить как выполненно</string>
     <string name="task_action_skip">Пропустить</string>
@@ -117,8 +119,8 @@
     <string name="goal">Цель</string>
 
     <!-- discard activity -->
-    <string name="confirm_discard_activity_title">Прервать создание</string>
-    <string name="confirm_discard_activity_message">Вы уверены, что хотите прервать создание активности?</string>
+    <string name="confirm_discard_activity_title">Сброс</string>
+    <string name="confirm_discard_activity_message">Вы уверены, что хотите сбросить создание активности?</string>
 
     <!--  search tasks  -->
     <string name="search_label">Поиск</string>
@@ -139,7 +141,7 @@
     <string name="reminder_edit_success_message">Оповещение изменено</string>
     <string name="reminder_delete_success_message">Оповещение удалено</string>
     <string name="reminder_failure_overlap_message">Оповещение на это время уже существует</string>
-    <string name="reminder_confirm_delete_title">Удалить оповещение</string>
+    <string name="reminder_confirm_delete_title">Удаление</string>
     <string name="reminder_confirm_delete_message">Вы уверены, что хотите удалить оповещение?</string>
     <string name="no_reminders_message_title">Нет оповещений</string>
     <string name="no_reminders_message_subtitle">Добавьте новое оповещение</string>

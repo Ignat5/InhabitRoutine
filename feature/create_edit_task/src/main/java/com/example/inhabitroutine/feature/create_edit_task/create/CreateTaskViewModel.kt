@@ -55,6 +55,7 @@ class CreateTaskViewModel(
 ) {
 
     override val taskModelState: StateFlow<TaskModel?> = readTaskByIdUseCase(taskId)
+        .filterNotNull()
         .stateIn(
             viewModelScope,
             SharingStarted.Eagerly,

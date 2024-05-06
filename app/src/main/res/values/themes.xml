@@ -2,7 +2,7 @@
 <resources>
     <style name="Theme.InhabitRoutine" parent="android:Theme.Material.Light.NoActionBar" />
     <style name="Theme.InhabitRoutine.Splash" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_v1</item>
         <item name="postSplashScreenTheme">@style/Theme.InhabitRoutine</item>
     </style>
 </resources>
