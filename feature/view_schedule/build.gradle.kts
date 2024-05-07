@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.inhabitroutine.feature.view_schedule"
+    namespace = "com.ignatlegostaev.inhabitroutine.feature.view_schedule"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {

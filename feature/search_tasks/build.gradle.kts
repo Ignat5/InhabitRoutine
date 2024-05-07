@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.inhabitroutine.feature.search_tasks"
+    namespace = "com.ignatlegostaev.inhabitroutine.feature.search_tasks"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {

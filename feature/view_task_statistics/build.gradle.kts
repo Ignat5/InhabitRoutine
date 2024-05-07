@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.inhabitroutine.feature.view_task_statistics"
+    namespace = "com.ignatlegostaev.inhabitroutine.feature.view_task_statistics"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {

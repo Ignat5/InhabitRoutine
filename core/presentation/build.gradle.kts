@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.inhabitroutine.core.presentation"
+    namespace = "com.ignatlegostaev.inhabitroutine.core.presentation"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {

@@ -1,0 +1,5 @@
+package com.ignatlegostaev.inhabitroutine.feature.view_task_statistics.components
+
+import com.ignatlegostaev.inhabitroutine.core.presentation.components.config.ScreenConfig
+
+data object ViewTaskStatisticsScreenConfig: ScreenConfig

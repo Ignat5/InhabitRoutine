@@ -13,7 +13,7 @@ java {
 sqldelight {
     databases {
         create("InhabitRoutineDatabase") {
-            packageName.set("com.example.inhabitroutine.core.database.impl")
+            packageName.set("com.ignatlegostaev.inhabitroutine.core.database.impl")
         }
     }
 }
