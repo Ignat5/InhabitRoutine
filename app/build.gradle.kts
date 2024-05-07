@@ -9,15 +9,6 @@ android {
     namespace = "com.example.inhabitroutine"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
-    signingConfigs {
-        this.create("release") {
-            storePassword = "sferathebest1917"
-            keyPassword = "sferathebest1917"
-            keyAlias = "sfera_alias"
-
-        }
-    }
-
     defaultConfig {
         applicationId = "com.example.inhabitroutine"
         minSdk = libs.versions.minSdk.get().toInt()
@@ -42,7 +33,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-//            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
