@@ -7,23 +7,14 @@ plugins {
 
 android {
     namespace = "com.example.inhabitroutine"
-    compileSdk = 34
-
-    signingConfigs {
-        this.create("release") {
-            storePassword = "sferathebest1917"
-            keyPassword = "sferathebest1917"
-            keyAlias = "sfera_alias"
-
-        }
-    }
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
         applicationId = "com.example.inhabitroutine"
-        minSdk = 28
-        targetSdk = 34
+        minSdk = libs.versions.minSdk.get().toInt()
+        targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -32,8 +23,12 @@ android {
     }
 
     buildTypes {
+        debug {
+
+        }
         release {
             isMinifyEnabled = false
+            isDebuggable = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

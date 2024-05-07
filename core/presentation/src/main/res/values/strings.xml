@@ -43,7 +43,7 @@
     <string name="no_tasks_message_title">You have no tasks</string>
     <string name="no_tasks_message_subtitle">Try adding a new one today</string>
     <string name="no_tasks_after_filter_message_title">No task matches specified filters</string>
-    <string name="no_tasks_after_filter_message_subtitle">Try changing the filters</string>
+    <string name="no_tasks_after_filter_message_subtitle">Try changing search parameters</string>
 
     <!--  view habits  -->
     <string name="view_habits_screen_title">Habits</string>
@@ -64,7 +64,9 @@
     <string name="daily_goal_suffix">a day</string>
     <string name="frequency_every_day">Every day</string>
     <string name="frequency_days_of_week">Days of week</string>
-    <string name="create_task_title">Create activity</string>
+<!--    <string name="create_task_title">Create activity</string>-->
+    <string name="create_task_title">Create task</string>
+    <string name="create_habit_title">Create habit</string>
     <string name="task_config_title_label">Name</string>
 
     <!--  task actions  -->
@@ -155,6 +157,15 @@
     <string name="day_of_week_saturday">Saturday</string>
     <string name="day_of_week_sunday">Sunday</string>
 
+    <!--  days of week short -->
+    <string name="day_of_week_monday_short">Mon</string>
+    <string name="day_of_week_tuesday_short">Tue</string>
+    <string name="day_of_week_wednesday_short">Wed</string>
+    <string name="day_of_week_thursday_short">Thu</string>
+    <string name="day_of_week_friday_short">Fri</string>
+    <string name="day_of_week_saturday_short">Sat</string>
+    <string name="day_of_week_sunday_short">Sun</string>
+
     <!--  months  -->
     <string name="month_january">January</string>
     <string name="month_february">February</string>
@@ -168,4 +179,18 @@
     <string name="month_october">October</string>
     <string name="month_november">November</string>
     <string name="month_december">December</string>
+
+    <!--  day of month  -->
+    <string name="day_of_month_january">January %1d</string>
+    <string name="day_of_month_february">February %1d</string>
+    <string name="day_of_month_march">March %1d</string>
+    <string name="day_of_month_april">April %1d</string>
+    <string name="day_of_month_may">May %1d</string>
+    <string name="day_of_month_june">June %1d</string>
+    <string name="day_of_month_july">July %1d</string>
+    <string name="day_of_month_august">August %1d</string>
+    <string name="day_of_month_september">September %1d</string>
+    <string name="day_of_month_october">October %1d</string>
+    <string name="day_of_month_november">November %1d</string>
+    <string name="day_of_month_december">December %1d</string>
 </resources>

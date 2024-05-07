@@ -20,11 +20,16 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContent
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -67,6 +72,7 @@ import com.example.inhabitroutine.core.presentation.ui.dialog.pick_task_progress
 import com.example.inhabitroutine.core.presentation.ui.dialog.pick_task_type.PickTaskTypeDialog
 import com.example.inhabitroutine.core.presentation.ui.util.limitNumberToDisplay
 import com.example.inhabitroutine.core.presentation.ui.util.toDisplay
+import com.example.inhabitroutine.core.presentation.ui.util.toDisplayShort
 import com.example.inhabitroutine.core.presentation.ui.util.toHourMinute
 import com.example.inhabitroutine.core.presentation.ui.util.toMonthDayYearDisplay
 import com.example.inhabitroutine.domain.model.derived.TaskStatus
@@ -91,7 +97,6 @@ private const val NOT_COMPLETED_PROGRESS = 0f
 
 private const val WEEK_DAY_COUNT = 7
 private const val WEEK_ITEM_HEIGHT_DP = 48
-private const val WEEK_ITEM_TITLE_LENGTH = 3
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -120,7 +125,8 @@ fun ViewScheduleScreen(
                 }
             )
         },
-        floatingActionButtonPosition = FabPosition.End
+        floatingActionButtonPosition = FabPosition.End,
+        modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)
     ) {
         Box(
             modifier = Modifier
@@ -149,8 +155,7 @@ fun ViewScheduleScreen(
                 LazyColumn(modifier = Modifier.fillMaxWidth()) {
                     itemsIndexed(
                         items = allTasks,
-                        key = { _, item -> item.task.id },
-                        contentType = { _, _ -> ItemType.Task }
+                        key = { _, item -> item.task.id }
                     ) { index, item ->
                         Column(
                             modifier = Modifier
@@ -514,7 +519,7 @@ private fun ItemDayOfWeek(
     onClick: () -> Unit
 ) {
     val dayOfWeekText = remember(date) {
-        date.dayOfWeek.toDisplay(context).take(WEEK_ITEM_TITLE_LENGTH)
+        date.dayOfWeek.toDisplayShort(context)
     }
     val dayOfMonthText = remember(date) {
         "${date.dayOfMonth}"
@@ -594,14 +599,11 @@ private fun BoxScope.NoTasksMessage(allTasksResult: UIResultModel<List<TaskWithE
         BaseEmptyStateMessage(
             titleResId = R.string.no_tasks_scheduled_message_title,
             subtitleResId = R.string.no_tasks_scheduled_message_subtitle,
-            modifier = Modifier.align(Alignment.Center)
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(horizontal = 16.dp)
         )
     }
-}
-
-private enum class ItemType {
-    Task,
-    FloorSpacer
 }
 
 @Composable

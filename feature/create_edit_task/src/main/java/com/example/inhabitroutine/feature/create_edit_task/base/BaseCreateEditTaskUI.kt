@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.example.inhabitroutine.core.presentation.ui.dialog.pick_date.PickDateDialog
 import com.example.inhabitroutine.core.presentation.ui.dialog.pick_date.components.PickDateScreenResult
 import com.example.inhabitroutine.core.presentation.ui.util.toDayMonthYearDisplay
+import com.example.inhabitroutine.core.presentation.ui.util.toDayMonthYearFullDisplay
 import com.example.inhabitroutine.core.presentation.ui.util.toDisplay
 import com.example.inhabitroutine.feature.create_edit_task.base.components.BaseCreateEditTaskScreenConfig
 import com.example.inhabitroutine.feature.create_edit_task.base.components.BaseCreateEditTaskScreenEvent
@@ -266,8 +267,9 @@ internal fun ItemDateConfig(
     item: BaseItemTaskConfig.DateConfig.Date,
     onClick: () -> Unit
 ) {
+    val context = LocalContext.current
     val text = remember(item) {
-        item.date.toDayMonthYearDisplay()
+        item.date.toDayMonthYearFullDisplay(context)
     }
     BasicTextItemConfig(
         iconResId = com.example.inhabitroutine.core.presentation.R.drawable.ic_start_date,
@@ -282,8 +284,9 @@ internal fun ItemStartDateConfig(
     item: BaseItemTaskConfig.DateConfig.StartDate,
     onClick: () -> Unit
 ) {
+    val context = LocalContext.current
     val text = remember(item) {
-        item.date.toDayMonthYearDisplay()
+        item.date.toDayMonthYearFullDisplay(context)
     }
     BasicTextItemConfig(
         iconResId = com.example.inhabitroutine.core.presentation.R.drawable.ic_start_date,
@@ -298,11 +301,12 @@ internal fun ItemEndDateConfig(
     item: BaseItemTaskConfig.DateConfig.EndDate,
     onClick: () -> Unit
 ) {
+    val context = LocalContext.current
     val isChecked = remember (item) {
         item.date != null
     }
     val text = remember(item) {
-        item.date?.toDayMonthYearDisplay() ?: ""
+        item.date?.toDayMonthYearFullDisplay(context) ?: ""
     }
     BasicSwitchItemConfig(
         iconResId = com.example.inhabitroutine.core.presentation.R.drawable.ic_end_date,

@@ -1,5 +1,6 @@
 package com.example.inhabitroutine.feature.view_reminders.config.create_edit_reminder.edit
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.example.inhabitroutine.core.presentation.R
@@ -26,11 +27,6 @@ private fun EditReminderDialogStateless(
     onEvent: (EditReminderScreenEvent) -> Unit
 ) {
     BaseCreateEditReminderDialog(
-        title = {
-            BaseDialogDefaults.BaseDialogTitle(
-                titleText = stringResource(id = R.string.edit_reminder_title)
-            )
-        },
         state = state,
         onEvent = {
             onEvent(EditReminderScreenEvent.Base(it))

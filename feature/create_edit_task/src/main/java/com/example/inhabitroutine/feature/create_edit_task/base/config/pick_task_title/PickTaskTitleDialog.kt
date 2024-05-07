@@ -1,17 +1,25 @@
 package com.example.inhabitroutine.feature.create_edit_task.base.config.pick_task_title
 
+import android.view.ViewTreeObserver
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import com.example.inhabitroutine.core.presentation.ui.base.BaseDialogWithResult
+import com.example.inhabitroutine.core.presentation.ui.common.BaseFocusedOutlinedTextField
 import com.example.inhabitroutine.core.presentation.ui.common.BaseOutlinedTextField
 import com.example.inhabitroutine.core.presentation.ui.dialog.base.BaseDialog
 import com.example.inhabitroutine.core.presentation.ui.dialog.base.BaseDialogActionType
@@ -20,6 +28,7 @@ import com.example.inhabitroutine.feature.create_edit_task.R
 import com.example.inhabitroutine.feature.create_edit_task.base.config.pick_task_title.components.PickTaskTitleScreenEvent
 import com.example.inhabitroutine.feature.create_edit_task.base.config.pick_task_title.components.PickTaskTitleScreenResult
 import com.example.inhabitroutine.feature.create_edit_task.base.config.pick_task_title.components.PickTaskTitleScreenState
+import kotlinx.coroutines.android.awaitFrame
 
 @Composable
 internal fun PickTaskTitleDialog(
@@ -34,6 +43,7 @@ internal fun PickTaskTitleDialog(
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun PickTaskTitleDialogStateless(
     state: PickTaskTitleScreenState,
@@ -63,15 +73,13 @@ private fun PickTaskTitleDialogStateless(
             }
         )
     ) {
-        val focusRequester = remember { FocusRequester() }
-        BaseOutlinedTextField(
+        BaseFocusedOutlinedTextField(
             value = state.inputTitle,
             onValueChange = {
                 onEvent(PickTaskTitleScreenEvent.OnInputValueUpdate(it))
             },
             modifier = Modifier
-                .fillMaxWidth()
-                .focusRequester(focusRequester),
+                .fillMaxWidth(),
             singleLine = true,
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.Sentences
@@ -80,8 +88,5 @@ private fun PickTaskTitleDialogStateless(
                 Text(text = stringResource(id = com.example.inhabitroutine.core.presentation.R.string.task_config_title_label))
             }
         )
-        LaunchedEffect(Unit) {
-            focusRequester.requestFocus()
-        }
     }
 }

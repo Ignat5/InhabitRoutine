@@ -50,14 +50,12 @@ import kotlinx.datetime.DayOfWeek
 
 @Composable
 internal fun BaseCreateEditReminderDialog(
-    title: @Composable () -> Unit,
     state: BaseCreateEditReminderScreenState,
     onEvent: (BaseCreateEditReminderScreenEvent) -> Unit
 ) {
     BaseDialog(
         onDismissRequest = { onEvent(BaseCreateEditReminderScreenEvent.OnDismissRequest) },
         properties = DialogProperties(dismissOnClickOutside = false),
-        title = title,
         actionType = BaseDialogActionType.ConfirmDismiss(
             confirmButton = {
                 BaseDialogDefaults.BaseActionButton(
