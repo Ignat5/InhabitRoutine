@@ -2,8 +2,11 @@ package com.example.inhabitroutine.feature.create_edit_task.create
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -47,7 +50,8 @@ fun CreateTaskScreen(
                     onEvent(CreateTaskScreenEvent.OnLeaveRequest)
                 }
             )
-        }
+        },
+        modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)
     ) {
         Box(modifier = Modifier.padding(it)) {
             LazyColumn(modifier = Modifier.fillMaxWidth()) {

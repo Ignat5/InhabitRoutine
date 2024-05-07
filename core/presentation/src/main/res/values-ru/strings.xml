@@ -13,7 +13,7 @@
     <string name="habit_description">Активность, выполняемая на протяжении периода времени. Включает в себя детальное отслеживание прогресса.</string>
     <string name="recurring_task_description">Активность, выполняемая на протяжении периода времени. Не включает в себя детальное отслеживание прогресса.</string>
     <string name="single_task_description">Активность, выполняемая один раз. Не включает в себя детальное отслеживание прогресса.</string>
-    <string name="habit_progress_type_yes_no_title">Успех или неудача</string>
+    <string name="habit_progress_type_yes_no_title">Выполнено</string>
     <string name="habit_progress_type_number_title">Число</string>
     <string name="habit_progress_type_time_title">Время</string>
     <string name="habit_progress_type_title">Тип прогресса</string>
