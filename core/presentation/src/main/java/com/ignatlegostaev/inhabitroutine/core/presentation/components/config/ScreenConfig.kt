@@ -1,0 +1,3 @@
+package com.ignatlegostaev.inhabitroutine.core.presentation.components.config
+
+interface ScreenConfig

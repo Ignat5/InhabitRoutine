@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.inhabitroutine"
+    namespace = "com.ignatlegostaev.inhabitroutine"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "com.example.inhabitroutine"
+        applicationId = "com.ignatlegostaev.inhabitroutine"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 1

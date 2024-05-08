@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.inhabitroutine.feature.view_habits"
+    namespace = "com.ignatlegostaev.inhabitroutine.feature.view_habits"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {

@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.inhabitroutine.feature.create_edit_task"
+    namespace = "com.ignatlegostaev.inhabitroutine.feature.create_edit_task"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
