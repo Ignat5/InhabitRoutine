@@ -7,6 +7,7 @@ import kotlinx.datetime.LocalTime
 internal object DomainConst {
     const val DEFAULT_TASK_TITLE = ""
     const val DEFAULT_TASK_DESCRIPTION = ""
+    const val DEFAULT_TASK_PRIORITY = 1L
     const val DEFAULT_TASK_IS_ARCHIVED = false
     const val DEFAULT_TASK_IS_DRAFT = true
     val DEFAULT_TASK_FREQUENCY get() = TaskFrequency.EveryDay

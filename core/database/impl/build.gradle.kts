@@ -13,7 +13,10 @@ java {
 sqldelight {
     databases {
         create("InhabitRoutineDatabase") {
-            packageName.set("com.ignatlegostaev.inhabitroutine.core.database.impl")
+            this.packageName.set("com.ignatlegostaev.inhabitroutine.core.database.impl")
+            this.deriveSchemaFromMigrations = false
+            this.schemaOutputDirectory.set(file("src/main/sqldelight/databases"))
+            this.verifyMigrations = true
         }
     }
 }

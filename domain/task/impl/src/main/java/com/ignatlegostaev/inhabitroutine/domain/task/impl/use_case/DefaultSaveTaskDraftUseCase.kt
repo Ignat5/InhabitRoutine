@@ -44,6 +44,7 @@ internal class DefaultSaveTaskDraftUseCase(
         val taskId = randomUUID()
         val title = DomainConst.DEFAULT_TASK_TITLE
         val description = DomainConst.DEFAULT_TASK_DESCRIPTION
+        val priority = DomainConst.DEFAULT_TASK_PRIORITY
         val isArchived = DomainConst.DEFAULT_TASK_IS_ARCHIVED
         val isDraft = DomainConst.DEFAULT_TASK_IS_DRAFT
         val nowInstant = Clock.System.now()
@@ -63,6 +64,7 @@ internal class DefaultSaveTaskDraftUseCase(
                             title = title,
                             description = description,
                             date = date,
+                            priority = priority,
                             frequency = frequency,
                             isArchived = isArchived,
                             versionStartDate = versionStartDate,
@@ -77,6 +79,7 @@ internal class DefaultSaveTaskDraftUseCase(
                             title = title,
                             description = description,
                             date = date,
+                            priority = priority,
                             progress = TaskProgress.Number(
                                 limitType = DomainConst.DEFAULT_LIMIT_TYPE,
                                 limitNumber = DomainConst.DEFAULT_LIMIT_NUMBER,
@@ -96,6 +99,7 @@ internal class DefaultSaveTaskDraftUseCase(
                             title = title,
                             description = description,
                             date = date,
+                            priority = priority,
                             progress = TaskProgress.Time(
                                 limitType = DomainConst.DEFAULT_LIMIT_TYPE,
                                 limitTime = DomainConst.DEFAULT_LIMIT_TIME
@@ -119,6 +123,7 @@ internal class DefaultSaveTaskDraftUseCase(
                         startDate = startDate,
                         endDate = null
                     ),
+                    priority = priority,
                     frequency = DomainConst.DEFAULT_TASK_FREQUENCY,
                     isArchived = isArchived,
                     versionStartDate = versionStartDate,
@@ -133,6 +138,7 @@ internal class DefaultSaveTaskDraftUseCase(
                     title = title,
                     description = description,
                     date = TaskDate.Day(startDate),
+                    priority = priority,
                     isArchived = isArchived,
                     versionStartDate = versionStartDate,
                     isDraft = isDraft,

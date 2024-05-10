@@ -182,3 +182,4 @@ misc.xml
 
 # local
 /local/**
+*.db

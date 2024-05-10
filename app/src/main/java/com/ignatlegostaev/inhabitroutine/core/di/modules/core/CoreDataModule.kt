@@ -12,7 +12,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
-private const val DATABASE_NAME = "InhabitRoutineDatabase"
+private const val DATABASE_NAME = "InhabitRoutine"
 
 @Module
 @InstallIn(SingletonComponent::class)

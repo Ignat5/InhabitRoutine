@@ -18,8 +18,8 @@ entryEpochDay = :targetEpochDay;
 deleteRecordsByTaskIdAndPeriod:
 DELETE FROM RecordTable
 WHERE taskId = :taskId AND
-entryEpochDay < :minEpochDay OR
-entryEpochDay > :maxEpochDay;
+(entryEpochDay < :minEpochDay OR
+entryEpochDay > :maxEpochDay);
 
 deleteRecordsByTaskId:
 DELETE FROM RecordTable

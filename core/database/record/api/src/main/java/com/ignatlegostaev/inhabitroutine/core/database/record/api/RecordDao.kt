@@ -8,5 +8,10 @@ interface RecordDao {
     fun readRecordsByTaskId(taskId: String): Flow<List<RecordEntity>>
     suspend fun saveRecord(recordEntity: RecordEntity): ResultModel<Unit, Throwable>
     suspend fun deleteRecordByTaskIdAndDate(taskId: String, targetEpochDay: Long): ResultModel<Unit, Throwable>
+    suspend fun deleteRecordsByTaskIdAndPeriod(
+        taskId: String,
+        minEpochDay: Long,
+        maxEpochDay: Long
+    ): ResultModel<Unit, Throwable>
     suspend fun deleteRecordsByTaskId(taskId: String): ResultModel<Unit, Throwable>
 }

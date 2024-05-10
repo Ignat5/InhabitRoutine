@@ -26,6 +26,21 @@ internal class DefaultUpdateTaskDateByIdUseCase(
                 val resultModel = taskRepository.saveTask(newTaskModel)
                 if (resultModel is ResultModel.Success) {
                     externalScope.launch {
+                        val minDate = when (taskDate) {
+                            is TaskDate.Period -> taskDate.startDate
+                            is TaskDate.Day -> taskDate.date
+                        }
+                        val maxDate = when (taskDate) {
+                            is TaskDate.Period -> taskDate.endDate
+                            is TaskDate.Day -> taskDate.date
+                        }
+                        recordRepository.deleteRecordsByTaskIdAndPeriod(
+                            taskId = taskId,
+                            minDate = minDate,
+                            maxDate = maxDate
+                        )
+                    }
+                    externalScope.launch {
                         setUpTaskRemindersUseCase(taskId = taskId)
                     }
                 }

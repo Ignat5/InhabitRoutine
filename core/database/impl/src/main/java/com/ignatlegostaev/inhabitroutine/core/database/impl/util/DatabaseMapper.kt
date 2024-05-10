@@ -1,13 +1,13 @@
 package com.ignatlegostaev.inhabitroutine.core.database.impl.util
 
+import com.ignatlegostaev.inhabitroutine.core.database.impl.RecordTable
+import com.ignatlegostaev.inhabitroutine.core.database.impl.ReminderTable
+import com.ignatlegostaev.inhabitroutine.core.database.impl.TaskContentTable
+import com.ignatlegostaev.inhabitroutine.core.database.impl.TaskTable
+import com.ignatlegostaev.inhabitroutine.core.database.impl.TaskView
 import com.ignatlegostaev.inhabitroutine.core.database.record.api.RecordEntity
 import com.ignatlegostaev.inhabitroutine.core.database.reminder.api.ReminderEntity
 import com.ignatlegostaev.inhabitroutine.core.database.task.api.TaskEntity
-import database.RecordTable
-import database.ReminderTable
-import database.TaskContentTable
-import database.TaskTable
-import database.TaskView
 
 /* task */
 
@@ -20,6 +20,7 @@ internal fun TaskView.toTaskEntity() = TaskEntity(
     description = task_description,
     startEpochDay = task_startEpochDay,
     endEpochDay = task_endEpochDay,
+    priority = task_priority,
     progressContent = taskContent_progressContent,
     frequencyContent = taskContent_frequencyContent,
     isArchived = taskContent_isArchived,
@@ -36,7 +37,8 @@ internal fun TaskEntity.toTaskTable() = TaskTable(
     startEpochDay = startEpochDay,
     endEpochDay = endEpochDay,
     isDraft = isDraft,
-    createdAt = createdAt
+    createdAt = createdAt,
+    priority = priority
 )
 
 internal fun TaskEntity.toTaskContentTable() = TaskContentTable(

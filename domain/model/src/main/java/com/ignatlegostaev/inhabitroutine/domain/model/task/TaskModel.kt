@@ -14,6 +14,7 @@ sealed interface TaskModel {
     val title: String
     val description: String
     val date: TaskDate
+    val priority: Long
     val isArchived: Boolean
     val versionStartDate: LocalDate
     val isDraft: Boolean
@@ -37,6 +38,7 @@ sealed interface TaskModel {
                 override val title: String,
                 override val description: String,
                 override val date: TaskDate.Period,
+                override val priority: Long,
                 override val progress: TaskProgress.Number,
                 override val frequency: TaskFrequency,
                 override val isArchived: Boolean,
@@ -50,6 +52,7 @@ sealed interface TaskModel {
                 override val title: String,
                 override val description: String,
                 override val date: TaskDate.Period,
+                override val priority: Long,
                 override val progress: TaskProgress.Time,
                 override val frequency: TaskFrequency,
                 override val isArchived: Boolean,
@@ -64,6 +67,7 @@ sealed interface TaskModel {
             override val title: String,
             override val description: String,
             override val date: TaskDate.Period,
+            override val priority: Long,
             override val frequency: TaskFrequency,
             override val isArchived: Boolean,
             override val versionStartDate: LocalDate,
@@ -82,6 +86,7 @@ sealed interface TaskModel {
             override val title: String,
             override val description: String,
             override val date: TaskDate.Period,
+            override val priority: Long,
             override val frequency: TaskFrequency,
             override val isArchived: Boolean,
             override val versionStartDate: LocalDate,
@@ -94,6 +99,7 @@ sealed interface TaskModel {
             override val title: String,
             override val description: String,
             override val date: TaskDate.Day,
+            override val priority: Long,
             override val isArchived: Boolean,
             override val versionStartDate: LocalDate,
             override val isDraft: Boolean,
@@ -108,6 +114,7 @@ sealed interface TaskModel {
         title: String? = null,
         description: String? = null,
         date: TaskDate? = null,
+        priority: Long? = null,
         isArchived: Boolean? = null,
         versionStartDate: LocalDate? = null,
         isDraft: Boolean? = null,
@@ -126,6 +133,7 @@ sealed interface TaskModel {
                                     title = title ?: taskModel.title,
                                     description = description ?: taskModel.description,
                                     date = (date as? TaskDate.Period) ?: taskModel.date,
+                                    priority = priority ?: taskModel.priority,
                                     isArchived = isArchived ?: taskModel.isArchived,
                                     versionStartDate = versionStartDate
                                         ?: taskModel.versionStartDate,
@@ -143,6 +151,7 @@ sealed interface TaskModel {
                                     title = title ?: taskModel.title,
                                     description = description ?: taskModel.description,
                                     date = (date as? TaskDate.Period) ?: taskModel.date,
+                                    priority = priority ?: taskModel.priority,
                                     isArchived = isArchived ?: taskModel.isArchived,
                                     versionStartDate = versionStartDate
                                         ?: taskModel.versionStartDate,
@@ -162,6 +171,7 @@ sealed interface TaskModel {
                             title = title ?: taskModel.title,
                             description = description ?: taskModel.description,
                             date = (date as? TaskDate.Period) ?: taskModel.date,
+                            priority = priority ?: taskModel.priority,
                             isArchived = isArchived ?: taskModel.isArchived,
                             versionStartDate = versionStartDate ?: taskModel.versionStartDate,
                             isDraft = isDraft ?: taskModel.isDraft,
@@ -180,6 +190,7 @@ sealed interface TaskModel {
                             title = title ?: taskModel.title,
                             description = description ?: taskModel.description,
                             date = (date as? TaskDate.Day) ?: taskModel.date,
+                            priority = priority ?: taskModel.priority,
                             isArchived = isArchived ?: taskModel.isArchived,
                             versionStartDate = versionStartDate ?: taskModel.versionStartDate,
                             isDraft = isDraft ?: taskModel.isDraft,
@@ -193,6 +204,7 @@ sealed interface TaskModel {
                             title = title ?: taskModel.title,
                             description = description ?: taskModel.description,
                             date = (date as? TaskDate.Period) ?: taskModel.date,
+                            priority = priority ?: taskModel.priority,
                             isArchived = isArchived ?: taskModel.isArchived,
                             versionStartDate = versionStartDate ?: taskModel.versionStartDate,
                             isDraft = isDraft ?: taskModel.isDraft,
