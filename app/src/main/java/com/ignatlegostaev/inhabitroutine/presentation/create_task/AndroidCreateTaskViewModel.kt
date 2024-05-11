@@ -12,7 +12,6 @@ import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskDesc
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskFrequencyByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskProgressByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskTitleByIdUseCase
-import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.ValidateProgressLimitNumberUseCase
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.create.CreateTaskViewModel
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.create.components.CreateTaskScreenConfig
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.create.components.CreateTaskScreenEvent
@@ -36,7 +35,6 @@ class AndroidCreateTaskViewModel @Inject constructor(
     updateTaskDateByIdUseCase: UpdateTaskDateByIdUseCase,
     updateTaskDescriptionByIdUseCase: UpdateTaskDescriptionByIdUseCase,
     readReminderCountByTaskIdUseCase: ReadReminderCountByTaskIdUseCase,
-    validateProgressLimitNumberUseCase: ValidateProgressLimitNumberUseCase,
     @DefaultDispatcherQualifier defaultDispatcher: CoroutineDispatcher
 ) : BaseAndroidViewModel<CreateTaskScreenEvent, CreateTaskScreenState, CreateTaskScreenNavigation, CreateTaskScreenConfig>() {
 
@@ -51,7 +49,6 @@ class AndroidCreateTaskViewModel @Inject constructor(
         updateTaskFrequencyByIdUseCase = updateTaskFrequencyByIdUseCase,
         updateTaskDateByIdUseCase = updateTaskDateByIdUseCase,
         updateTaskDescriptionByIdUseCase = updateTaskDescriptionByIdUseCase,
-        validateProgressLimitNumberUseCase = validateProgressLimitNumberUseCase,
         defaultDispatcher = defaultDispatcher,
         viewModelScope = viewModelScope
     )

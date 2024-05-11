@@ -5,7 +5,7 @@ import com.ignatlegostaev.inhabitroutine.domain.model.task.content.TaskProgress
 import kotlinx.datetime.LocalDate
 
 sealed class BaseItemTaskConfig(val key: Key, val contentType: ContentType) {
-    enum class Key { Title, Description, Progress, Frequency, Date, StartDate, EndDate, Reminders }
+    enum class Key { Title, Description, Progress, Frequency, Date, StartDate, EndDate, Priority, Reminders }
     enum class ContentType { Basic, Switch }
 
     data class Title(
@@ -19,6 +19,10 @@ sealed class BaseItemTaskConfig(val key: Key, val contentType: ContentType) {
     data class Frequency(
         val taskFrequency: TaskFrequency
     ) : BaseItemTaskConfig(Key.Frequency, ContentType.Basic)
+
+    data class Priority(
+        val priority: Long
+    ) : BaseItemTaskConfig(Key.Priority, ContentType.Basic)
 
     data class Reminders(
         val count: Int

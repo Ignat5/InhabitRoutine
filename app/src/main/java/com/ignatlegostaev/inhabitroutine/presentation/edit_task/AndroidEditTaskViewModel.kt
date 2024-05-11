@@ -13,7 +13,6 @@ import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskDesc
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskFrequencyByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskProgressByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskTitleByIdUseCase
-import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.ValidateProgressLimitNumberUseCase
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.edit.EditTaskViewModel
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.edit.components.EditTaskScreenConfig
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.edit.components.EditTaskScreenEvent
@@ -38,7 +37,6 @@ class AndroidEditTaskViewModel @Inject constructor(
     updateTaskFrequencyByIdUseCase: UpdateTaskFrequencyByIdUseCase,
     updateTaskDateByIdUseCase: UpdateTaskDateByIdUseCase,
     updateTaskDescriptionByIdUseCase: UpdateTaskDescriptionByIdUseCase,
-    validateProgressLimitNumberUseCase: ValidateProgressLimitNumberUseCase,
     @DefaultDispatcherQualifier defaultDispatcher: CoroutineDispatcher
 ) : BaseAndroidViewModel<EditTaskScreenEvent, EditTaskScreenState, EditTaskScreenNavigation, EditTaskScreenConfig>() {
 
@@ -54,7 +52,6 @@ class AndroidEditTaskViewModel @Inject constructor(
         updateTaskFrequencyByIdUseCase = updateTaskFrequencyByIdUseCase,
         updateTaskDateByIdUseCase = updateTaskDateByIdUseCase,
         updateTaskDescriptionByIdUseCase = updateTaskDescriptionByIdUseCase,
-        validateProgressLimitNumberUseCase = validateProgressLimitNumberUseCase,
         defaultDispatcher = defaultDispatcher,
         viewModelScope = viewModelScope
     )

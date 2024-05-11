@@ -65,6 +65,7 @@
     <string name="daily_goal_suffix">в день</string>
     <string name="frequency_every_day">Каждый день</string>
     <string name="frequency_days_of_week">Дни недели</string>
+    <string name="task_config_priority">Приоритет</string>
     <string name="create_task_title">Новая задача</string>
     <string name="create_habit_title">Новая привычка</string>
     <string name="task_config_title_label">Название</string>

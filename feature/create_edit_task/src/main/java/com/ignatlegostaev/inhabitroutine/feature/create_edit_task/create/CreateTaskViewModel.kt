@@ -10,7 +10,6 @@ import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskDesc
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskFrequencyByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskProgressByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskTitleByIdUseCase
-import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.ValidateProgressLimitNumberUseCase
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.BaseCreateEditTaskViewModel
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.components.BaseCreateEditTaskScreenConfig
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.components.BaseCreateEditTaskScreenNavigation
@@ -41,7 +40,6 @@ class CreateTaskViewModel(
     updateTaskFrequencyByIdUseCase: UpdateTaskFrequencyByIdUseCase,
     updateTaskDateByIdUseCase: UpdateTaskDateByIdUseCase,
     updateTaskDescriptionByIdUseCase: UpdateTaskDescriptionByIdUseCase,
-    validateProgressLimitNumberUseCase: ValidateProgressLimitNumberUseCase,
     defaultDispatcher: CoroutineDispatcher,
     override val viewModelScope: CoroutineScope
 ) : BaseCreateEditTaskViewModel<CreateTaskScreenEvent, CreateTaskScreenState, CreateTaskScreenNavigation, CreateTaskScreenConfig>(
@@ -50,7 +48,6 @@ class CreateTaskViewModel(
     updateTaskFrequencyByIdUseCase = updateTaskFrequencyByIdUseCase,
     updateTaskDateByIdUseCase = updateTaskDateByIdUseCase,
     updateTaskDescriptionByIdUseCase = updateTaskDescriptionByIdUseCase,
-    validateProgressLimitNumberUseCase = validateProgressLimitNumberUseCase,
     defaultDispatcher = defaultDispatcher,
 ) {
 

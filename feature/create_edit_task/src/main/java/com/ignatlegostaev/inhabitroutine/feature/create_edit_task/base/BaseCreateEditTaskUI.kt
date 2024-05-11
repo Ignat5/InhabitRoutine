@@ -27,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.ignatlegostaev.inhabitroutine.core.presentation.R
 import com.ignatlegostaev.inhabitroutine.core.presentation.ui.dialog.pick_date.PickDateDialog
 import com.ignatlegostaev.inhabitroutine.core.presentation.ui.util.toDayMonthYearFullDisplay
 import com.ignatlegostaev.inhabitroutine.core.presentation.ui.util.toDisplay
@@ -178,6 +179,13 @@ internal fun LazyListScope.baseConfigItems(
                     )
                 }
 
+                BaseItemTaskConfig.Key.Priority -> {
+                    ItemPriorityConfig(
+                        item = (item as BaseItemTaskConfig.Priority),
+                        onClick = onClick
+                    )
+                }
+
                 BaseItemTaskConfig.Key.Reminders -> {
                     ItemRemindersConfig(
                         item = (item as BaseItemTaskConfig.Reminders),
@@ -311,6 +319,19 @@ internal fun ItemEndDateConfig(
         titleResId = com.ignatlegostaev.inhabitroutine.core.presentation.R.string.task_config_end_date,
         text = text,
         isChecked = isChecked,
+        onClick = onClick
+    )
+}
+
+@Composable
+internal fun ItemPriorityConfig(
+    item: BaseItemTaskConfig.Priority,
+    onClick: () -> Unit
+) {
+    BasicTextItemConfig(
+        iconResId = R.drawable.ic_priority,
+        titleResId = R.string.task_config_priority,
+        text = "${item.priority}",
         onClick = onClick
     )
 }

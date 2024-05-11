@@ -3,7 +3,7 @@ package com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.config.p
 import com.ignatlegostaev.inhabitroutine.core.presentation.base.BaseResultStateHolder
 import com.ignatlegostaev.inhabitroutine.core.presentation.ui.util.limitNumberToDisplay
 import com.ignatlegostaev.inhabitroutine.domain.model.task.content.TaskProgress
-import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.ValidateProgressLimitNumberUseCase
+import com.ignatlegostaev.inhabitroutine.domain.model.util.DomainConst
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.config.pick_task_number_progress.components.PickTaskNumberProgressScreenEvent
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.config.pick_task_number_progress.components.PickTaskNumberProgressScreenResult
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.config.pick_task_number_progress.components.PickTaskNumberProgressScreenState
@@ -18,12 +18,12 @@ import kotlinx.coroutines.flow.update
 
 class PickTaskNumberProgressStateHolder(
     initTaskProgress: TaskProgress.Number,
-    private val validateProgressLimitNumberUseCase: ValidateProgressLimitNumberUseCase,
     override val holderScope: CoroutineScope
 ) : BaseResultStateHolder<PickTaskNumberProgressScreenEvent, PickTaskNumberProgressScreenState, PickTaskNumberProgressScreenResult>() {
 
     private val inputLimitTypeState = MutableStateFlow(initTaskProgress.limitType)
-    private val inputLimitNumberState = MutableStateFlow(initTaskProgress.limitNumber.limitNumberToDisplay())
+    private val inputLimitNumberState =
+        MutableStateFlow(initTaskProgress.limitNumber.limitNumberToDisplay())
     private val inputLimitUnitState = MutableStateFlow(initTaskProgress.limitUnit)
     private val limitNumberInputValidator: (String) -> Boolean = { input ->
         input.isEmpty() || input.isValid()
@@ -114,7 +114,17 @@ class PickTaskNumberProgressStateHolder(
     }
 
     private fun String.isValid(): Boolean = this.let { input ->
-        input.toDoubleOrNull()?.let { validateProgressLimitNumberUseCase(it) } ?: false
+        input.toDoubleOrNull()?.let { number ->
+            number in availableLimitNumberRange && input.length <= maxLimitNumberLength
+        } ?: false
+    }
+
+    private val availableLimitNumberRange by lazy {
+        DomainConst.MIN_LIMIT_NUMBER..DomainConst.MAX_LIMIT_NUMBER
+    }
+
+    private val maxLimitNumberLength by lazy {
+        DomainConst.MAX_LIMIT_NUMBER.toString().length
     }
 
 }

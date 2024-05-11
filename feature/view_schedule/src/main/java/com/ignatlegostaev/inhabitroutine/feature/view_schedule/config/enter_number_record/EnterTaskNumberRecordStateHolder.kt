@@ -4,7 +4,7 @@ import com.ignatlegostaev.inhabitroutine.core.presentation.base.BaseResultStateH
 import com.ignatlegostaev.inhabitroutine.core.presentation.ui.util.limitNumberToDisplay
 import com.ignatlegostaev.inhabitroutine.domain.model.record.content.RecordEntry
 import com.ignatlegostaev.inhabitroutine.domain.model.task.TaskModel
-import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.ValidateProgressLimitNumberUseCase
+import com.ignatlegostaev.inhabitroutine.domain.model.util.DomainConst
 import com.ignatlegostaev.inhabitroutine.feature.view_schedule.config.enter_number_record.components.EnterTaskNumberRecordScreenEvent
 import com.ignatlegostaev.inhabitroutine.feature.view_schedule.config.enter_number_record.components.EnterTaskNumberRecordScreenResult
 import com.ignatlegostaev.inhabitroutine.feature.view_schedule.config.enter_number_record.components.EnterTaskNumberRecordScreenState
@@ -22,7 +22,6 @@ class EnterTaskNumberRecordStateHolder(
     private val taskModel: TaskModel.Habit.HabitContinuous.HabitNumber,
     entry: RecordEntry.HabitEntry.Continuous.Number?,
     private val date: LocalDate,
-    private val validateProgressLimitNumberUseCase: ValidateProgressLimitNumberUseCase,
     override val holderScope: CoroutineScope
 ) : BaseResultStateHolder<EnterTaskNumberRecordScreenEvent, EnterTaskNumberRecordScreenState, EnterTaskNumberRecordScreenResult>() {
 
@@ -99,7 +98,17 @@ class EnterTaskNumberRecordStateHolder(
     }
 
     private fun String.isValid(): Boolean = this.let { input ->
-        input.toDoubleOrNull()?.let { validateProgressLimitNumberUseCase(it) } ?: false
+        input.toDoubleOrNull()?.let { number ->
+            number in availableLimitNumberRange && input.length <= maxLimitNumberLength
+        } ?: false
+    }
+
+    private val availableLimitNumberRange by lazy {
+        DomainConst.MIN_LIMIT_NUMBER..DomainConst.MAX_LIMIT_NUMBER
+    }
+
+    private val maxLimitNumberLength by lazy {
+        DomainConst.MAX_LIMIT_NUMBER.toString().length
     }
 
 }

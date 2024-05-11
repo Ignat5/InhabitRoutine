@@ -15,7 +15,6 @@ import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskDesc
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskFrequencyByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskProgressByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskTitleByIdUseCase
-import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.ValidateProgressLimitNumberUseCase
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.components.BaseCreateEditTaskScreenConfig
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.components.BaseCreateEditTaskScreenEvent
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.components.BaseCreateEditTaskScreenNavigation
@@ -45,7 +44,6 @@ abstract class BaseCreateEditTaskViewModel<SE : ScreenEvent, SS : ScreenState, S
     private val updateTaskFrequencyByIdUseCase: UpdateTaskFrequencyByIdUseCase,
     private val updateTaskDateByIdUseCase: UpdateTaskDateByIdUseCase,
     private val updateTaskDescriptionByIdUseCase: UpdateTaskDescriptionByIdUseCase,
-    private val validateProgressLimitNumberUseCase: ValidateProgressLimitNumberUseCase,
     private val defaultDispatcher: CoroutineDispatcher
 ) : BaseViewModel<SE, SS, SN, SC>() {
     private val todayDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
@@ -293,6 +291,15 @@ abstract class BaseCreateEditTaskViewModel<SE : ScreenEvent, SS : ScreenState, S
 
             is BaseItemTaskConfig.Description ->
                 onConfigTaskDescriptionClick()
+
+            is BaseItemTaskConfig.Priority ->
+                onConfigTaskPriorityClick()
+        }
+    }
+
+    private fun onConfigTaskPriorityClick() {
+        taskModelState.value?.priority?.let { priority ->
+
         }
     }
 
@@ -443,7 +450,6 @@ abstract class BaseCreateEditTaskViewModel<SE : ScreenEvent, SS : ScreenState, S
                 BaseCreateEditTaskScreenConfig.PickTaskNumberProgress(
                     stateHolder = PickTaskNumberProgressStateHolder(
                         initTaskProgress = habitNumber.progress,
-                        validateProgressLimitNumberUseCase = validateProgressLimitNumberUseCase,
                         holderScope = provideChildScope()
                     )
                 )
@@ -495,6 +501,7 @@ abstract class BaseCreateEditTaskViewModel<SE : ScreenEvent, SS : ScreenState, S
                     add(BaseItemTaskConfig.DateConfig.EndDate(taskDate.endDate))
                 }
             }
+            add(BaseItemTaskConfig.Priority(taskModel.priority))
             add(BaseItemTaskConfig.Reminders(reminderCount))
         }.sortedBy { it.key.ordinal }
     }

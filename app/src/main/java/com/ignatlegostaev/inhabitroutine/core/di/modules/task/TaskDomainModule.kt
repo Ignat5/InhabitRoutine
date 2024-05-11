@@ -21,7 +21,6 @@ import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskDesc
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskFrequencyByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskProgressByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskTitleByIdUseCase
-import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.ValidateProgressLimitNumberUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.calculate_statistics.CalculateTaskStatisticsUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.impl.di.LocalTaskDomainModule
 import dagger.Module
@@ -216,11 +215,6 @@ object TaskDomainModule {
             recordRepository = recordRepository,
             defaultDispatcher = defaultDispatcher
         )
-    }
-
-    @Provides
-    fun provideValidateProgressLimitNumberUseCase(): ValidateProgressLimitNumberUseCase {
-        return LocalTaskDomainModule.provideValidateProgressLimitNumberUseCase()
     }
 
     @Provides
