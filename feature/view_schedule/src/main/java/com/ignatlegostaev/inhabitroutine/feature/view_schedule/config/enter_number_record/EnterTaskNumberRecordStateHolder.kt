@@ -29,6 +29,14 @@ class EnterTaskNumberRecordStateHolder(
         (entry as? RecordEntry.Number)?.number?.limitNumberToDisplay() ?: ""
     )
 
+    private val availableLimitNumberRange by lazy {
+        DomainConst.MIN_LIMIT_NUMBER..DomainConst.MAX_LIMIT_NUMBER
+    }
+
+    private val maxLimitNumberLength by lazy {
+        DomainConst.MAX_LIMIT_NUMBER.toString().length
+    }
+
     private val inputNumberValidator: (String) -> Boolean = { input ->
         input.isEmpty() || input.isValid()
     }
@@ -101,14 +109,6 @@ class EnterTaskNumberRecordStateHolder(
         input.toDoubleOrNull()?.let { number ->
             number in availableLimitNumberRange && input.length <= maxLimitNumberLength
         } ?: false
-    }
-
-    private val availableLimitNumberRange by lazy {
-        DomainConst.MIN_LIMIT_NUMBER..DomainConst.MAX_LIMIT_NUMBER
-    }
-
-    private val maxLimitNumberLength by lazy {
-        DomainConst.MAX_LIMIT_NUMBER.toString().length
     }
 
 }

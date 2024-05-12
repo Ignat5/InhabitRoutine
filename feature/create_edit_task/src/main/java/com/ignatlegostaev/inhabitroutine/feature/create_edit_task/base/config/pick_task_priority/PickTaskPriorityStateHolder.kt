@@ -19,6 +19,9 @@ class PickTaskPriorityStateHolder(
     override val holderScope: CoroutineScope
 ) : BaseResultStateHolder<PickTaskPriorityScreenEvent, PickTaskPriorityScreenState, PickTaskPriorityScreenResult>() {
     private val inputPriorityState = MutableStateFlow(initPriority.toString())
+    private val availablePriorityRange by lazy {
+        DomainConst.MIN_PRIORITY..DomainConst.MAX_PRIORITY
+    }
     private val canConfirmFlow = inputPriorityState.map { inputPriority ->
         inputPriority.isValid()
     }
@@ -78,9 +81,5 @@ class PickTaskPriorityStateHolder(
         this.toLongOrNull()
             ?.let { priority -> priority in availablePriorityRange }
             ?: false
-
-    private val availablePriorityRange by lazy {
-        DomainConst.MIN_PRIORITY..DomainConst.MAX_PRIORITY
-    }
 
 }

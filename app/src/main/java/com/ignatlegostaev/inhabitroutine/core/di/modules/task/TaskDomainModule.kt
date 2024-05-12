@@ -19,6 +19,7 @@ import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.SaveTaskDraftU
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskDateByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskDescriptionByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskFrequencyByIdUseCase
+import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskPriorityByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskProgressByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskTitleByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.calculate_statistics.CalculateTaskStatisticsUseCase
@@ -158,6 +159,17 @@ object TaskDomainModule {
     ): UpdateTaskDescriptionByIdUseCase {
         return LocalTaskDomainModule.provideUpdateTaskDescriptionByIdUseCase(
             taskRepository = taskRepository
+        )
+    }
+
+    @Provides
+    fun provideUpdateTaskPriorityByIdUseCase(
+        taskRepository: TaskRepository,
+        @DefaultDispatcherQualifier defaultDispatcher: CoroutineDispatcher
+    ): UpdateTaskPriorityByIdUseCase {
+        return LocalTaskDomainModule.provideUpdateTaskPriorityByIdUseCase(
+            taskRepository = taskRepository,
+            defaultDispatcher = defaultDispatcher
         )
     }
 

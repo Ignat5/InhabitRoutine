@@ -36,6 +36,7 @@ import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.component
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.config.pick_task_description.PickTaskDescriptionDialog
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.config.pick_task_frequency.PickTaskFrequencyDialog
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.config.pick_task_number_progress.PickTaskNumberProgressDialog
+import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.config.pick_task_priority.PickTaskPriorityDialog
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.config.pick_task_time_progress.PickTaskTimeProgressDialog
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.config.pick_task_title.PickTaskTitleDialog
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.model.BaseItemTaskConfig
@@ -110,6 +111,12 @@ internal fun BaseCreateEditTaskConfig(
         is BaseCreateEditTaskScreenConfig.PickTaskDescription -> {
             PickTaskDescriptionDialog(stateHolder = config.stateHolder) {
                 onEvent(BaseCreateEditTaskScreenEvent.ResultEvent.PickTaskDescription(it))
+            }
+        }
+
+        is BaseCreateEditTaskScreenConfig.PickTaskPriority -> {
+            PickTaskPriorityDialog(stateHolder = config.stateHolder) {
+                onEvent(BaseCreateEditTaskScreenEvent.ResultEvent.PickTaskPriority(it))
             }
         }
     }

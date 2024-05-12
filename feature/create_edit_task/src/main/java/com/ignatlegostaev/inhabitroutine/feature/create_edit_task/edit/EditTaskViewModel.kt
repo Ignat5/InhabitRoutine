@@ -16,6 +16,7 @@ import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.ResetTaskByIdU
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskDateByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskDescriptionByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskFrequencyByIdUseCase
+import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskPriorityByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskProgressByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskTitleByIdUseCase
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.BaseCreateEditTaskViewModel
@@ -52,6 +53,7 @@ class EditTaskViewModel(
     updateTaskFrequencyByIdUseCase: UpdateTaskFrequencyByIdUseCase,
     updateTaskDateByIdUseCase: UpdateTaskDateByIdUseCase,
     updateTaskDescriptionByIdUseCase: UpdateTaskDescriptionByIdUseCase,
+    updateTaskPriorityByIdUseCase: UpdateTaskPriorityByIdUseCase,
     defaultDispatcher: CoroutineDispatcher,
     override val viewModelScope: CoroutineScope
 ) : BaseCreateEditTaskViewModel<EditTaskScreenEvent, EditTaskScreenState, EditTaskScreenNavigation, EditTaskScreenConfig>(
@@ -60,6 +62,7 @@ class EditTaskViewModel(
     updateTaskFrequencyByIdUseCase = updateTaskFrequencyByIdUseCase,
     updateTaskDateByIdUseCase = updateTaskDateByIdUseCase,
     updateTaskDescriptionByIdUseCase = updateTaskDescriptionByIdUseCase,
+    updateTaskPriorityByIdUseCase = updateTaskPriorityByIdUseCase,
     defaultDispatcher = defaultDispatcher
 ) {
 

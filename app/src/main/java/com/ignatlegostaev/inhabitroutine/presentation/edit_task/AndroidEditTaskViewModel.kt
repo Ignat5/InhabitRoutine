@@ -11,6 +11,7 @@ import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.ResetTaskByIdU
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskDateByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskDescriptionByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskFrequencyByIdUseCase
+import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskPriorityByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskProgressByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskTitleByIdUseCase
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.edit.EditTaskViewModel
@@ -37,6 +38,7 @@ class AndroidEditTaskViewModel @Inject constructor(
     updateTaskFrequencyByIdUseCase: UpdateTaskFrequencyByIdUseCase,
     updateTaskDateByIdUseCase: UpdateTaskDateByIdUseCase,
     updateTaskDescriptionByIdUseCase: UpdateTaskDescriptionByIdUseCase,
+    updateTaskPriorityByIdUseCase: UpdateTaskPriorityByIdUseCase,
     @DefaultDispatcherQualifier defaultDispatcher: CoroutineDispatcher
 ) : BaseAndroidViewModel<EditTaskScreenEvent, EditTaskScreenState, EditTaskScreenNavigation, EditTaskScreenConfig>() {
 
@@ -52,6 +54,7 @@ class AndroidEditTaskViewModel @Inject constructor(
         updateTaskFrequencyByIdUseCase = updateTaskFrequencyByIdUseCase,
         updateTaskDateByIdUseCase = updateTaskDateByIdUseCase,
         updateTaskDescriptionByIdUseCase = updateTaskDescriptionByIdUseCase,
+        updateTaskPriorityByIdUseCase = updateTaskPriorityByIdUseCase,
         defaultDispatcher = defaultDispatcher,
         viewModelScope = viewModelScope
     )

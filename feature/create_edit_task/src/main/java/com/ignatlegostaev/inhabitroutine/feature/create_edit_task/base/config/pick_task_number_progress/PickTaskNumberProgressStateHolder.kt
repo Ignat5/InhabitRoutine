@@ -20,11 +20,17 @@ class PickTaskNumberProgressStateHolder(
     initTaskProgress: TaskProgress.Number,
     override val holderScope: CoroutineScope
 ) : BaseResultStateHolder<PickTaskNumberProgressScreenEvent, PickTaskNumberProgressScreenState, PickTaskNumberProgressScreenResult>() {
-
     private val inputLimitTypeState = MutableStateFlow(initTaskProgress.limitType)
     private val inputLimitNumberState =
         MutableStateFlow(initTaskProgress.limitNumber.limitNumberToDisplay())
     private val inputLimitUnitState = MutableStateFlow(initTaskProgress.limitUnit)
+    private val availableLimitNumberRange by lazy {
+        DomainConst.MIN_LIMIT_NUMBER..DomainConst.MAX_LIMIT_NUMBER
+    }
+
+    private val maxLimitNumberLength by lazy {
+        DomainConst.MAX_LIMIT_NUMBER.toString().length
+    }
     private val limitNumberInputValidator: (String) -> Boolean = { input ->
         input.isEmpty() || input.isValid()
     }
@@ -117,14 +123,6 @@ class PickTaskNumberProgressStateHolder(
         input.toDoubleOrNull()?.let { number ->
             number in availableLimitNumberRange && input.length <= maxLimitNumberLength
         } ?: false
-    }
-
-    private val availableLimitNumberRange by lazy {
-        DomainConst.MIN_LIMIT_NUMBER..DomainConst.MAX_LIMIT_NUMBER
-    }
-
-    private val maxLimitNumberLength by lazy {
-        DomainConst.MAX_LIMIT_NUMBER.toString().length
     }
 
 }
