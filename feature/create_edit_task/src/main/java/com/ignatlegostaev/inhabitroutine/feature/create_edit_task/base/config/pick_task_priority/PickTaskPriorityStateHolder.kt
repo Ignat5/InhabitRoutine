@@ -22,6 +22,9 @@ class PickTaskPriorityStateHolder(
     private val availablePriorityRange by lazy {
         DomainConst.MIN_PRIORITY..DomainConst.MAX_PRIORITY
     }
+    private val maxPriorityLength by lazy {
+        DomainConst.MAX_PRIORITY.toString().length
+    }
     private val canConfirmFlow = inputPriorityState.map { inputPriority ->
         inputPriority.isValid()
     }
@@ -79,7 +82,7 @@ class PickTaskPriorityStateHolder(
 
     private fun String.isValid(): Boolean =
         this.toLongOrNull()
-            ?.let { priority -> priority in availablePriorityRange }
+            ?.let { priority -> priority in availablePriorityRange && this.length <= maxPriorityLength }
             ?: false
 
 }

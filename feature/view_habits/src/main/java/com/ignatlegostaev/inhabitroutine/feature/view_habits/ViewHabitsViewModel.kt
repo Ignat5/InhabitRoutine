@@ -45,7 +45,7 @@ class ViewHabitsViewModel(
     override val viewModelScope: CoroutineScope
 ) : BaseViewModel<ViewHabitsScreenEvent, ViewHabitsScreenState, ViewHabitsScreenNavigation, ViewHabitsScreenConfig>() {
     private val filterByStatusState = MutableStateFlow<HabitFilterByStatus?>(null)
-    private val sortState = MutableStateFlow<HabitSort>(HabitSort.ByDate)
+    private val sortState = MutableStateFlow<HabitSort>(HabitSort.ByPriority)
     private val messageState = MutableStateFlow<ViewHabitsMessage>(ViewHabitsMessage.Idle)
 
     private val allHabitsState = combine(
@@ -335,6 +335,7 @@ class ViewHabitsViewModel(
 
     private fun List<TaskModel.Habit>.sortHabits(sort: HabitSort) = this.let { allHabits ->
         when (sort) {
+            HabitSort.ByPriority -> allHabits.sortedByDescending { it.priority }
             HabitSort.ByDate -> allHabits.sortedByDescending { it.date.startDate }
             HabitSort.ByTitle -> allHabits.sortedBy { it.title }
         }

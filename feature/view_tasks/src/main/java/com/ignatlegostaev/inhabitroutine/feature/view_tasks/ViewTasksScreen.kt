@@ -60,13 +60,16 @@ import com.ignatlegostaev.inhabitroutine.core.presentation.ui.common.ChipTaskSta
 import com.ignatlegostaev.inhabitroutine.core.presentation.ui.common.ChipTaskType
 import com.ignatlegostaev.inhabitroutine.core.presentation.ui.common.CreateTaskFAB
 import com.ignatlegostaev.inhabitroutine.core.presentation.ui.common.BaseEmptyStateMessage
+import com.ignatlegostaev.inhabitroutine.core.presentation.ui.common.BaseFilterChipWithDropdownMenu
 import com.ignatlegostaev.inhabitroutine.core.presentation.ui.common.BaseTaskDefaults
+import com.ignatlegostaev.inhabitroutine.core.presentation.ui.common.ChipTaskPriority
 import com.ignatlegostaev.inhabitroutine.core.presentation.ui.common.TaskDivider
 import com.ignatlegostaev.inhabitroutine.core.presentation.ui.dialog.archive_task.ArchiveTaskDialog
 import com.ignatlegostaev.inhabitroutine.core.presentation.ui.dialog.delete_task.DeleteTaskDialog
 import com.ignatlegostaev.inhabitroutine.core.presentation.ui.dialog.pick_task_type.PickTaskTypeDialog
 import com.ignatlegostaev.inhabitroutine.domain.model.task.TaskModel
 import com.ignatlegostaev.inhabitroutine.domain.model.task.content.TaskDate
+import com.ignatlegostaev.inhabitroutine.domain.model.util.DomainConst
 import com.ignatlegostaev.inhabitroutine.feature.view_tasks.components.ViewTasksScreenConfig
 import com.ignatlegostaev.inhabitroutine.feature.view_tasks.components.ViewTasksScreenEvent
 import com.ignatlegostaev.inhabitroutine.feature.view_tasks.components.ViewTasksScreenState
@@ -299,6 +302,9 @@ private fun TaskDetailsRow(
     ) {
         ChipTaskType(taskType = item.type)
         ChipTaskProgressType(taskProgressType = item.progressType)
+        if (item.priority != DomainConst.DEFAULT_TASK_PRIORITY) {
+            ChipTaskPriority(priority = item.priority)
+        }
         when (val taskDate = item.date) {
             is TaskDate.Period -> {
                 ChipTaskStartDate(date = taskDate.startDate)
@@ -360,56 +366,30 @@ private fun SortChip(
     sort: TaskSort,
     onSortClick: (TaskSort) -> Unit
 ) {
-    var isExpanded by remember {
-        mutableStateOf(false)
-    }
-    Box {
-        FilterChip(
-            selected = false,
-            onClick = { isExpanded = !isExpanded },
-            label = {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_sort),
-                    contentDescription = null
-                )
-            }
-        )
-        DropdownMenu(
-            expanded = isExpanded,
-            onDismissRequest = { isExpanded = false }
-        ) {
-            val allSortItems = remember { TaskSort.entries }
-            allSortItems.forEach { item ->
-                val titleResId = remember {
-                    when (item) {
-                        TaskSort.ByDate -> R.string.task_sort_by_date_title
-                        TaskSort.ByTitle -> R.string.task_sort_by_name_title
-                    }
+    val context = LocalContext.current
+    val allItems = remember { TaskSort.entries }
+    BaseFilterChipWithDropdownMenu(
+        allItems = allItems,
+        currentItem = sort,
+        textByItem = { taskSort ->
+            context.getString(
+                when (taskSort) {
+                    TaskSort.ByPriority -> R.string.task_sort_by_priority_title
+                    TaskSort.ByDate -> R.string.task_sort_by_date_title
+                    TaskSort.ByTitle -> R.string.task_sort_by_name_title
                 }
-                val isSelected = remember {
-                    item == sort
-                }
-                DropdownMenuItem(
-                    text = {
-                        Text(text = stringResource(id = titleResId))
-                    },
-                    trailingIcon = {
-                        if (isSelected) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_check),
-                                modifier = Modifier.size(16.dp),
-                                contentDescription = null
-                            )
-                        }
-                    },
-                    onClick = {
-                        onSortClick(item)
-                        isExpanded = false
-                    }
-                )
-            }
-        }
-    }
+            )
+        },
+        label = {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_sort),
+                contentDescription = null
+            )
+        },
+        isFilterActive = false,
+        onItemClick = onSortClick,
+        showArrowDropdown = false
+    )
 }
 
 @Composable
@@ -417,72 +397,35 @@ private fun FilterByStatusChip(
     filterByStatus: TaskFilterByStatus?,
     onFilterClick: (TaskFilterByStatus) -> Unit
 ) {
-    var isExpanded by remember {
-        mutableStateOf(false)
-    }
-    val isSelected = remember(filterByStatus) {
+    val context = LocalContext.current
+    val allItems = remember { TaskFilterByStatus.entries }
+    val isFilterActive = remember(filterByStatus) {
         filterByStatus != null
     }
-    Box {
-        FilterChip(
-            selected = isSelected,
-            onClick = { isExpanded = !isExpanded },
-            label = {
-                val titleResId = remember(filterByStatus) {
-                    when (filterByStatus) {
-                        null -> R.string.task_filter_by_status_title
-                        TaskFilterByStatus.OnlyActive -> R.string.task_filter_by_status_only_active_title
-                        TaskFilterByStatus.OnlyArchived -> R.string.task_filter_by_status_only_archived_title
-                    }
+    BaseFilterChipWithDropdownMenu(
+        allItems = allItems,
+        currentItem = filterByStatus,
+        textByItem = { taskFilterByStatus ->
+            context.getString(
+                when (taskFilterByStatus) {
+                    TaskFilterByStatus.OnlyActive -> R.string.task_filter_by_status_only_active_title
+                    TaskFilterByStatus.OnlyArchived -> R.string.task_filter_by_status_only_archived_title
                 }
-                Text(text = stringResource(id = titleResId))
-            },
-            trailingIcon = {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_arrow_dropdown),
-                    modifier = Modifier.rotate(
-                        if (isExpanded) 180f else 0f
-                    ),
-                    contentDescription = null
-                )
-            },
-        )
-        DropdownMenu(
-            expanded = isExpanded,
-            onDismissRequest = { isExpanded = false }
-        ) {
-            val allFilterItems = remember { TaskFilterByStatus.entries }
-            allFilterItems.forEach { item ->
-                val titleResId = remember {
-                    when (item) {
-                        TaskFilterByStatus.OnlyActive -> R.string.task_filter_by_status_only_active_title
-                        TaskFilterByStatus.OnlyArchived -> R.string.task_filter_by_status_only_archived_title
-                    }
+            )
+        },
+        label = {
+            val titleResId = remember(filterByStatus) {
+                when (filterByStatus) {
+                    null -> R.string.task_filter_by_status_title
+                    TaskFilterByStatus.OnlyActive -> R.string.task_filter_by_status_only_active_title
+                    TaskFilterByStatus.OnlyArchived -> R.string.task_filter_by_status_only_archived_title
                 }
-                val isCurrent = remember {
-                    item == filterByStatus
-                }
-                DropdownMenuItem(
-                    text = {
-                        Text(text = stringResource(id = titleResId))
-                    },
-                    trailingIcon = {
-                        if (isCurrent) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_check),
-                                modifier = Modifier.size(16.dp),
-                                contentDescription = null
-                            )
-                        }
-                    },
-                    onClick = {
-                        onFilterClick(item)
-                        isExpanded = false
-                    }
-                )
             }
-        }
-    }
+            Text(text = stringResource(id = titleResId))
+        },
+        isFilterActive = isFilterActive,
+        onItemClick = onFilterClick,
+    )
 }
 
 @Composable
@@ -490,72 +433,35 @@ private fun FilterByTypeChip(
     filterByType: TaskFilterByType?,
     onFilterClick: (TaskFilterByType) -> Unit
 ) {
-    var isExpanded by remember {
-        mutableStateOf(false)
-    }
-    val isSelected = remember(filterByType) {
+    val context = LocalContext.current
+    val allItems = remember { TaskFilterByType.entries }
+    val isFilterActive = remember(filterByType) {
         filterByType != null
     }
-    Box {
-        FilterChip(
-            selected = isSelected,
-            onClick = { isExpanded = !isExpanded },
-            label = {
-                val titleResId = remember(filterByType) {
-                    when (filterByType) {
-                        null -> R.string.task_filter_by_type_title
-                        TaskFilterByType.OnlyRecurring -> R.string.task_filter_by_type_recurring_tasks_title
-                        TaskFilterByType.OnlySingle -> R.string.task_filter_by_type_single_tasks_title
-                    }
+    BaseFilterChipWithDropdownMenu(
+        allItems = allItems,
+        currentItem = filterByType,
+        textByItem = { taskFilterByType ->
+            context.getString(
+                when (taskFilterByType) {
+                    TaskFilterByType.OnlyRecurring -> R.string.task_filter_by_type_recurring_tasks_title
+                    TaskFilterByType.OnlySingle -> R.string.task_filter_by_type_single_tasks_title
                 }
-                Text(text = stringResource(id = titleResId))
-            },
-            trailingIcon = {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_arrow_dropdown),
-                    modifier = Modifier.rotate(
-                        if (isExpanded) 180f else 0f
-                    ),
-                    contentDescription = null
-                )
-            },
-        )
-        DropdownMenu(
-            expanded = isExpanded,
-            onDismissRequest = { isExpanded = false }
-        ) {
-            val allFilterItems = remember { TaskFilterByType.entries }
-            allFilterItems.forEach { item ->
-                val titleResId = remember {
-                    when (item) {
-                        TaskFilterByType.OnlyRecurring -> R.string.task_filter_by_type_recurring_tasks_title
-                        TaskFilterByType.OnlySingle -> R.string.task_filter_by_type_single_tasks_title
-                    }
+            )
+        },
+        label = {
+            val titleResId = remember(filterByType) {
+                when (filterByType) {
+                    null -> R.string.task_filter_by_type_title
+                    TaskFilterByType.OnlyRecurring -> R.string.task_filter_by_type_recurring_tasks_title
+                    TaskFilterByType.OnlySingle -> R.string.task_filter_by_type_single_tasks_title
                 }
-                val isCurrent = remember {
-                    item == filterByType
-                }
-                DropdownMenuItem(
-                    text = {
-                        Text(text = stringResource(id = titleResId))
-                    },
-                    trailingIcon = {
-                        if (isCurrent) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_check),
-                                modifier = Modifier.size(16.dp),
-                                contentDescription = null
-                            )
-                        }
-                    },
-                    onClick = {
-                        onFilterClick(item)
-                        isExpanded = false
-                    }
-                )
             }
-        }
-    }
+            Text(text = stringResource(id = titleResId))
+        },
+        isFilterActive = isFilterActive,
+        onItemClick = onFilterClick
+    )
 }
 
 @Composable

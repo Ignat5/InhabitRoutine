@@ -116,19 +116,11 @@ fun ChipTaskProgressType(taskProgressType: TaskProgressType) {
 }
 
 @Composable
-fun ChipTaskReminders(allReminders: List<ReminderModel>) {
-    if (allReminders.isEmpty()) return
-    val text = remember(allReminders) {
-        buildString {
-            allReminders.forEachIndexed { index, item ->
-                append(item.time.toHourMinute())
-                if (index != allReminders.lastIndex) {
-                    append(" • ")
-                }
-            }
-        }
-    }
-    BaseDataItem(text = text)
+fun ChipTaskPriority(priority: Long) {
+    BaseIconDataItem(
+        iconResId = R.drawable.ic_priority,
+        text = "$priority"
+    )
 }
 
 @Composable

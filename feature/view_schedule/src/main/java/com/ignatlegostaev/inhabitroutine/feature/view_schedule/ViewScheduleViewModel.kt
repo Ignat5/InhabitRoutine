@@ -580,7 +580,11 @@ class ViewScheduleViewModel(
                     is TaskStatus.NotCompleted.Pending -> Int.MIN_VALUE
                     else -> Int.MAX_VALUE
                 }
-            }.thenBy { taskWithExtrasAndRecord ->
+            }
+                .thenByDescending { taskWithExtrasAndRecord ->
+                    taskWithExtrasAndRecord.task.priority
+                }
+                .thenBy { taskWithExtrasAndRecord ->
                 taskWithExtrasAndRecord.taskExtras.allReminders.minByOrNull { it.time }?.time?.toMillisecondOfDay()
                     ?: Int.MAX_VALUE
             }.thenBy { taskWithExtrasAndRecord ->
