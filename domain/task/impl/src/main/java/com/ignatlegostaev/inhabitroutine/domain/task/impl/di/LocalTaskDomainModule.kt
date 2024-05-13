@@ -18,9 +18,9 @@ import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.SaveTaskDraftU
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskDateByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskDescriptionByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskFrequencyByIdUseCase
+import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskPriorityByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskProgressByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskTitleByIdUseCase
-import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.ValidateProgressLimitNumberUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.calculate_statistics.CalculateTaskStatisticsUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.impl.use_case.DefaultArchiveTaskByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.impl.use_case.DefaultCalculateTaskStatisticsUseCase
@@ -36,9 +36,9 @@ import com.ignatlegostaev.inhabitroutine.domain.task.impl.use_case.DefaultSaveTa
 import com.ignatlegostaev.inhabitroutine.domain.task.impl.use_case.DefaultUpdateTaskDateByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.impl.use_case.DefaultUpdateTaskDescriptionByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.impl.use_case.DefaultUpdateTaskFrequencyByIdUseCase
+import com.ignatlegostaev.inhabitroutine.domain.task.impl.use_case.DefaultUpdateTaskPriorityByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.impl.use_case.DefaultUpdateTaskProgressByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.impl.use_case.DefaultUpdateTaskTitleByIdUseCase
-import com.ignatlegostaev.inhabitroutine.domain.task.impl.use_case.DefaultValidateProgressLimitNumberUseCase
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 
@@ -160,6 +160,16 @@ object LocalTaskDomainModule {
         )
     }
 
+    fun provideUpdateTaskPriorityByIdUseCase(
+        taskRepository: TaskRepository,
+        defaultDispatcher: CoroutineDispatcher
+    ): UpdateTaskPriorityByIdUseCase {
+        return DefaultUpdateTaskPriorityByIdUseCase(
+            taskRepository = taskRepository,
+            defaultDispatcher = defaultDispatcher
+        )
+    }
+
     fun provideSaveTaskByIdUseCase(
         taskRepository: TaskRepository,
         setUpTaskRemindersUseCase: SetUpTaskRemindersUseCase,
@@ -212,10 +222,6 @@ object LocalTaskDomainModule {
         )
     }
 
-    fun provideValidateProgressLimitNumberUseCase(): ValidateProgressLimitNumberUseCase {
-        return DefaultValidateProgressLimitNumberUseCase()
-    }
-
     fun provideDeleteTaskByIdUseCase(
         taskRepository: TaskRepository,
         resetTaskRemindersUseCase: ResetTaskRemindersUseCase,
@@ -227,5 +233,4 @@ object LocalTaskDomainModule {
             externalScope = externalScope
         )
     }
-
 }

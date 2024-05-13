@@ -10,9 +10,9 @@ import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.SaveTaskByIdUs
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskDateByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskDescriptionByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskFrequencyByIdUseCase
+import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskPriorityByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskProgressByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskTitleByIdUseCase
-import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.ValidateProgressLimitNumberUseCase
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.create.CreateTaskViewModel
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.create.components.CreateTaskScreenConfig
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.create.components.CreateTaskScreenEvent
@@ -35,8 +35,8 @@ class AndroidCreateTaskViewModel @Inject constructor(
     updateTaskFrequencyByIdUseCase: UpdateTaskFrequencyByIdUseCase,
     updateTaskDateByIdUseCase: UpdateTaskDateByIdUseCase,
     updateTaskDescriptionByIdUseCase: UpdateTaskDescriptionByIdUseCase,
+    updateTaskPriorityByIdUseCase: UpdateTaskPriorityByIdUseCase,
     readReminderCountByTaskIdUseCase: ReadReminderCountByTaskIdUseCase,
-    validateProgressLimitNumberUseCase: ValidateProgressLimitNumberUseCase,
     @DefaultDispatcherQualifier defaultDispatcher: CoroutineDispatcher
 ) : BaseAndroidViewModel<CreateTaskScreenEvent, CreateTaskScreenState, CreateTaskScreenNavigation, CreateTaskScreenConfig>() {
 
@@ -51,7 +51,7 @@ class AndroidCreateTaskViewModel @Inject constructor(
         updateTaskFrequencyByIdUseCase = updateTaskFrequencyByIdUseCase,
         updateTaskDateByIdUseCase = updateTaskDateByIdUseCase,
         updateTaskDescriptionByIdUseCase = updateTaskDescriptionByIdUseCase,
-        validateProgressLimitNumberUseCase = validateProgressLimitNumberUseCase,
+        updateTaskPriorityByIdUseCase = updateTaskPriorityByIdUseCase,
         defaultDispatcher = defaultDispatcher,
         viewModelScope = viewModelScope
     )

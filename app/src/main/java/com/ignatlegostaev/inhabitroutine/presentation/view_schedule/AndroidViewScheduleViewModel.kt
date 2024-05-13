@@ -1,13 +1,11 @@
 package com.ignatlegostaev.inhabitroutine.presentation.view_schedule
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.ignatlegostaev.inhabitroutine.core.di.qualifiers.DefaultDispatcherQualifier
 import com.ignatlegostaev.inhabitroutine.domain.record.api.DeleteRecordUseCase
 import com.ignatlegostaev.inhabitroutine.domain.record.api.SaveRecordUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.ReadTasksWithExtrasAndRecordByDateUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.SaveTaskDraftUseCase
-import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.ValidateProgressLimitNumberUseCase
 import com.ignatlegostaev.inhabitroutine.feature.view_schedule.ViewScheduleViewModel
 import com.ignatlegostaev.inhabitroutine.feature.view_schedule.components.ViewScheduleScreenConfig
 import com.ignatlegostaev.inhabitroutine.feature.view_schedule.components.ViewScheduleScreenEvent
@@ -20,12 +18,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AndroidViewScheduleViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
     readTasksWithExtrasAndRecordByDateUseCase: ReadTasksWithExtrasAndRecordByDateUseCase,
     saveTaskDraftUseCase: SaveTaskDraftUseCase,
     saveRecordUseCase: SaveRecordUseCase,
     deleteRecordUseCase: DeleteRecordUseCase,
-    validateProgressLimitNumberUseCase: ValidateProgressLimitNumberUseCase,
     @DefaultDispatcherQualifier defaultDispatcher: CoroutineDispatcher
 ) : BaseAndroidViewModel<ViewScheduleScreenEvent, ViewScheduleScreenState, ViewScheduleScreenNavigation, ViewScheduleScreenConfig>() {
 
@@ -35,7 +31,6 @@ class AndroidViewScheduleViewModel @Inject constructor(
         saveTaskDraftUseCase = saveTaskDraftUseCase,
         saveRecordUseCase = saveRecordUseCase,
         deleteRecordUseCase = deleteRecordUseCase,
-        validateProgressLimitNumberUseCase = validateProgressLimitNumberUseCase,
         defaultDispatcher = defaultDispatcher
     )
 

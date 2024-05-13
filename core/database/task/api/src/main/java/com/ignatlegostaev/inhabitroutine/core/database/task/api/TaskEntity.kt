@@ -9,6 +9,7 @@ data class TaskEntity(
     public val description: String,
     public val startEpochDay: Long,
     public val endEpochDay: Long,
+    public val priority: Long,
     public val progressContent: String,
     public val frequencyContent: String,
     public val isArchived: String,

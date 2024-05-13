@@ -22,6 +22,7 @@ internal fun TaskDataModel.toTaskModel(): TaskModel? = runCatching {
                             startDate = this.startDate,
                             endDate = this.endDate
                         ),
+                        priority = this.priority,
                         frequency = this.frequency.toTaskFrequency() ?: return@runCatching null,
                         isArchived = this.isArchived,
                         versionStartDate = versionStartDate,
@@ -39,6 +40,7 @@ internal fun TaskDataModel.toTaskModel(): TaskModel? = runCatching {
                             startDate = this.startDate,
                             endDate = this.endDate
                         ),
+                        priority = this.priority,
                         progress = this.progress.toTaskProgress() as? TaskProgress.Number
                             ?: return@runCatching null,
                         frequency = this.frequency.toTaskFrequency() ?: return@runCatching null,
@@ -58,6 +60,7 @@ internal fun TaskDataModel.toTaskModel(): TaskModel? = runCatching {
                             startDate = this.startDate,
                             endDate = this.endDate
                         ),
+                        priority = this.priority,
                         progress = this.progress.toTaskProgress() as? TaskProgress.Time
                             ?: return@runCatching null,
                         frequency = this.frequency.toTaskFrequency() ?: return@runCatching null,
@@ -79,6 +82,7 @@ internal fun TaskDataModel.toTaskModel(): TaskModel? = runCatching {
                     startDate = this.startDate,
                     endDate = this.endDate
                 ),
+                priority = this.priority,
                 frequency = this.frequency.toTaskFrequency() ?: return@runCatching null,
                 isArchived = this.isArchived,
                 versionStartDate = versionStartDate,
@@ -95,6 +99,7 @@ internal fun TaskDataModel.toTaskModel(): TaskModel? = runCatching {
                 date = TaskDate.Day(
                     date = this.startDate,
                 ),
+                priority = this.priority,
                 isArchived = this.isArchived,
                 versionStartDate = versionStartDate,
                 isDraft = this.isDraft,
@@ -132,6 +137,7 @@ internal fun TaskModel.toTaskDataModel(): TaskDataModel {
         description = description,
         startDate = startDate,
         endDate = endDate,
+        priority = this.priority,
         progress = progress,
         frequency = frequency,
         isArchived = isArchived,

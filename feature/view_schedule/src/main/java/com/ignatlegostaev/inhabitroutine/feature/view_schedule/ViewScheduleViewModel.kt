@@ -16,7 +16,6 @@ import com.ignatlegostaev.inhabitroutine.domain.record.api.DeleteRecordUseCase
 import com.ignatlegostaev.inhabitroutine.domain.record.api.SaveRecordUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.ReadTasksWithExtrasAndRecordByDateUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.SaveTaskDraftUseCase
-import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.ValidateProgressLimitNumberUseCase
 import com.ignatlegostaev.inhabitroutine.feature.view_schedule.components.ViewScheduleScreenConfig
 import com.ignatlegostaev.inhabitroutine.feature.view_schedule.components.ViewScheduleScreenEvent
 import com.ignatlegostaev.inhabitroutine.feature.view_schedule.components.ViewScheduleScreenNavigation
@@ -57,7 +56,6 @@ class ViewScheduleViewModel(
     private val saveTaskDraftUseCase: SaveTaskDraftUseCase,
     private val saveRecordUseCase: SaveRecordUseCase,
     private val deleteRecordUseCase: DeleteRecordUseCase,
-    private val validateProgressLimitNumberUseCase: ValidateProgressLimitNumberUseCase,
     private val defaultDispatcher: CoroutineDispatcher
 ) : BaseViewModel<ViewScheduleScreenEvent, ViewScheduleScreenState, ViewScheduleScreenNavigation, ViewScheduleScreenConfig>() {
 
@@ -288,7 +286,6 @@ class ViewScheduleViewModel(
                     taskModel = taskWithExtrasAndRecordModel.task,
                     entry = taskWithExtrasAndRecordModel.recordEntry,
                     date = currentDateState.value,
-                    validateProgressLimitNumberUseCase = validateProgressLimitNumberUseCase,
                     holderScope = provideChildScope()
                 )
             )
@@ -420,7 +417,6 @@ class ViewScheduleViewModel(
                     taskModel = taskWithExtrasAndRecordModel.task,
                     entry = taskWithExtrasAndRecordModel.recordEntry,
                     date = currentDateState.value,
-                    validateProgressLimitNumberUseCase = validateProgressLimitNumberUseCase,
                     holderScope = provideChildScope()
                 )
             )
@@ -584,7 +580,11 @@ class ViewScheduleViewModel(
                     is TaskStatus.NotCompleted.Pending -> Int.MIN_VALUE
                     else -> Int.MAX_VALUE
                 }
-            }.thenBy { taskWithExtrasAndRecord ->
+            }
+                .thenByDescending { taskWithExtrasAndRecord ->
+                    taskWithExtrasAndRecord.task.priority
+                }
+                .thenBy { taskWithExtrasAndRecord ->
                 taskWithExtrasAndRecord.taskExtras.allReminders.minByOrNull { it.time }?.time?.toMillisecondOfDay()
                     ?: Int.MAX_VALUE
             }.thenBy { taskWithExtrasAndRecord ->

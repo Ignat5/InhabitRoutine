@@ -24,6 +24,7 @@ internal fun TaskEntity.toTaskDataModel(json: Json): TaskDataModel? {
         startDate = startEpochDay.toDateFromEpochDay(),
         endDate = endEpochDay.toDateFromEpochDay()
             .let { date -> if (date != distantFutureDate) date else null },
+        priority = priority,
         progress = progressContent.decodeFromTaskProgress(json) ?: return null,
         frequency = frequencyContent.decodeFromTaskFrequency(json) ?: return null,
         isArchived = isArchived.decodeFromBoolean(json) ?: return null,
@@ -43,6 +44,7 @@ internal fun TaskDataModel.toTaskEntity(json: Json): TaskEntity? {
         description = description,
         startEpochDay = startDate.encodeToEpochDay(),
         endEpochDay = endDate.encodeToEpochDay(),
+        priority = priority,
         progressContent = progress.encodeToString(json) ?: return null,
         frequencyContent = frequency.encodeToString(json) ?: return null,
         isArchived = isArchived.encodeToString(json) ?: return null,

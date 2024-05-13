@@ -13,9 +13,9 @@ import com.ignatlegostaev.inhabitroutine.domain.model.task.content.TaskDate
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskDateByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskDescriptionByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskFrequencyByIdUseCase
+import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskPriorityByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskProgressByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskTitleByIdUseCase
-import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.ValidateProgressLimitNumberUseCase
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.components.BaseCreateEditTaskScreenConfig
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.components.BaseCreateEditTaskScreenEvent
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.components.BaseCreateEditTaskScreenNavigation
@@ -25,6 +25,8 @@ import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.config.pi
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.config.pick_task_frequency.components.PickTaskFrequencyScreenResult
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.config.pick_task_number_progress.PickTaskNumberProgressStateHolder
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.config.pick_task_number_progress.components.PickTaskNumberProgressScreenResult
+import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.config.pick_task_priority.PickTaskPriorityStateHolder
+import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.config.pick_task_priority.components.PickTaskPriorityScreenResult
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.config.pick_task_time_progress.PickTaskTimeProgressStateHolder
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.config.pick_task_time_progress.components.PickTaskTimeProgressScreenResult
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.config.pick_task_title.PickTaskTitleStateHolder
@@ -45,7 +47,7 @@ abstract class BaseCreateEditTaskViewModel<SE : ScreenEvent, SS : ScreenState, S
     private val updateTaskFrequencyByIdUseCase: UpdateTaskFrequencyByIdUseCase,
     private val updateTaskDateByIdUseCase: UpdateTaskDateByIdUseCase,
     private val updateTaskDescriptionByIdUseCase: UpdateTaskDescriptionByIdUseCase,
-    private val validateProgressLimitNumberUseCase: ValidateProgressLimitNumberUseCase,
+    private val updateTaskPriorityByIdUseCase: UpdateTaskPriorityByIdUseCase,
     private val defaultDispatcher: CoroutineDispatcher
 ) : BaseViewModel<SE, SS, SN, SC>() {
     private val todayDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
@@ -82,6 +84,29 @@ abstract class BaseCreateEditTaskViewModel<SE : ScreenEvent, SS : ScreenState, S
 
             is BaseCreateEditTaskScreenEvent.ResultEvent.PickTaskDescription ->
                 onPickTaskDescriptionResultEvent(event)
+
+            is BaseCreateEditTaskScreenEvent.ResultEvent.PickTaskPriority ->
+                onPickTaskPriorityResultEvent(event)
+        }
+    }
+
+    private fun onPickTaskPriorityResultEvent(event: BaseCreateEditTaskScreenEvent.ResultEvent.PickTaskPriority) {
+        onIdleToAction {
+            when (val result = event.result) {
+                is PickTaskPriorityScreenResult.Confirm -> onConfirmPickTaskPriority(result)
+                is PickTaskPriorityScreenResult.Dismiss -> Unit
+            }
+        }
+    }
+
+    private fun onConfirmPickTaskPriority(result: PickTaskPriorityScreenResult.Confirm) {
+        taskModelState.value?.id?.let { taskId ->
+            viewModelScope.launch {
+                updateTaskPriorityByIdUseCase(
+                    taskId = taskId,
+                    priority = result.priority
+                )
+            }
         }
     }
 
@@ -293,6 +318,22 @@ abstract class BaseCreateEditTaskViewModel<SE : ScreenEvent, SS : ScreenState, S
 
             is BaseItemTaskConfig.Description ->
                 onConfigTaskDescriptionClick()
+
+            is BaseItemTaskConfig.Priority ->
+                onConfigTaskPriorityClick()
+        }
+    }
+
+    private fun onConfigTaskPriorityClick() {
+        taskModelState.value?.priority?.let { priority ->
+            setUpBaseConfigState(
+                BaseCreateEditTaskScreenConfig.PickTaskPriority(
+                    stateHolder = PickTaskPriorityStateHolder(
+                        initPriority = priority,
+                        holderScope = provideChildScope()
+                    )
+                )
+            )
         }
     }
 
@@ -443,7 +484,6 @@ abstract class BaseCreateEditTaskViewModel<SE : ScreenEvent, SS : ScreenState, S
                 BaseCreateEditTaskScreenConfig.PickTaskNumberProgress(
                     stateHolder = PickTaskNumberProgressStateHolder(
                         initTaskProgress = habitNumber.progress,
-                        validateProgressLimitNumberUseCase = validateProgressLimitNumberUseCase,
                         holderScope = provideChildScope()
                     )
                 )
@@ -495,6 +535,7 @@ abstract class BaseCreateEditTaskViewModel<SE : ScreenEvent, SS : ScreenState, S
                     add(BaseItemTaskConfig.DateConfig.EndDate(taskDate.endDate))
                 }
             }
+            add(BaseItemTaskConfig.Priority(taskModel.priority))
             add(BaseItemTaskConfig.Reminders(reminderCount))
         }.sortedBy { it.key.ordinal }
     }

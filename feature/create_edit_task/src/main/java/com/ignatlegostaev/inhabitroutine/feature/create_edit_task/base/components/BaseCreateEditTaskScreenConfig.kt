@@ -5,6 +5,7 @@ import com.ignatlegostaev.inhabitroutine.core.presentation.ui.dialog.pick_date.P
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.config.pick_task_description.PickTaskDescriptionStateHolder
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.config.pick_task_frequency.PickTaskFrequencyStateHolder
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.config.pick_task_number_progress.PickTaskNumberProgressStateHolder
+import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.config.pick_task_priority.PickTaskPriorityStateHolder
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.config.pick_task_time_progress.PickTaskTimeProgressStateHolder
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.config.pick_task_title.PickTaskTitleStateHolder
 
@@ -27,6 +28,10 @@ sealed interface BaseCreateEditTaskScreenConfig : ScreenConfig {
 
     data class PickTaskDescription(
         val stateHolder: PickTaskDescriptionStateHolder
+    ) : BaseCreateEditTaskScreenConfig
+
+    data class PickTaskPriority(
+        val stateHolder: PickTaskPriorityStateHolder
     ) : BaseCreateEditTaskScreenConfig
 
     sealed interface PickDate : BaseCreateEditTaskScreenConfig {

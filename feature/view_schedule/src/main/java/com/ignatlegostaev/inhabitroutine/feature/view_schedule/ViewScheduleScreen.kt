@@ -60,6 +60,7 @@ import com.ignatlegostaev.inhabitroutine.core.presentation.ui.common.ChipTaskTyp
 import com.ignatlegostaev.inhabitroutine.core.presentation.ui.common.CreateTaskFAB
 import com.ignatlegostaev.inhabitroutine.core.presentation.ui.common.BaseEmptyStateMessage
 import com.ignatlegostaev.inhabitroutine.core.presentation.ui.common.BaseTaskDefaults
+import com.ignatlegostaev.inhabitroutine.core.presentation.ui.common.ChipTaskPriority
 import com.ignatlegostaev.inhabitroutine.core.presentation.ui.common.ChipTaskReminder
 import com.ignatlegostaev.inhabitroutine.core.presentation.ui.common.TaskDivider
 import com.ignatlegostaev.inhabitroutine.core.presentation.ui.dialog.pick_date.PickDateDialog
@@ -73,6 +74,7 @@ import com.ignatlegostaev.inhabitroutine.domain.model.derived.TaskStatus
 import com.ignatlegostaev.inhabitroutine.domain.model.derived.TaskWithExtrasAndRecordModel
 import com.ignatlegostaev.inhabitroutine.domain.model.record.content.RecordEntry
 import com.ignatlegostaev.inhabitroutine.domain.model.task.type.ProgressLimitType
+import com.ignatlegostaev.inhabitroutine.domain.model.util.DomainConst
 import com.ignatlegostaev.inhabitroutine.feature.view_schedule.components.ViewScheduleScreenConfig
 import com.ignatlegostaev.inhabitroutine.feature.view_schedule.components.ViewScheduleScreenEvent
 import com.ignatlegostaev.inhabitroutine.feature.view_schedule.components.ViewScheduleScreenState
@@ -269,6 +271,9 @@ private fun TaskDetailRow(
     ) {
         ChipTaskType(item.task.type)
         ChipTaskProgressType(item.task.progressType)
+        if (item.task.priority != DomainConst.DEFAULT_TASK_PRIORITY) {
+            ChipTaskPriority(priority = item.task.priority)
+        }
         val allReminders = remember(item.taskExtras.allReminders) {
             item.taskExtras.allReminders.take(MAX_DISPLAYED_REMINDER_COUNT)
         }

@@ -33,6 +33,7 @@
     <!--  view tasks  -->
     <string name="view_tasks_screen_title">Tasks</string>
     <string name="task_sort_by_date_title">By date</string>
+    <string name="task_sort_by_priority_title">By priority</string>
     <string name="task_sort_by_name_title">By name</string>
     <string name="task_filter_by_status_title">Status</string>
     <string name="task_filter_by_status_only_active_title">Only active</string>
@@ -64,7 +65,7 @@
     <string name="daily_goal_suffix">a day</string>
     <string name="frequency_every_day">Every day</string>
     <string name="frequency_days_of_week">Days of week</string>
-<!--    <string name="create_task_title">Create activity</string>-->
+    <string name="task_config_priority">Priority</string>
     <string name="create_task_title">Create task</string>
     <string name="create_habit_title">Create habit</string>
     <string name="task_config_title_label">Name</string>

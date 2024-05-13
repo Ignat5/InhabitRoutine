@@ -1,0 +1,41 @@
+selectTaskById:
+SELECT * FROM TaskView tView
+WHERE tView.task_id = :taskId
+GROUP BY tView.task_id
+HAVING tView.taskContent_versionStartEpochDay = MAX(tView.taskContent_versionStartEpochDay);
+
+selectTasksByQuery:
+SELECT * FROM TaskView tView
+WHERE tView.task_title LIKE :searchQuery
+GROUP BY tView.task_id
+HAVING tView.taskContent_versionStartEpochDay = MAX(tView.taskContent_versionStartEpochDay);
+
+selectTasksByDate:
+SELECT * FROM TaskView tView
+WHERE tView.task_startEpochDay <= :targetEpochDay AND
+tView.task_endEpochDay >= :targetEpochDay AND
+tView.taskContent_versionStartEpochDay <= :targetEpochDay
+GROUP BY tView.task_id
+HAVING tView.taskContent_versionStartEpochDay = MAX(tView.taskContent_versionStartEpochDay);
+
+selectTasksById:
+SELECT * FROM TaskView tView
+WHERE tView.task_id = :taskId;
+
+selectTasksByType:
+SELECT * FROM TaskView tView
+WHERE tView.task_type IN :targetTaskTypes
+GROUP BY tView.task_id
+HAVING tView.taskContent_versionStartEpochDay = MAX(tView.taskContent_versionStartEpochDay);
+
+insertTask:
+INSERT OR REPLACE INTO TaskTable
+VALUES ?;
+
+insertTaskContent:
+INSERT OR REPLACE INTO TaskContentTable
+VALUES ?;
+
+deleteTaskById:
+DELETE FROM TaskTable
+WHERE id = :taskId;

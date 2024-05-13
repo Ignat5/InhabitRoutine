@@ -6,6 +6,8 @@ import com.ignatlegostaev.inhabitroutine.core.presentation.ui.dialog.pick_date.c
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.config.pick_task_description.components.PickTaskDescriptionScreenResult
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.config.pick_task_frequency.components.PickTaskFrequencyScreenResult
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.config.pick_task_number_progress.components.PickTaskNumberProgressScreenResult
+import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.config.pick_task_priority.components.PickTaskPriorityScreenEvent
+import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.config.pick_task_priority.components.PickTaskPriorityScreenResult
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.config.pick_task_time_progress.components.PickTaskTimeProgressScreenResult
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.config.pick_task_title.components.PickTaskTitleScreenResult
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.model.BaseItemTaskConfig
@@ -36,6 +38,10 @@ sealed interface BaseCreateEditTaskScreenEvent : ScreenEvent {
 
         data class PickTaskDescription(
             override val result: PickTaskDescriptionScreenResult
+        ) : ResultEvent
+
+        data class PickTaskPriority(
+            override val result: PickTaskPriorityScreenResult
         ) : ResultEvent
 
         sealed interface PickDate : ResultEvent {

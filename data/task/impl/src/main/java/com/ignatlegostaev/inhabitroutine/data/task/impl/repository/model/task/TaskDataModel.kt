@@ -12,6 +12,7 @@ data class TaskDataModel(
     val description: String,
     val startDate: LocalDate,
     val endDate: LocalDate?,
+    val priority: Long,
     val progress: TaskContentDataModel.ProgressContent,
     val frequency: TaskContentDataModel.FrequencyContent,
     val isArchived: Boolean,

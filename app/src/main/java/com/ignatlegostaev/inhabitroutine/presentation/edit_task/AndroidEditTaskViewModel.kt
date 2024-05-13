@@ -11,9 +11,9 @@ import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.ResetTaskByIdU
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskDateByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskDescriptionByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskFrequencyByIdUseCase
+import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskPriorityByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskProgressByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskTitleByIdUseCase
-import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.ValidateProgressLimitNumberUseCase
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.edit.EditTaskViewModel
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.edit.components.EditTaskScreenConfig
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.edit.components.EditTaskScreenEvent
@@ -38,7 +38,7 @@ class AndroidEditTaskViewModel @Inject constructor(
     updateTaskFrequencyByIdUseCase: UpdateTaskFrequencyByIdUseCase,
     updateTaskDateByIdUseCase: UpdateTaskDateByIdUseCase,
     updateTaskDescriptionByIdUseCase: UpdateTaskDescriptionByIdUseCase,
-    validateProgressLimitNumberUseCase: ValidateProgressLimitNumberUseCase,
+    updateTaskPriorityByIdUseCase: UpdateTaskPriorityByIdUseCase,
     @DefaultDispatcherQualifier defaultDispatcher: CoroutineDispatcher
 ) : BaseAndroidViewModel<EditTaskScreenEvent, EditTaskScreenState, EditTaskScreenNavigation, EditTaskScreenConfig>() {
 
@@ -54,7 +54,7 @@ class AndroidEditTaskViewModel @Inject constructor(
         updateTaskFrequencyByIdUseCase = updateTaskFrequencyByIdUseCase,
         updateTaskDateByIdUseCase = updateTaskDateByIdUseCase,
         updateTaskDescriptionByIdUseCase = updateTaskDescriptionByIdUseCase,
-        validateProgressLimitNumberUseCase = validateProgressLimitNumberUseCase,
+        updateTaskPriorityByIdUseCase = updateTaskPriorityByIdUseCase,
         defaultDispatcher = defaultDispatcher,
         viewModelScope = viewModelScope
     )

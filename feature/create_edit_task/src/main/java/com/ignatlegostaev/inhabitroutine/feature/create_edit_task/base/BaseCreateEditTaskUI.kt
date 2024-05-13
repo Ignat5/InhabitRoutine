@@ -27,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.ignatlegostaev.inhabitroutine.core.presentation.R
 import com.ignatlegostaev.inhabitroutine.core.presentation.ui.dialog.pick_date.PickDateDialog
 import com.ignatlegostaev.inhabitroutine.core.presentation.ui.util.toDayMonthYearFullDisplay
 import com.ignatlegostaev.inhabitroutine.core.presentation.ui.util.toDisplay
@@ -35,6 +36,7 @@ import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.component
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.config.pick_task_description.PickTaskDescriptionDialog
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.config.pick_task_frequency.PickTaskFrequencyDialog
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.config.pick_task_number_progress.PickTaskNumberProgressDialog
+import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.config.pick_task_priority.PickTaskPriorityDialog
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.config.pick_task_time_progress.PickTaskTimeProgressDialog
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.config.pick_task_title.PickTaskTitleDialog
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.base.model.BaseItemTaskConfig
@@ -111,6 +113,12 @@ internal fun BaseCreateEditTaskConfig(
                 onEvent(BaseCreateEditTaskScreenEvent.ResultEvent.PickTaskDescription(it))
             }
         }
+
+        is BaseCreateEditTaskScreenConfig.PickTaskPriority -> {
+            PickTaskPriorityDialog(stateHolder = config.stateHolder) {
+                onEvent(BaseCreateEditTaskScreenEvent.ResultEvent.PickTaskPriority(it))
+            }
+        }
     }
 }
 
@@ -174,6 +182,13 @@ internal fun LazyListScope.baseConfigItems(
                 BaseItemTaskConfig.Key.EndDate -> {
                     ItemEndDateConfig(
                         item = (item as BaseItemTaskConfig.DateConfig.EndDate),
+                        onClick = onClick
+                    )
+                }
+
+                BaseItemTaskConfig.Key.Priority -> {
+                    ItemPriorityConfig(
+                        item = (item as BaseItemTaskConfig.Priority),
                         onClick = onClick
                     )
                 }
@@ -311,6 +326,19 @@ internal fun ItemEndDateConfig(
         titleResId = com.ignatlegostaev.inhabitroutine.core.presentation.R.string.task_config_end_date,
         text = text,
         isChecked = isChecked,
+        onClick = onClick
+    )
+}
+
+@Composable
+internal fun ItemPriorityConfig(
+    item: BaseItemTaskConfig.Priority,
+    onClick: () -> Unit
+) {
+    BasicTextItemConfig(
+        iconResId = R.drawable.ic_priority,
+        titleResId = R.string.task_config_priority,
+        text = "${item.priority}",
         onClick = onClick
     )
 }

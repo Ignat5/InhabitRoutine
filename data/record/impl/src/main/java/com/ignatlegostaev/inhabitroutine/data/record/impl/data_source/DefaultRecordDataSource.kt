@@ -3,6 +3,7 @@ package com.ignatlegostaev.inhabitroutine.data.record.impl.data_source
 import com.ignatlegostaev.inhabitroutine.core.database.record.api.RecordDao
 import com.ignatlegostaev.inhabitroutine.core.util.ResultModel
 import com.ignatlegostaev.inhabitroutine.data.record.impl.model.RecordDataModel
+import com.ignatlegostaev.inhabitroutine.data.record.impl.util.distantFutureDate
 import com.ignatlegostaev.inhabitroutine.data.record.impl.util.encodeToEpochDay
 import com.ignatlegostaev.inhabitroutine.data.record.impl.util.toRecordDataModel
 import com.ignatlegostaev.inhabitroutine.data.record.impl.util.toRecordEntity
@@ -54,6 +55,16 @@ internal class DefaultRecordDataSource(
     ): ResultModel<Unit, Throwable> = recordDao.deleteRecordByTaskIdAndDate(
         taskId = taskId,
         targetEpochDay = targetDate.encodeToEpochDay()
+    )
+
+    override suspend fun deleteRecordsByTaskIdAndPeriod(
+        taskId: String,
+        minDate: LocalDate,
+        maxDate: LocalDate?
+    ): ResultModel<Unit, Throwable> = recordDao.deleteRecordsByTaskIdAndPeriod(
+        taskId = taskId,
+        minEpochDay = minDate.encodeToEpochDay(),
+        maxEpochDay = (maxDate ?: distantFutureDate).encodeToEpochDay()
     )
 
     override suspend fun deleteRecordsByTaskId(taskId: String): ResultModel<Unit, Throwable> =

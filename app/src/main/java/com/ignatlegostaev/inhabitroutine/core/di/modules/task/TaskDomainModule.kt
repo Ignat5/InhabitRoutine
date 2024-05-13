@@ -19,9 +19,9 @@ import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.SaveTaskDraftU
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskDateByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskDescriptionByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskFrequencyByIdUseCase
+import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskPriorityByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskProgressByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskTitleByIdUseCase
-import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.ValidateProgressLimitNumberUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.calculate_statistics.CalculateTaskStatisticsUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.impl.di.LocalTaskDomainModule
 import dagger.Module
@@ -163,6 +163,17 @@ object TaskDomainModule {
     }
 
     @Provides
+    fun provideUpdateTaskPriorityByIdUseCase(
+        taskRepository: TaskRepository,
+        @DefaultDispatcherQualifier defaultDispatcher: CoroutineDispatcher
+    ): UpdateTaskPriorityByIdUseCase {
+        return LocalTaskDomainModule.provideUpdateTaskPriorityByIdUseCase(
+            taskRepository = taskRepository,
+            defaultDispatcher = defaultDispatcher
+        )
+    }
+
+    @Provides
     fun provideSaveTaskByIdUseCase(
         taskRepository: TaskRepository,
         setUpTaskRemindersUseCase: SetUpTaskRemindersUseCase,
@@ -216,11 +227,6 @@ object TaskDomainModule {
             recordRepository = recordRepository,
             defaultDispatcher = defaultDispatcher
         )
-    }
-
-    @Provides
-    fun provideValidateProgressLimitNumberUseCase(): ValidateProgressLimitNumberUseCase {
-        return LocalTaskDomainModule.provideValidateProgressLimitNumberUseCase()
     }
 
     @Provides

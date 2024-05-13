@@ -48,7 +48,7 @@ class ViewTasksViewModel(
 ) : BaseViewModel<ViewTasksScreenEvent, ViewTasksScreenState, ViewTasksScreenNavigation, ViewTasksScreenConfig>() {
     private val filterByStatusState = MutableStateFlow<TaskFilterByStatus?>(null)
     private val filterByTypeState = MutableStateFlow<TaskFilterByType?>(null)
-    private val sortState = MutableStateFlow<TaskSort>(TaskSort.ByDate)
+    private val sortState = MutableStateFlow<TaskSort>(TaskSort.ByPriority)
     private val messageState = MutableStateFlow<ViewTasksMessage>(ViewTasksMessage.Idle)
     private val allTasksState = combine(
         readTasksUseCase(),
@@ -367,6 +367,9 @@ class ViewTasksViewModel(
     private fun List<TaskModel.Task>.sortTasks(taskSort: TaskSort) =
         this.let { allTasks ->
             when (taskSort) {
+                TaskSort.ByPriority -> {
+                    allTasks.sortedByDescending { it.priority }
+                }
                 TaskSort.ByDate -> {
                     allTasks.sortedByDescending { taskModel ->
                         when (val date = taskModel.date) {
