@@ -7,7 +7,7 @@ targetSdk = "34"
 
 # kotlin
 kotlin = "1.9.23"
-kotlin-coroutines = "1.8.0"
+kotlin-coroutines = "1.8.1"
 kotlin-datetime = "0.4.0"
 kotlin-serialization = "1.5.1"
 
@@ -39,11 +39,14 @@ compose-navigation = "2.7.7"
 splash = "1.0.1"
 
 coreKtx = "1.13.0"
+appcompat = "1.6.1"
+material = "1.11.0"
+
+#tests
 junit = "4.13.2"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
-appcompat = "1.6.1"
-material = "1.11.0"
+turbine = "1.1.0"
 
 
 [libraries]
@@ -51,6 +54,9 @@ material = "1.11.0"
 kotlin-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }
 kotlin-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlin-datetime" }
 kotlin-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlin-serialization" }
+kotlin-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlin-coroutines" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
+
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 
 # db
@@ -87,7 +93,7 @@ compose-compiler = { module = "androidx.compose.compiler:compiler", version.ref 
 # splash
 androidx-core-splash = { module = "androidx.core:core-splashscreen", version.ref = "splash"}
 
-# auto
+
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

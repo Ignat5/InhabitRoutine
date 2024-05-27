@@ -49,6 +49,8 @@ dependencies {
     implementation(libs.kotlin.coroutines.core)
 
     testImplementation(libs.junit)
+    testImplementation(libs.kotlin.coroutines.test)
+    testImplementation(libs.turbine)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }
