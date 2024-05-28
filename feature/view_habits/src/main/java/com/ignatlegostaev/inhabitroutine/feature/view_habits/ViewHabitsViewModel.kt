@@ -315,21 +315,8 @@ class ViewHabitsViewModel(
     private fun List<TaskModel.Habit>.filterByStatus(filterByStatus: HabitFilterByStatus) =
         this.let { allHabits ->
             when (filterByStatus) {
-                HabitFilterByStatus.OnlyActive -> {
-                    Clock.System.todayDate.let { todayDate ->
-                        allHabits.filter { taskModel ->
-                            if (!taskModel.isArchived) {
-                                taskModel.date.endDate?.let { endDate ->
-                                    todayDate in taskModel.date.startDate..endDate
-                                } ?: (todayDate >= taskModel.date.startDate)
-                            } else false
-                        }
-                    }
-                }
-
-                HabitFilterByStatus.OnlyArchived -> {
-                    allHabits.filter { it.isArchived }
-                }
+                HabitFilterByStatus.OnlyActive -> allHabits.filterHabitsByOnlyActive()
+                HabitFilterByStatus.OnlyArchived -> allHabits.filterHabitsByOnlyArchived()
             }
         }
 

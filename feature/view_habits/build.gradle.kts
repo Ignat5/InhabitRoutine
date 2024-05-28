@@ -48,7 +48,10 @@ dependencies {
     implementation(libs.kotlin.coroutines.core)
     implementation(libs.kotlin.datetime)
 
+    testImplementation(project(":core:test"))
     testImplementation(libs.junit)
+    testImplementation(libs.kotlin.coroutines.test)
+    testImplementation(libs.turbine)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }
