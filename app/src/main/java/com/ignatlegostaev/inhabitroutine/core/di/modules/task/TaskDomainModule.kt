@@ -23,6 +23,7 @@ import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskPrio
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskProgressByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskTitleByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.calculate_statistics.CalculateTaskStatisticsUseCase
+import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.filter_habit_by_status.FilterHabitsByStatusUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.impl.di.LocalTaskDomainModule
 import dagger.Module
 import dagger.Provides
@@ -240,6 +241,11 @@ object TaskDomainModule {
             resetTaskRemindersUseCase = resetTaskRemindersUseCase,
             externalScope = externalScope
         )
+    }
+
+    @Provides
+    fun provideFilterHabitsByStatusUseCase(): FilterHabitsByStatusUseCase {
+        return LocalTaskDomainModule.provideFilterHabitsByStatusUseCase()
     }
 
 }

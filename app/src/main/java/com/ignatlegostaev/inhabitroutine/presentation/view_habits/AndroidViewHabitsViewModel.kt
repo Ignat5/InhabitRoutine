@@ -6,6 +6,7 @@ import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.ArchiveTaskByI
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.DeleteTaskByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.ReadHabitsUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.SaveTaskDraftUseCase
+import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.filter_habit_by_status.FilterHabitsByStatusUseCase
 import com.ignatlegostaev.inhabitroutine.feature.view_habits.ViewHabitsViewModel
 import com.ignatlegostaev.inhabitroutine.feature.view_habits.components.ViewHabitsScreenConfig
 import com.ignatlegostaev.inhabitroutine.feature.view_habits.components.ViewHabitsScreenEvent
@@ -22,6 +23,7 @@ class AndroidViewHabitsViewModel @Inject constructor(
     saveTaskDraftUseCase: SaveTaskDraftUseCase,
     archiveTaskByIdUseCase: ArchiveTaskByIdUseCase,
     deleteTaskByIdUseCase: DeleteTaskByIdUseCase,
+    filterHabitsByStatusUseCase: FilterHabitsByStatusUseCase,
     @DefaultDispatcherQualifier defaultDispatcher: CoroutineDispatcher
 ): BaseAndroidViewModel<ViewHabitsScreenEvent, ViewHabitsScreenState, ViewHabitsScreenNavigation, ViewHabitsScreenConfig>() {
 
@@ -30,6 +32,7 @@ class AndroidViewHabitsViewModel @Inject constructor(
         saveTaskDraftUseCase = saveTaskDraftUseCase,
         archiveTaskByIdUseCase = archiveTaskByIdUseCase,
         deleteTaskByIdUseCase = deleteTaskByIdUseCase,
+        filterHabitsByStatusUseCase = filterHabitsByStatusUseCase,
         defaultDispatcher = defaultDispatcher,
         viewModelScope = viewModelScope
     )

@@ -7,10 +7,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
 
-class FakeReadHabitsUseCase(
-    private val dataSource: FakeHabitsDataSource
-) : ReadHabitsUseCase {
+class FakeReadHabitsUseCase : ReadHabitsUseCase {
 
-    override fun invoke(): Flow<List<TaskModel.Habit>> = dataSource.allHabitsState
+    val allHabitsState = MutableStateFlow<List<TaskModel.Habit>>(emptyList())
+
+    override fun invoke(): Flow<List<TaskModel.Habit>> = allHabitsState
 
 }

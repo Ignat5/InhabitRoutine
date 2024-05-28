@@ -15,13 +15,14 @@ import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.ArchiveTaskByI
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.DeleteTaskByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.ReadHabitsUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.SaveTaskDraftUseCase
+import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.filter_habit_by_status.FilterHabitsByStatusUseCase
+import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.filter_habit_by_status.HabitFilterByStatusType
 import com.ignatlegostaev.inhabitroutine.feature.view_habits.components.ViewHabitsScreenConfig
 import com.ignatlegostaev.inhabitroutine.feature.view_habits.components.ViewHabitsScreenEvent
 import com.ignatlegostaev.inhabitroutine.feature.view_habits.components.ViewHabitsScreenNavigation
 import com.ignatlegostaev.inhabitroutine.feature.view_habits.components.ViewHabitsScreenState
 import com.ignatlegostaev.inhabitroutine.feature.view_habits.config.view_habit_actions.ViewHabitActionsStateHolder
 import com.ignatlegostaev.inhabitroutine.feature.view_habits.config.view_habit_actions.components.ViewHabitActionsScreenResult
-import com.ignatlegostaev.inhabitroutine.feature.view_habits.model.HabitFilterByStatus
 import com.ignatlegostaev.inhabitroutine.feature.view_habits.model.HabitSort
 import com.ignatlegostaev.inhabitroutine.feature.view_habits.model.ViewHabitsMessage
 import kotlinx.coroutines.CoroutineDispatcher
@@ -35,18 +36,21 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDate
 
 class ViewHabitsViewModel(
     readHabitsUseCase: ReadHabitsUseCase,
     private val saveTaskDraftUseCase: SaveTaskDraftUseCase,
     private val archiveTaskByIdUseCase: ArchiveTaskByIdUseCase,
     private val deleteTaskByIdUseCase: DeleteTaskByIdUseCase,
+    private val filterHabitsByStatusUseCase: FilterHabitsByStatusUseCase,
     private val defaultDispatcher: CoroutineDispatcher,
     override val viewModelScope: CoroutineScope
 ) : BaseViewModel<ViewHabitsScreenEvent, ViewHabitsScreenState, ViewHabitsScreenNavigation, ViewHabitsScreenConfig>() {
-    private val filterByStatusState = MutableStateFlow<HabitFilterByStatus?>(null)
+    private val filterByStatusState = MutableStateFlow<HabitFilterByStatusType?>(null)
     private val sortState = MutableStateFlow<HabitSort>(HabitSort.ByPriority)
     private val messageState = MutableStateFlow<ViewHabitsMessage>(ViewHabitsMessage.Idle)
+    private val todayDate: LocalDate get() = Clock.System.todayDate
 
     private val allHabitsState = combine(
         readHabitsUseCase(),
@@ -57,7 +61,17 @@ class ViewHabitsViewModel(
             withContext(defaultDispatcher) {
                 UIResultModel.Data(
                     allHabits
-                        .let { if (filterByStatus != null) it.filterByStatus(filterByStatus) else it }
+                        .let { allHabits ->
+                            if (filterByStatus != null) {
+                                filterHabitsByStatusUseCase(
+                                    allHabits = allHabits,
+                                    filterType = filterByStatus,
+                                    targetDate = todayDate
+                                )
+                            } else {
+                                allHabits
+                            }
+                        }
                         .sortHabits(sort)
                 )
             }
@@ -311,14 +325,6 @@ class ViewHabitsViewModel(
     private fun onSearchClick() {
         setUpNavigationState(ViewHabitsScreenNavigation.SearchTasks)
     }
-
-    private fun List<TaskModel.Habit>.filterByStatus(filterByStatus: HabitFilterByStatus) =
-        this.let { allHabits ->
-            when (filterByStatus) {
-                HabitFilterByStatus.OnlyActive -> allHabits.filterHabitsByOnlyActive()
-                HabitFilterByStatus.OnlyArchived -> allHabits.filterHabitsByOnlyArchived()
-            }
-        }
 
     private fun List<TaskModel.Habit>.sortHabits(sort: HabitSort) = this.let { allHabits ->
         when (sort) {

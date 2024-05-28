@@ -47,6 +47,7 @@ junit = "4.13.2"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
 turbine = "1.1.0"
+kotlin-mockito = "5.3.1"
 
 
 [libraries]
@@ -54,9 +55,10 @@ turbine = "1.1.0"
 kotlin-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }
 kotlin-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlin-datetime" }
 kotlin-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlin-serialization" }
+# kotlin-test
 kotlin-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlin-coroutines" }
+kotlin-mockito = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "kotlin-mockito" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
-
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 
 # db
