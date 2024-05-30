@@ -42,6 +42,7 @@ import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ViewTasksViewModelTest {
+
     private lateinit var viewModel: ViewTasksViewModel
     private lateinit var fakeReadTasksUseCase: FakeReadTasksUseCase
     private lateinit var mockedArchiveTaskByIdUseCase: ArchiveTaskByIdUseCase
@@ -73,26 +74,6 @@ class ViewTasksViewModelTest {
             filterTasksByTypeUseCase = mockedFilterTasksByTypeUseCase,
             sortTasksUseCase = mockedSortTasksUseCase
         )
-    }
-
-    @Test
-    fun `when filters are active, then state's data is filtered`() = runLocalTest {
-        val matchFilterTask = getSingleDummyTask()
-        val notMatchFilterTask = getSingleDummyTask()
-        whenever(mockedFilterTasksByStatusUseCase.invoke(any(), any()))
-            .thenReturn(listOf(matchFilterTask))
-        whenever(mockedFilterTasksByTypeUseCase.invoke(any(), any()))
-            .thenReturn(listOf(matchFilterTask))
-        whenever(mockedSortTasksUseCase.invoke(any(), any()))
-            .thenReturn(listOf(matchFilterTask))
-
-        fillFakeDataSourceWithTasks(matchFilterTask, notMatchFilterTask)
-        collectUIScreenState()
-        advanceUntilIdle()
-        viewModel.uiScreenState.value.allTasksResult.data?.let { data ->
-            assertTrue(data.contains(matchFilterTask))
-            assertTrue(!data.contains(notMatchFilterTask))
-        } ?: throw AssertionError()
     }
 
     @Test

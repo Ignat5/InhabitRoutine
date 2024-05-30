@@ -48,6 +48,7 @@ junitVersion = "1.1.5"
 espressoCore = "3.5.1"
 turbine = "1.1.0"
 kotlin-mockito = "5.3.1"
+truth = "1.4.2"
 
 
 [libraries]
@@ -91,6 +92,9 @@ compose-material3 = { module = "androidx.compose.material3:material3", version.r
 compose-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "compose-lifecycle-viewmodel" }
 compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "compose-navigation" }
 compose-compiler = { module = "androidx.compose.compiler:compiler", version.ref = "compose-compiler" }
+
+# test
+truth = { module = "com.google.truth:truth", version.ref = "truth" }
 
 # splash
 androidx-core-splash = { module = "androidx.core:core-splashscreen", version.ref = "splash"}
