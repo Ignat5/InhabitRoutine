@@ -1,5 +1,6 @@
-package com.ignatlegostaev.inhabitroutine.core.test
+package com.ignatlegostaev.inhabitroutine.core.test.factory
 
+import com.ignatlegostaev.inhabitroutine.core.test.factory.TaskAbstractFactory
 import com.ignatlegostaev.inhabitroutine.domain.model.task.TaskModel
 import com.ignatlegostaev.inhabitroutine.domain.model.task.content.TaskDate
 import com.ignatlegostaev.inhabitroutine.domain.model.task.content.TaskFrequency

@@ -1,9 +1,10 @@
-package com.ignatlegostaev.inhabitroutine.core.test
+package com.ignatlegostaev.inhabitroutine.core.test.factory
 
 import com.ignatlegostaev.inhabitroutine.core.util.randomUUID
 import com.ignatlegostaev.inhabitroutine.core.util.todayDate
 import com.ignatlegostaev.inhabitroutine.domain.model.task.TaskModel
 import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDate
 
 abstract class TaskAbstractFactory {
     protected val taskId get() = randomUUID()

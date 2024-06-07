@@ -1,16 +1,13 @@
-package com.ignatlegostaev.inhabitroutine.core.test
+package com.ignatlegostaev.inhabitroutine.core.test.factory
 
+import com.ignatlegostaev.inhabitroutine.core.test.factory.TaskAbstractFactory
 import com.ignatlegostaev.inhabitroutine.domain.model.task.TaskModel
 import com.ignatlegostaev.inhabitroutine.domain.model.task.content.TaskDate
 import com.ignatlegostaev.inhabitroutine.domain.model.task.content.TaskFrequency
-import com.ignatlegostaev.inhabitroutine.domain.model.task.content.TaskProgress
-import com.ignatlegostaev.inhabitroutine.domain.model.task.type.ProgressLimitType
-import kotlinx.datetime.LocalTime
 
-class HabitTimeFactory : TaskAbstractFactory() {
-
-    override fun build(): TaskModel.Habit.HabitContinuous.HabitTime {
-        return TaskModel.Habit.HabitContinuous.HabitTime(
+class RecurringTaskFactory : TaskAbstractFactory() {
+    override fun build(): TaskModel.Task.RecurringTask {
+        return TaskModel.Task.RecurringTask(
             id = super.taskId,
             title = super.taskTitle,
             description = TaskAbstractFactory.TASK_DESCRIPTION,
@@ -20,12 +17,7 @@ class HabitTimeFactory : TaskAbstractFactory() {
             versionStartDate = super.startDate,
             isDraft = TaskAbstractFactory.TASK_IS_DRAFT,
             createdAt = super.createdAt,
-            frequency = TaskFrequency.EveryDay,
-            progress = TaskProgress.Time(
-                limitType = ProgressLimitType.AtLeast,
-                limitTime = LocalTime(hour = 0, minute = 0)
-            )
+            frequency = TaskFrequency.EveryDay
         )
     }
-
 }
