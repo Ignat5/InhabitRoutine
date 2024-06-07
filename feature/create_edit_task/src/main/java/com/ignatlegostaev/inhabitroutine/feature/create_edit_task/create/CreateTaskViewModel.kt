@@ -19,6 +19,8 @@ import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.create.compone
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.create.components.CreateTaskScreenNavigation
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.create.components.CreateTaskScreenState
 import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.create.config.ConfirmLeavingScreenResult
+import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.create.other.DefaultVerifyCanSaveTaskUseCase
+import com.ignatlegostaev.inhabitroutine.feature.create_edit_task.create.other.VerifyCanSaveTaskUseCase
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
@@ -43,7 +45,8 @@ class CreateTaskViewModel(
     updateTaskDescriptionByIdUseCase: UpdateTaskDescriptionByIdUseCase,
     updateTaskPriorityByIdUseCase: UpdateTaskPriorityByIdUseCase,
     defaultDispatcher: CoroutineDispatcher,
-    override val viewModelScope: CoroutineScope
+    override val viewModelScope: CoroutineScope,
+    private val verifyCanSaveTaskUseCase: VerifyCanSaveTaskUseCase = DefaultVerifyCanSaveTaskUseCase(),
 ) : BaseCreateEditTaskViewModel<CreateTaskScreenEvent, CreateTaskScreenState, CreateTaskScreenNavigation, CreateTaskScreenConfig>(
     updateTaskTitleByIdUseCase = updateTaskTitleByIdUseCase,
     updateTaskProgressByIdUseCase = updateTaskProgressByIdUseCase,
@@ -79,7 +82,7 @@ class CreateTaskViewModel(
     )
 
     private val canSaveState = taskModelState.filterNotNull().map { taskModel ->
-        taskModel.title.isNotBlank()
+        verifyCanSaveTaskUseCase(taskModel)
     }.stateIn(
         viewModelScope,
         SharingStarted.Eagerly,
