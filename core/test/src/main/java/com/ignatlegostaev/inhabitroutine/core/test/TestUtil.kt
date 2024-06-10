@@ -22,8 +22,12 @@ object TestUtil {
     fun buildRandomTaskProgressTime(): TaskProgress.Time {
         return TaskProgress.Time(
             limitType = ProgressLimitType.entries.random(),
-            limitTime = LocalTime(hour = getRandomHour(), minute = getRandomMinute())
+            limitTime = buildRandomLocalTime()
         )
+    }
+
+    fun buildRandomLocalTime(): LocalTime {
+        return LocalTime(hour = getRandomHour(), minute = getRandomMinute())
     }
 
     private fun getRandomHour(): Int {

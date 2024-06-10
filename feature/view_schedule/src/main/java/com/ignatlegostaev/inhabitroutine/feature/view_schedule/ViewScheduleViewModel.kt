@@ -8,6 +8,8 @@ import com.ignatlegostaev.inhabitroutine.core.presentation.ui.dialog.pick_date.m
 import com.ignatlegostaev.inhabitroutine.core.presentation.ui.dialog.pick_task_progress_type.PickTaskProgressTypeScreenResult
 import com.ignatlegostaev.inhabitroutine.core.presentation.ui.dialog.pick_task_type.PickTaskTypeScreenResult
 import com.ignatlegostaev.inhabitroutine.core.util.ResultModel
+import com.ignatlegostaev.inhabitroutine.core.util.firstDayOfWeek
+import com.ignatlegostaev.inhabitroutine.core.util.todayDate
 import com.ignatlegostaev.inhabitroutine.domain.model.derived.TaskStatus
 import com.ignatlegostaev.inhabitroutine.domain.model.derived.TaskWithExtrasAndRecordModel
 import com.ignatlegostaev.inhabitroutine.domain.model.task.type.TaskProgressType
@@ -26,6 +28,8 @@ import com.ignatlegostaev.inhabitroutine.feature.view_schedule.config.enter_time
 import com.ignatlegostaev.inhabitroutine.feature.view_schedule.config.enter_time_record.components.EnterTaskTimeRecordScreenResult
 import com.ignatlegostaev.inhabitroutine.feature.view_schedule.config.view_task_actions.ViewTaskActionsStateHolder
 import com.ignatlegostaev.inhabitroutine.feature.view_schedule.config.view_task_actions.components.ViewTaskActionsScreenResult
+import com.ignatlegostaev.inhabitroutine.feature.view_schedule.util.DefaultSortTasksUseCase
+import com.ignatlegostaev.inhabitroutine.feature.view_schedule.util.SortTasksUseCase
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -43,11 +47,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
-import kotlinx.datetime.toLocalDateTime
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ViewScheduleViewModel(
@@ -56,14 +57,15 @@ class ViewScheduleViewModel(
     private val saveTaskDraftUseCase: SaveTaskDraftUseCase,
     private val saveRecordUseCase: SaveRecordUseCase,
     private val deleteRecordUseCase: DeleteRecordUseCase,
-    private val defaultDispatcher: CoroutineDispatcher
+    private val defaultDispatcher: CoroutineDispatcher,
+    private val sortTasksUseCase: SortTasksUseCase = DefaultSortTasksUseCase()
 ) : BaseViewModel<ViewScheduleScreenEvent, ViewScheduleScreenState, ViewScheduleScreenNavigation, ViewScheduleScreenConfig>() {
 
-    private val todayDateState = flow { emit(todayDate) }
+    private val todayDateState = flow { emit(Clock.System.todayDate) }
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(),
-            todayDate
+            Clock.System.todayDate
         )
 
     private val currentDateState = MutableStateFlow(todayDateState.value)
@@ -75,7 +77,9 @@ class ViewScheduleViewModel(
             .map { allTasks ->
                 if (allTasks.isNotEmpty()) {
                     withContext(defaultDispatcher) {
-                        UIResultModel.Data(allTasks.sortTasks())
+                        UIResultModel.Data(
+                            sortTasksUseCase(allTasks)
+                        )
                     }
                 } else UIResultModel.Data(emptyList())
             }
@@ -572,31 +576,4 @@ class ViewScheduleViewModel(
     private fun onSearchClick() {
         setUpNavigationState(ViewScheduleScreenNavigation.SearchTasks)
     }
-
-    private fun List<TaskWithExtrasAndRecordModel>.sortTasks() = this.let { allTasks ->
-        allTasks.sortedWith(
-            compareBy<TaskWithExtrasAndRecordModel> { taskWithExtrasAndRecord ->
-                when (taskWithExtrasAndRecord.status) {
-                    is TaskStatus.NotCompleted.Pending -> Int.MIN_VALUE
-                    else -> Int.MAX_VALUE
-                }
-            }
-                .thenByDescending { taskWithExtrasAndRecord ->
-                    taskWithExtrasAndRecord.task.priority
-                }
-                .thenBy { taskWithExtrasAndRecord ->
-                taskWithExtrasAndRecord.taskExtras.allReminders.minByOrNull { it.time }?.time?.toMillisecondOfDay()
-                    ?: Int.MAX_VALUE
-            }.thenBy { taskWithExtrasAndRecord ->
-                taskWithExtrasAndRecord.task.createdAt
-            }
-        )
-    }
-
-    private val todayDate: LocalDate
-        get() = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
-
-    private val LocalDate.firstDayOfWeek
-        get() = this.let { date -> date.minus(date.dayOfWeek.ordinal, DateTimeUnit.DAY) }
-
 }
