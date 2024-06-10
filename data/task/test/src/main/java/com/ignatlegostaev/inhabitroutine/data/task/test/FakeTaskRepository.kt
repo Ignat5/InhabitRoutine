@@ -21,6 +21,9 @@ class FakeTaskRepository : TaskRepository {
 
     fun getTasks(): List<TaskModel> = allTasksState.value
 
+    var saveTaskIsAutomaticFailure = false
+    var deleteTaskIsAutomaticFailure = false
+
     override fun readTaskById(taskId: String): Flow<TaskModel?> {
         return allTasksState
             .map { allTasks ->
@@ -49,28 +52,34 @@ class FakeTaskRepository : TaskRepository {
     }
 
     override suspend fun saveTask(taskModel: TaskModel): ResultModel<Unit, Throwable> {
-        allTasksState.update { oldTasks ->
-            val newTasks = mutableListOf<TaskModel>()
-            newTasks.addAll(oldTasks)
-            val index = newTasks.indexOfFirst { it.id == taskModel.id }
-            if (index != -1) {
-                newTasks[index] = taskModel
-            } else {
-                newTasks.add(taskModel)
+        if (saveTaskIsAutomaticFailure) return ResultModel.failure(Exception())
+        else {
+            allTasksState.update { oldTasks ->
+                val newTasks = mutableListOf<TaskModel>()
+                newTasks.addAll(oldTasks)
+                val index = newTasks.indexOfFirst { it.id == taskModel.id }
+                if (index != -1) {
+                    newTasks[index] = taskModel
+                } else {
+                    newTasks.add(taskModel)
+                }
+                newTasks
             }
-            newTasks
+            return ResultModel.success(Unit)
         }
-        return ResultModel.success(Unit)
     }
 
     override suspend fun deleteTaskById(taskId: String): ResultModel<Unit, Throwable> {
-        allTasksState.update { oldTasks ->
-            val newTasks = mutableListOf<TaskModel>()
-            newTasks.addAll(oldTasks)
-            newTasks.removeIf { it.id == taskId }
-            newTasks
+        if (deleteTaskIsAutomaticFailure) return ResultModel.failure(Exception())
+        else {
+            allTasksState.update { oldTasks ->
+                val newTasks = mutableListOf<TaskModel>()
+                newTasks.addAll(oldTasks)
+                newTasks.removeIf { it.id == taskId }
+                newTasks
+            }
+            return ResultModel.success(Unit)
         }
-        return ResultModel.success(Unit)
     }
 
 }

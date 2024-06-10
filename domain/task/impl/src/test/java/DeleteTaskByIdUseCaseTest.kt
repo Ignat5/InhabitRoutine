@@ -1,5 +1,4 @@
 import com.ignatlegostaev.inhabitroutine.core.test.factory.SingleTaskFactory
-import com.ignatlegostaev.inhabitroutine.core.util.ResultModel
 import com.ignatlegostaev.inhabitroutine.core.util.randomUUID
 import com.ignatlegostaev.inhabitroutine.data.task.test.FakeTaskRepository
 import com.ignatlegostaev.inhabitroutine.domain.model.task.TaskModel
@@ -15,17 +14,14 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.spy
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
-import org.mockito.kotlin.whenever
-import org.mockito.kotlin.wheneverBlocking
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DeleteTaskByIdUseCaseTest {
 
     private lateinit var useCase: DefaultDeleteTaskByIdUseCase
-    private lateinit var spyFakeTaskRepository: FakeTaskRepository
+    private lateinit var fakeTaskRepository: FakeTaskRepository
     private lateinit var testDispatcher: TestDispatcher
     private lateinit var mockResetTaskRemindersUseCase: ResetTaskRemindersUseCase
 
@@ -38,7 +34,7 @@ class DeleteTaskByIdUseCaseTest {
     @Test
     fun `when repository call results in failure, then reset is not called`() = runLocalTest {
         val targetTaskId = randomUUID()
-        mockRepositoryCallToResultInFailureForTask(targetTaskId)
+        mockRepositoryCallToResultInFailure()
         useCase.invoke(targetTaskId)
         advanceUntilIdle()
         verifyResetTaskRemindersUseCaseNotCalled()
@@ -50,26 +46,17 @@ class DeleteTaskByIdUseCaseTest {
         }
     }
 
-    private fun mockRepositoryCallToResultInFailureForTask(taskId: String) {
-        wheneverBlocking {
-            spyFakeTaskRepository.deleteTaskById(taskId)
-        }.thenReturn(ResultModel.failure(NoSuchElementException()))
+    private fun mockRepositoryCallToResultInFailure() {
+        fakeTaskRepository.deleteTaskIsAutomaticFailure = true
     }
 
     @Test
     fun `when repository call results in success, then reset task reminders is called`() = runLocalTest {
         val targetTask = buildRandomTask()
         fillRepository(listOf(targetTask))
-        mockRepositoryCallToResultInSuccessForTask(targetTask.id)
         useCase.invoke(targetTask.id)
         advanceUntilIdle()
         verifyResetTaskRemindersUseCaseCalledOnceForTask(targetTask.id)
-    }
-
-    private fun mockRepositoryCallToResultInSuccessForTask(taskId: String) {
-        wheneverBlocking {
-            spyFakeTaskRepository.deleteTaskById(taskId)
-        }.thenReturn(ResultModel.success(Unit))
     }
 
     private fun verifyResetTaskRemindersUseCaseCalledOnceForTask(taskId: String) {
@@ -79,7 +66,7 @@ class DeleteTaskByIdUseCaseTest {
     }
 
     private fun fillRepository(tasks: List<TaskModel>) {
-        spyFakeTaskRepository.setTasks(tasks)
+        fakeTaskRepository.setTasks(tasks)
     }
 
     private fun buildRandomTask(): TaskModel {
@@ -91,7 +78,7 @@ class DeleteTaskByIdUseCaseTest {
     }
 
     private fun initDependencies() {
-        spyFakeTaskRepository = spy(FakeTaskRepository())
+        fakeTaskRepository = FakeTaskRepository()
         testDispatcher = StandardTestDispatcher()
         setUpMockForResetTaskRemindersUseCase()
     }
@@ -106,7 +93,7 @@ class DeleteTaskByIdUseCaseTest {
 
     private fun initUseCase() {
         useCase = DefaultDeleteTaskByIdUseCase(
-            taskRepository = spyFakeTaskRepository,
+            taskRepository = fakeTaskRepository,
             resetTaskRemindersUseCase = mockResetTaskRemindersUseCase,
             externalScope = TestScope(testDispatcher)
         )
