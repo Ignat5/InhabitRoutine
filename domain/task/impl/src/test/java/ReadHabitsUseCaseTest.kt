@@ -2,6 +2,7 @@ import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import com.ignatlegostaev.inhabitroutine.core.test.factory.HabitYesNoFactory
 import com.ignatlegostaev.inhabitroutine.core.test.factory.SingleTaskFactory
+import com.ignatlegostaev.inhabitroutine.core.test.factory.TaskAbstractFactory
 import com.ignatlegostaev.inhabitroutine.data.task.test.FakeTaskRepository
 import com.ignatlegostaev.inhabitroutine.domain.model.task.TaskModel
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.ReadHabitsUseCase
@@ -25,10 +26,23 @@ class ReadHabitsUseCaseTest {
     fun setUpRule() = SetUpRule()
 
     @Test
+    fun `when drafts are excluded, then no drafts are read`() = runLocalTest {
+        val notDraftHabit = buildRandomHabit().copy(isDraft = false)
+        val draftHabit = buildRandomHabit().copy(isDraft = true)
+        fillRepository(notDraftHabit, draftHabit)
+        useCase.invoke(excludeDrafts = true).test {
+            awaitItem().apply {
+                assertThat(this).containsExactly(notDraftHabit)
+            }
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
     fun `when there are tasks saved in repository, then they are not read`() = runLocalTest {
         val task = buildRandomTask()
-        fillRepository(listOf(task))
-        useCase().test {
+        fillRepository(task)
+        useCase(excludeDrafts = false).test {
             this.awaitItem().apply {
                 assertThat(this).doesNotContain(task)
             }
@@ -39,8 +53,8 @@ class ReadHabitsUseCaseTest {
     @Test
     fun `when there are habits saved in repository, then they are read`() = runLocalTest {
         val habit = buildRandomHabit()
-        fillRepository(listOf(habit))
-        useCase().test {
+        fillRepository(habit)
+        useCase(excludeDrafts = false).test {
             this.awaitItem().apply {
                 assertThat(this).containsExactly(habit)
             }
@@ -48,8 +62,8 @@ class ReadHabitsUseCaseTest {
         }
     }
 
-    private fun fillRepository(tasks: List<TaskModel>) {
-        taskRepository.setTasks(tasks)
+    private fun fillRepository(vararg tasks: TaskModel) {
+        taskRepository.setTasks(tasks.toList())
     }
 
     private fun buildRandomHabit(): TaskModel.Habit {

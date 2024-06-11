@@ -11,6 +11,6 @@ class FakeReadHabitsUseCase : ReadHabitsUseCase {
 
     val allHabitsState = MutableStateFlow<List<TaskModel.Habit>>(emptyList())
 
-    override fun invoke(): Flow<List<TaskModel.Habit>> = allHabitsState
+    override fun invoke(excludeDrafts: Boolean): Flow<List<TaskModel.Habit>> = allHabitsState
 
 }

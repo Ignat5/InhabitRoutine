@@ -4,5 +4,5 @@ import com.ignatlegostaev.inhabitroutine.domain.model.task.TaskModel
 import kotlinx.coroutines.flow.Flow
 
 interface ReadTasksUseCase {
-    operator fun invoke(): Flow<List<TaskModel.Task>>
+    operator fun invoke(excludeDrafts: Boolean = true): Flow<List<TaskModel.Task>>
 }

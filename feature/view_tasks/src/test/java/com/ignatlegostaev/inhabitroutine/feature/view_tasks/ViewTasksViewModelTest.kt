@@ -242,7 +242,7 @@ class ViewTasksViewModelTest {
     private class FakeReadTasksUseCase : ReadTasksUseCase {
         val allTasksState = MutableStateFlow<List<TaskModel.Task>>(emptyList())
 
-        override fun invoke(): Flow<List<TaskModel.Task>> {
+        override fun invoke(excludeDrafts: Boolean): Flow<List<TaskModel.Task>> {
             return allTasksState
         }
     }
