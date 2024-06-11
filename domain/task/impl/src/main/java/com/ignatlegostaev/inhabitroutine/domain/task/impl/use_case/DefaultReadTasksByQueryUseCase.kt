@@ -13,13 +13,20 @@ internal class DefaultReadTasksByQueryUseCase(
     private val defaultDispatcher: CoroutineDispatcher
 ) : ReadTasksByQueryUseCase {
 
-    override operator fun invoke(query: String): Flow<List<TaskModel>> =
-        taskRepository.readTasksByQuery(query).map { allTasks ->
+    override operator fun invoke(
+        query: String,
+        excludeDrafts: Boolean
+    ): Flow<List<TaskModel>> = taskRepository.readTasksByQuery(query).map { allTasks ->
+        if (allTasks.isNotEmpty()) {
             withContext(defaultDispatcher) {
-                allTasks.filter { taskModel ->
-                    !taskModel.isDraft
-                }
+                allTasks.excludeDraftsIfRequired(excludeDrafts)
             }
-        }
+        } else emptyList()
+    }
+
+    private fun List<TaskModel>.excludeDraftsIfRequired(exclude: Boolean) = this.let { allTasks ->
+        if (exclude) allTasks.filterNot { it.isDraft }
+        else allTasks
+    }
 
 }

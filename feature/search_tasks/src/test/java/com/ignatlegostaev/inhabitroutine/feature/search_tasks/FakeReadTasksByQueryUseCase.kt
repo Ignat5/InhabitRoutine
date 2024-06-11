@@ -13,7 +13,7 @@ class FakeReadTasksByQueryUseCase() : ReadTasksByQueryUseCase {
         task.title.contains(other = query, ignoreCase = true)
     }
 
-    override fun invoke(query: String): Flow<List<TaskModel>> {
+    override fun invoke(query: String, excludeDrafts: Boolean): Flow<List<TaskModel>> {
         return flow {
             emit(
                 allTasks

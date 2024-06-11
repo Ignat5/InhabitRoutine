@@ -23,6 +23,7 @@ class FakeTaskRepository : TaskRepository {
 
     var saveTaskIsAutomaticFailure = false
     var deleteTaskIsAutomaticFailure = false
+    var queryFilter: (TaskModel) -> Boolean = { true }
 
     override fun readTaskById(taskId: String): Flow<TaskModel?> {
         return allTasksState
@@ -36,7 +37,9 @@ class FakeTaskRepository : TaskRepository {
     }
 
     override fun readTasksByQuery(query: String): Flow<List<TaskModel>> {
-        return allTasksState
+        return allTasksState.map { allTasks ->
+            allTasks.filter(queryFilter)
+        }
     }
 
     override fun readTasksByTaskType(targetTaskTypes: Set<TaskType>): Flow<List<TaskModel>> {
