@@ -29,7 +29,7 @@ import org.mockito.kotlin.wheneverBlocking
 class UpdateTaskDateByIdUseCaseTest {
 
     private lateinit var useCase: UpdateTaskDateByIdUseCase
-    private lateinit var fakeTaskRepository: FakeTaskRepository
+    private lateinit var taskRepository: FakeTaskRepository
     private lateinit var recordRepository: RecordRepository
     private lateinit var setUpTaskRemindersUseCase: SetUpTaskRemindersUseCase
     private lateinit var testDispatcher: TestDispatcher
@@ -108,7 +108,7 @@ class UpdateTaskDateByIdUseCaseTest {
     }
 
     private fun getAllTasksFromRepository(): List<TaskModel> {
-        return fakeTaskRepository.getTasks()
+        return taskRepository.getTasks()
     }
 
     private fun mockRecordRepositoryDeleteRecordsToSuccess() {
@@ -124,7 +124,7 @@ class UpdateTaskDateByIdUseCaseTest {
     }
 
     private fun fillRepository(tasks: List<TaskModel>) {
-        fakeTaskRepository.setTasks(tasks)
+        taskRepository.setTasks(tasks)
     }
 
     private fun buildRandomSingleTask(): TaskModel.Task.SingleTask {
@@ -144,7 +144,7 @@ class UpdateTaskDateByIdUseCaseTest {
         }
 
         private fun initDependencies() {
-            fakeTaskRepository = FakeTaskRepository()
+            taskRepository = FakeTaskRepository()
             recordRepository = mock()
             setUpTaskRemindersUseCase = mock()
             testDispatcher = StandardTestDispatcher()
@@ -152,7 +152,7 @@ class UpdateTaskDateByIdUseCaseTest {
 
         private fun initUseCase() {
             useCase = DefaultUpdateTaskDateByIdUseCase(
-                taskRepository = fakeTaskRepository,
+                taskRepository = taskRepository,
                 recordRepository = recordRepository,
                 setUpTaskRemindersUseCase = setUpTaskRemindersUseCase,
                 externalScope = TestScope(testDispatcher)
