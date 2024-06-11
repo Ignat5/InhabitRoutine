@@ -24,6 +24,48 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.LocalDate
 
+/*
+    Step #1: Define the problem
+    Write high quality unit tests for the complex use case
+
+    Step #2: Metrics
+        1. readability
+        2. isolation
+        3. coverage (cover all possible implementation flaws)
+
+    Step #3: Questions
+        1. How do i handle private functions?
+        2. Do i mock or implement repositories?
+        3. What can go wrong in the use case (which tests are required)?
+
+    Answers:
+        1. Private functions
+            Options:
+                #1) transform private functions into 'helper' classes +
+                #2) move filter processing into repository (why use case should do additional data filtering?)
+
+        2. Write fake implementations
+        3. What requires to be tested:
+            #1) filter tasks
+            #2) filter reminders
+            #3) reminders of the result model match the task that they belong to
+            #4) record matches the task that it belongs to
+            #5) test getTaskStatusByRecordEntry() function in isolation
+            #6) test toTaskWithExtrasAndRecord() function in isolation
+            Edge cases
+            #7) no tasks in repo
+            #8) no reminders in repo
+            #9) no records in repo
+
+    Step #4: Divide the problem (what are the independent segments of the problem?)
+        1. create fake implementations for reminderRepo and recordRepo
+        2. create helper classes for the private functions and pass them as arguments to the use case
+        3.
+
+
+
+ */
+
 internal class DefaultReadTasksWithExtrasAndRecordByDateUseCase(
     private val taskRepository: TaskRepository,
     private val reminderRepository: ReminderRepository,

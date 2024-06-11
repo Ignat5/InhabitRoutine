@@ -20,6 +20,8 @@ dependencies {
     implementation(libs.kotlin.datetime)
 
     testImplementation(project(":data:task:test"))
+    testImplementation(project(":data:reminder:test"))
+    testImplementation(project(":data:record:test"))
     testImplementation(project(":core:test"))
     testImplementation(libs.junit)
     testImplementation(libs.kotlin.mockito)
