@@ -12,19 +12,29 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
 
 internal class DefaultUpdateTaskProgressByIdUseCase(
-    private val taskRepository: TaskRepository, private val defaultDispatcher: CoroutineDispatcher
+    private val taskRepository: TaskRepository,
+    private val defaultDispatcher: CoroutineDispatcher
 ) : UpdateTaskProgressByIdUseCase {
+
     override suspend operator fun invoke(
-        taskId: String, taskProgress: TaskProgress
+        taskId: String,
+        taskProgress: TaskProgress
     ): ResultModel<Unit, Throwable> = withContext(defaultDispatcher) {
-        taskRepository.readTaskById(taskId).filterIsInstance<TaskModel.Habit.HabitContinuous>()
-            .firstOrNull()?.let { taskModel ->
-                taskModel.copy(
-                    progress = taskProgress,
-                    versionStartDate = taskModel.getTaskVersionStartDate()
-                ).let { newTaskModel ->
-                    taskRepository.saveTask(newTaskModel)
-                }
-            } ?: ResultModel.failure(NoSuchElementException())
+        getHabitContinuousById(taskId)?.let { taskModel ->
+            taskModel.copy(
+                progress = taskProgress,
+                versionStartDate = taskModel.getTaskVersionStartDate()
+            ).let { newTaskModel ->
+                taskRepository.saveTask(newTaskModel)
+            }
+        } ?: ResultModel.failure(NoSuchElementException())
     }
+
+    private suspend fun getHabitContinuousById(taskId: String): TaskModel.Habit.HabitContinuous? {
+        return taskRepository
+            .readTaskById(taskId)
+            .firstOrNull()
+            ?.let { it as? TaskModel.Habit.HabitContinuous }
+    }
+
 }
