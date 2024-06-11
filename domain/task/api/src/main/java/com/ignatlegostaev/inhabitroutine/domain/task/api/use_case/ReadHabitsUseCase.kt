@@ -4,5 +4,5 @@ import com.ignatlegostaev.inhabitroutine.domain.model.task.TaskModel
 import kotlinx.coroutines.flow.Flow
 
 interface ReadHabitsUseCase {
-    operator fun invoke(): Flow<List<TaskModel.Habit>>
+    operator fun invoke(excludeDrafts: Boolean = true): Flow<List<TaskModel.Habit>>
 }

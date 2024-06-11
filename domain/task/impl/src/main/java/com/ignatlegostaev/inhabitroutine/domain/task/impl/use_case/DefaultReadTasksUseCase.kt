@@ -17,16 +17,22 @@ internal class DefaultReadTasksUseCase(
     private val targetTaskTypes: Set<TaskType>
         get() = setOf(TaskType.RecurringTask, TaskType.SingleTask)
 
-    override operator fun invoke(): Flow<List<TaskModel.Task>> =
+    override operator fun invoke(excludeDrafts: Boolean): Flow<List<TaskModel.Task>> =
         taskRepository.readTasksByTaskType(targetTaskTypes)
             .map { allTasks ->
                 if (allTasks.isNotEmpty()) {
                     withContext(defaultDispatcher) {
                         allTasks
-                            .filter { !it.isDraft }
+                            .excludeDraftsIfRequired(excludeDrafts)
                             .filterIsInstance<TaskModel.Task>()
                     }
                 } else emptyList()
             }
+
+    private fun List<TaskModel>.excludeDraftsIfRequired(exclude: Boolean): List<TaskModel> =
+        this.let { allTasks ->
+            if (exclude) allTasks.filterNot { it.isDraft }
+            else allTasks
+        }
 
 }

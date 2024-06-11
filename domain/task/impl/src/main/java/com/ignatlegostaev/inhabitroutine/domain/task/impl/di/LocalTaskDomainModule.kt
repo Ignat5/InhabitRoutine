@@ -22,9 +22,11 @@ import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskPrio
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskProgressByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.UpdateTaskTitleByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.calculate_statistics.CalculateTaskStatisticsUseCase
+import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.filter_habit_by_status.FilterHabitsByStatusUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.impl.use_case.DefaultArchiveTaskByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.impl.use_case.DefaultCalculateTaskStatisticsUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.impl.use_case.DefaultDeleteTaskByIdUseCase
+import com.ignatlegostaev.inhabitroutine.domain.task.impl.use_case.DefaultFilterHabitsByStatusUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.impl.use_case.DefaultReadHabitsUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.impl.use_case.DefaultReadTaskByIdUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.impl.use_case.DefaultReadTasksByQueryUseCase
@@ -232,5 +234,9 @@ object LocalTaskDomainModule {
             resetTaskRemindersUseCase = resetTaskRemindersUseCase,
             externalScope = externalScope
         )
+    }
+
+    fun provideFilterHabitsByStatusUseCase(): FilterHabitsByStatusUseCase {
+        return DefaultFilterHabitsByStatusUseCase()
     }
 }

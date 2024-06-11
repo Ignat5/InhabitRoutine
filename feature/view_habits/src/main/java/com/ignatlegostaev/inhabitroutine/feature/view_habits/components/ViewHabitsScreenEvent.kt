@@ -5,8 +5,8 @@ import com.ignatlegostaev.inhabitroutine.core.presentation.components.result.Scr
 import com.ignatlegostaev.inhabitroutine.core.presentation.ui.dialog.archive_task.components.ArchiveTaskScreenResult
 import com.ignatlegostaev.inhabitroutine.core.presentation.ui.dialog.delete_task.components.DeleteTaskScreenResult
 import com.ignatlegostaev.inhabitroutine.core.presentation.ui.dialog.pick_task_progress_type.PickTaskProgressTypeScreenResult
+import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.filter_habit_by_status.HabitFilterByStatusType
 import com.ignatlegostaev.inhabitroutine.feature.view_habits.config.view_habit_actions.components.ViewHabitActionsScreenResult
-import com.ignatlegostaev.inhabitroutine.feature.view_habits.model.HabitFilterByStatus
 import com.ignatlegostaev.inhabitroutine.feature.view_habits.model.HabitSort
 
 sealed interface ViewHabitsScreenEvent : ScreenEvent {
@@ -15,7 +15,7 @@ sealed interface ViewHabitsScreenEvent : ScreenEvent {
     ) : ViewHabitsScreenEvent
 
     data class OnPickFilterByStatus(
-        val filterByStatus: HabitFilterByStatus
+        val filterByStatus: HabitFilterByStatusType
     ) : ViewHabitsScreenEvent
 
     data class OnPickSort(

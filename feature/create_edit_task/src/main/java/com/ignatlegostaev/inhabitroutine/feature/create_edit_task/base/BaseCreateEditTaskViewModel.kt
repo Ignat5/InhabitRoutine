@@ -504,7 +504,7 @@ abstract class BaseCreateEditTaskViewModel<SE : ScreenEvent, SS : ScreenState, S
         }
     }
 
-    protected fun provideBaseTaskConfigItems(
+    protected open fun provideBaseTaskConfigItems(
         taskModel: TaskModel,
         reminderCount: Int
     ): List<BaseItemTaskConfig> {

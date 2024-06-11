@@ -8,7 +8,6 @@ import com.ignatlegostaev.inhabitroutine.core.presentation.ui.dialog.delete_task
 import com.ignatlegostaev.inhabitroutine.core.presentation.ui.dialog.delete_task.components.DeleteTaskScreenResult
 import com.ignatlegostaev.inhabitroutine.core.presentation.ui.dialog.pick_task_type.PickTaskTypeScreenResult
 import com.ignatlegostaev.inhabitroutine.core.util.ResultModel
-import com.ignatlegostaev.inhabitroutine.core.util.todayDate
 import com.ignatlegostaev.inhabitroutine.domain.model.task.TaskModel
 import com.ignatlegostaev.inhabitroutine.domain.model.task.content.TaskDate
 import com.ignatlegostaev.inhabitroutine.domain.model.task.type.TaskType
@@ -26,6 +25,12 @@ import com.ignatlegostaev.inhabitroutine.feature.view_tasks.model.TaskFilterBySt
 import com.ignatlegostaev.inhabitroutine.feature.view_tasks.model.TaskFilterByType
 import com.ignatlegostaev.inhabitroutine.feature.view_tasks.model.TaskSort
 import com.ignatlegostaev.inhabitroutine.feature.view_tasks.model.ViewTasksMessage
+import com.ignatlegostaev.inhabitroutine.feature.view_tasks.use_case.filter_tasks_by_status.DefaultFilterTasksByStatusUseCase
+import com.ignatlegostaev.inhabitroutine.feature.view_tasks.use_case.filter_tasks_by_status.FilterTasksByStatusUseCase
+import com.ignatlegostaev.inhabitroutine.feature.view_tasks.use_case.filter_tasks_by_type.DefaultFilterTasksByTypeUseCase
+import com.ignatlegostaev.inhabitroutine.feature.view_tasks.use_case.filter_tasks_by_type.FilterTasksByTypeUseCase
+import com.ignatlegostaev.inhabitroutine.feature.view_tasks.use_case.sort_tasks.DefaultSortTasksUseCase
+import com.ignatlegostaev.inhabitroutine.feature.view_tasks.use_case.sort_tasks.SortTasksUseCase
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,7 +41,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.datetime.Clock
 
 class ViewTasksViewModel(
     readTasksUseCase: ReadTasksUseCase,
@@ -44,7 +48,10 @@ class ViewTasksViewModel(
     private val archiveTaskByIdUseCase: ArchiveTaskByIdUseCase,
     private val deleteTaskByIdUseCase: DeleteTaskByIdUseCase,
     private val defaultDispatcher: CoroutineDispatcher,
-    override val viewModelScope: CoroutineScope
+    override val viewModelScope: CoroutineScope,
+    private val filterTasksByStatusUseCase: FilterTasksByStatusUseCase = DefaultFilterTasksByStatusUseCase(),
+    private val filterTasksByTypeUseCase: FilterTasksByTypeUseCase = DefaultFilterTasksByTypeUseCase(),
+    private val sortTasksUseCase: SortTasksUseCase = DefaultSortTasksUseCase()
 ) : BaseViewModel<ViewTasksScreenEvent, ViewTasksScreenState, ViewTasksScreenNavigation, ViewTasksScreenConfig>() {
     private val filterByStatusState = MutableStateFlow<TaskFilterByStatus?>(null)
     private val filterByTypeState = MutableStateFlow<TaskFilterByType?>(null)
@@ -332,57 +339,12 @@ class ViewTasksViewModel(
     }
 
     private fun List<TaskModel.Task>.filterByStatus(filterByStatus: TaskFilterByStatus) =
-        this.let { allTasks ->
-            when (filterByStatus) {
-                TaskFilterByStatus.OnlyActive -> {
-                    Clock.System.todayDate.let { todayDate ->
-                        allTasks.filter { taskModel ->
-                            if (!taskModel.isArchived) {
-                                when (val taskDate = taskModel.date) {
-                                    is TaskDate.Period -> {
-                                        taskDate.endDate?.let { endDate ->
-                                            todayDate in taskDate.startDate..endDate
-                                        } ?: (todayDate >= taskDate.startDate)
-                                    }
-
-                                    is TaskDate.Day -> taskDate.date >= todayDate
-                                }
-                            } else false
-                        }
-                    }
-                }
-
-                TaskFilterByStatus.OnlyArchived -> allTasks.filter { it.isArchived }
-            }
-        }
+        filterTasksByStatusUseCase(this, filterByStatus)
 
     private fun List<TaskModel.Task>.filterByType(filterByType: TaskFilterByType) =
-        this.let { allTasks ->
-            when (filterByType) {
-                TaskFilterByType.OnlyRecurring -> allTasks.filter { it.type == TaskType.RecurringTask }
-                TaskFilterByType.OnlySingle -> allTasks.filter { it.type == TaskType.SingleTask }
-            }
-        }
+        filterTasksByTypeUseCase(this, filterByType)
 
     private fun List<TaskModel.Task>.sortTasks(taskSort: TaskSort) =
-        this.let { allTasks ->
-            when (taskSort) {
-                TaskSort.ByPriority -> {
-                    allTasks.sortedByDescending { it.priority }
-                }
-                TaskSort.ByDate -> {
-                    allTasks.sortedByDescending { taskModel ->
-                        when (val date = taskModel.date) {
-                            is TaskDate.Period -> date.startDate
-                            is TaskDate.Day -> date.date
-                        }
-                    }
-                }
-
-                TaskSort.ByTitle -> {
-                    allTasks.sortedBy { it.title }
-                }
-            }
-        }
+        sortTasksUseCase(this, taskSort)
 
 }

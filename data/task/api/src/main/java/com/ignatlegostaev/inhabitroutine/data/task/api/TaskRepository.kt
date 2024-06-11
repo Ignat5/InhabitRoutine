@@ -12,9 +12,6 @@ interface TaskRepository {
     fun readTasksByDate(targetDate: LocalDate): Flow<List<TaskModel>>
     fun readTasksById(taskId: String): Flow<List<TaskModel>>
     fun readTasksByTaskType(targetTaskTypes: Set<TaskType>): Flow<List<TaskModel>>
-    suspend fun saveTask(
-        taskModel: TaskModel
-    ): ResultModel<Unit, Throwable>
-
+    suspend fun saveTask(taskModel: TaskModel): ResultModel<Unit, Throwable>
     suspend fun deleteTaskById(taskId: String): ResultModel<Unit, Throwable>
 }

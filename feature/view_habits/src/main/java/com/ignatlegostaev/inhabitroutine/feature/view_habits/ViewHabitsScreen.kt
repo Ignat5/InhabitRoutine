@@ -69,11 +69,11 @@ import com.ignatlegostaev.inhabitroutine.core.presentation.ui.dialog.delete_task
 import com.ignatlegostaev.inhabitroutine.core.presentation.ui.dialog.pick_task_progress_type.PickTaskProgressTypeDialog
 import com.ignatlegostaev.inhabitroutine.domain.model.task.TaskModel
 import com.ignatlegostaev.inhabitroutine.domain.model.util.DomainConst
+import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.filter_habit_by_status.HabitFilterByStatusType
 import com.ignatlegostaev.inhabitroutine.feature.view_habits.components.ViewHabitsScreenConfig
 import com.ignatlegostaev.inhabitroutine.feature.view_habits.components.ViewHabitsScreenEvent
 import com.ignatlegostaev.inhabitroutine.feature.view_habits.components.ViewHabitsScreenState
 import com.ignatlegostaev.inhabitroutine.feature.view_habits.config.view_habit_actions.ViewHabitActionsDialog
-import com.ignatlegostaev.inhabitroutine.feature.view_habits.model.HabitFilterByStatus
 import com.ignatlegostaev.inhabitroutine.feature.view_habits.model.HabitSort
 import com.ignatlegostaev.inhabitroutine.feature.view_habits.model.ViewHabitsMessage
 import kotlinx.coroutines.launch
@@ -242,8 +242,8 @@ private fun HabitTitleRow(title: String) {
 private fun FilterSortRow(
     sort: HabitSort,
     onSortClick: (HabitSort) -> Unit,
-    filterByStatus: HabitFilterByStatus?,
-    onFilterClick: (HabitFilterByStatus) -> Unit
+    filterByStatus: HabitFilterByStatusType?,
+    onFilterClick: (HabitFilterByStatusType) -> Unit
 ) {
     LazyRow(
         modifier = Modifier.fillMaxWidth(),
@@ -267,11 +267,11 @@ private fun FilterSortRow(
 
 @Composable
 private fun FilterByStatusChip(
-    filterByStatus: HabitFilterByStatus?,
-    onFilterClick: (HabitFilterByStatus) -> Unit
+    filterByStatus: HabitFilterByStatusType?,
+    onFilterClick: (HabitFilterByStatusType) -> Unit
 ) {
     val context = LocalContext.current
-    val allItems = remember { HabitFilterByStatus.entries }
+    val allItems = remember { HabitFilterByStatusType.entries }
     val isFilterActive = remember(filterByStatus) {
         filterByStatus != null
     }
@@ -281,8 +281,8 @@ private fun FilterByStatusChip(
         textByItem = { taskFilterByStatus ->
             context.getString(
                 when (taskFilterByStatus) {
-                    HabitFilterByStatus.OnlyActive -> R.string.task_filter_by_status_only_active_title
-                    HabitFilterByStatus.OnlyArchived -> R.string.task_filter_by_status_only_archived_title
+                    HabitFilterByStatusType.OnlyActive -> R.string.task_filter_by_status_only_active_title
+                    HabitFilterByStatusType.OnlyArchived -> R.string.task_filter_by_status_only_archived_title
                 }
             )
         },
@@ -290,8 +290,8 @@ private fun FilterByStatusChip(
             val titleResId = remember(filterByStatus) {
                 when (filterByStatus) {
                     null -> R.string.task_filter_by_status_title
-                    HabitFilterByStatus.OnlyActive -> R.string.task_filter_by_status_only_active_title
-                    HabitFilterByStatus.OnlyArchived -> R.string.task_filter_by_status_only_archived_title
+                    HabitFilterByStatusType.OnlyActive -> R.string.task_filter_by_status_only_active_title
+                    HabitFilterByStatusType.OnlyArchived -> R.string.task_filter_by_status_only_archived_title
                 }
             }
             Text(text = stringResource(id = titleResId))
@@ -335,7 +335,7 @@ private fun SortChip(
 @Composable
 private fun BoxScope.NoHabitsMessage(
     allHabitsResult: UIResultModel<List<TaskModel.Habit>>,
-    filterByStatus: HabitFilterByStatus?
+    filterByStatus: HabitFilterByStatusType?
 ) {
     val shouldShowMessage = remember(allHabitsResult) {
         allHabitsResult is UIResultModel.Data && allHabitsResult.data.isEmpty()
