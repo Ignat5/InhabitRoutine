@@ -181,24 +181,7 @@ internal class DefaultReadTasksWithExtrasAndRecordByDateUseCase(
             }.distinctUntilChanged()
 
     private fun readRemindersByDate(date: LocalDate) =
-        reminderRepository.readRemindersByDate(date).map { allReminders ->
-            if (allReminders.isNotEmpty()) {
-                withContext(defaultDispatcher) {
-                    allReminders.filterByDate(date)
-                }
-            } else emptyList()
-        }.distinctUntilChanged()
-
-    private fun List<ReminderModel>.filterByDate(date: LocalDate) = this.let { allReminders ->
-        allReminders.filter { reminderModel ->
-            when (val schedule = reminderModel.schedule) {
-                is ReminderSchedule.AlwaysEnabled -> true
-                is ReminderSchedule.DaysOfWeek -> {
-                    date.dayOfWeek in schedule.daysOfWeek
-                }
-            }
-        }
-    }
+        reminderRepository.readRemindersByDate(date)
 
     private fun List<TaskModel>.filterTasks(date: LocalDate) = this.let { allTasks ->
         allTasks

@@ -44,10 +44,13 @@ internal class DefaultReminderDao(
             .map { it.toInt() }
 
     override fun readRemindersByDate(targetEpochDay: Long): Flow<List<ReminderEntity>> =
-        reminderDao.selectRemindersByDate(targetEpochDay = targetEpochDay)
-            .readQueryList(ioDispatcher).map { allReminders ->
+        reminderDao.selectRemindersByDate(targetEpochDay)
+            .readQueryList(ioDispatcher)
+            .map { allReminders ->
                 if (allReminders.isNotEmpty()) {
-                    allReminders.map { it.toReminderEntity() }
+                    withContext(ioDispatcher) {
+                        allReminders.map { it.toReminderEntity() }
+                    }
                 } else emptyList()
             }
 

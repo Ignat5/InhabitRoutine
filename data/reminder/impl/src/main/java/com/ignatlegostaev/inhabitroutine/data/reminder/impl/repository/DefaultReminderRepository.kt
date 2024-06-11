@@ -3,12 +3,15 @@ package com.ignatlegostaev.inhabitroutine.data.reminder.impl.repository
 import com.ignatlegostaev.inhabitroutine.core.util.ResultModel
 import com.ignatlegostaev.inhabitroutine.data.reminder.api.ReminderRepository
 import com.ignatlegostaev.inhabitroutine.data.reminder.impl.data_source.ReminderDataSource
+import com.ignatlegostaev.inhabitroutine.data.reminder.impl.model.ReminderDataModel
 import com.ignatlegostaev.inhabitroutine.data.reminder.impl.util.toReminderDataModel
 import com.ignatlegostaev.inhabitroutine.data.reminder.impl.util.toReminderModel
 import com.ignatlegostaev.inhabitroutine.domain.model.reminder.ReminderModel
+import com.ignatlegostaev.inhabitroutine.domain.model.reminder.content.ReminderSchedule
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -38,12 +41,25 @@ internal class DefaultReminderRepository(
         reminderDataSource.readRemindersByDate(targetDate).map { allReminders ->
             if (allReminders.isNotEmpty()) {
                 withContext(defaultDispatcher) {
-                    allReminders.map {
-                        async { it.toReminderModel() }
-                    }.awaitAll()
+                    allReminders
+                        .map {
+                            async { it.toReminderModel() }
+                        }.awaitAll()
+                        .filterByDate(targetDate)
                 }
             } else emptyList()
         }
+
+    private fun List<ReminderModel>.filterByDate(date: LocalDate) = this.let { allReminders ->
+        allReminders.filter { reminderModel ->
+            when (val schedule = reminderModel.schedule) {
+                is ReminderSchedule.AlwaysEnabled -> true
+                is ReminderSchedule.DaysOfWeek -> {
+                    date.dayOfWeek in schedule.daysOfWeek
+                }
+            }
+        }
+    }
 
     override fun readReminders(): Flow<List<ReminderModel>> =
         reminderDataSource.readReminders().map { allReminders ->

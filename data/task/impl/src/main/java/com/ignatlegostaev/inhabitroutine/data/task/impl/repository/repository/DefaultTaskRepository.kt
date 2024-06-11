@@ -7,6 +7,7 @@ import com.ignatlegostaev.inhabitroutine.data.task.impl.repository.util.toTaskDa
 import com.ignatlegostaev.inhabitroutine.data.task.impl.repository.util.toTaskModel
 import com.ignatlegostaev.inhabitroutine.domain.model.task.TaskModel
 import com.ignatlegostaev.inhabitroutine.domain.model.task.type.TaskType
+import com.ignatlegostaev.inhabitroutine.domain.model.util.checkIfMatches
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -46,9 +47,30 @@ internal class DefaultTaskRepository(
                 withContext(defaultDispatcher) {
                     allTasks.map {
                         async { it.toTaskModel() }
-                    }.awaitAll().filterNotNull()
+                    }.awaitAll()
+                        .filterNotNull()
+                        .filterByDate(targetDate)
                 }
             } else emptyList()
+        }
+
+    private fun List<TaskModel>.filterByDate(date: LocalDate) = this.let { allTasks ->
+        allTasks.filter { taskModel ->
+            with(taskModel) {
+                checkIfTaskDateMatches(date) && checkIfTaskFrequencyMatches(date)
+            }
+        }
+    }
+
+    private fun TaskModel.checkIfTaskDateMatches(date: LocalDate): Boolean =
+        this.date.checkIfMatches(date)
+
+    private fun TaskModel.checkIfTaskFrequencyMatches(date: LocalDate): Boolean =
+        this.let { taskModel ->
+            when (taskModel) {
+                is TaskModel.RecurringActivity -> taskModel.frequency.checkIfMatches(date)
+                is TaskModel.Task.SingleTask -> taskModel.date.checkIfMatches(date)
+            }
         }
 
     override fun readTasksById(taskId: String): Flow<List<TaskModel>> =
