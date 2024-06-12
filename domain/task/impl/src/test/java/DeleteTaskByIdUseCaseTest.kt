@@ -1,4 +1,4 @@
-import com.ignatlegostaev.inhabitroutine.core.test.factory.SingleTaskFactory
+import com.ignatlegostaev.inhabitroutine.core.test.factory.task.SingleTaskFactory
 import com.ignatlegostaev.inhabitroutine.core.util.randomUUID
 import com.ignatlegostaev.inhabitroutine.data.task.test.FakeTaskRepository
 import com.ignatlegostaev.inhabitroutine.domain.model.task.TaskModel

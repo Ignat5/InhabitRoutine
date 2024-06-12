@@ -7,11 +7,11 @@ import com.ignatlegostaev.inhabitroutine.core.presentation.ui.dialog.pick_date.c
 import com.ignatlegostaev.inhabitroutine.core.presentation.ui.dialog.pick_task_progress_type.PickTaskProgressTypeScreenResult
 import com.ignatlegostaev.inhabitroutine.core.presentation.ui.dialog.pick_task_type.PickTaskTypeScreenResult
 import com.ignatlegostaev.inhabitroutine.core.test.TestUtil
-import com.ignatlegostaev.inhabitroutine.core.test.factory.HabitNumberFactory
-import com.ignatlegostaev.inhabitroutine.core.test.factory.HabitTimeFactory
-import com.ignatlegostaev.inhabitroutine.core.test.factory.HabitYesNoFactory
-import com.ignatlegostaev.inhabitroutine.core.test.factory.RecurringTaskFactory
-import com.ignatlegostaev.inhabitroutine.core.test.factory.SingleTaskFactory
+import com.ignatlegostaev.inhabitroutine.core.test.factory.task.HabitNumberFactory
+import com.ignatlegostaev.inhabitroutine.core.test.factory.task.HabitTimeFactory
+import com.ignatlegostaev.inhabitroutine.core.test.factory.task.HabitYesNoFactory
+import com.ignatlegostaev.inhabitroutine.core.test.factory.task.RecurringTaskFactory
+import com.ignatlegostaev.inhabitroutine.core.test.factory.task.SingleTaskFactory
 import com.ignatlegostaev.inhabitroutine.core.util.ResultModel
 import com.ignatlegostaev.inhabitroutine.core.util.randomUUID
 import com.ignatlegostaev.inhabitroutine.domain.model.derived.TaskExtras
@@ -52,10 +52,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
-import org.mockito.Mockito
-import org.mockito.Spy
 import org.mockito.junit.MockitoJUnitRunner
-import org.mockito.kotlin.any
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyBlocking

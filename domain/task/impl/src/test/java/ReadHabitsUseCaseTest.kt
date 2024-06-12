@@ -1,8 +1,7 @@
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
-import com.ignatlegostaev.inhabitroutine.core.test.factory.HabitYesNoFactory
-import com.ignatlegostaev.inhabitroutine.core.test.factory.SingleTaskFactory
-import com.ignatlegostaev.inhabitroutine.core.test.factory.TaskAbstractFactory
+import com.ignatlegostaev.inhabitroutine.core.test.factory.task.HabitYesNoFactory
+import com.ignatlegostaev.inhabitroutine.core.test.factory.task.SingleTaskFactory
 import com.ignatlegostaev.inhabitroutine.data.task.test.FakeTaskRepository
 import com.ignatlegostaev.inhabitroutine.domain.model.task.TaskModel
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.ReadHabitsUseCase

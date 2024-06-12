@@ -3,6 +3,7 @@ package com.ignatlegostaev.inhabitroutine.data.task.impl.repository.repository
 import com.ignatlegostaev.inhabitroutine.core.util.ResultModel
 import com.ignatlegostaev.inhabitroutine.data.task.api.TaskRepository
 import com.ignatlegostaev.inhabitroutine.data.task.impl.repository.data_source.TaskDataSource
+import com.ignatlegostaev.inhabitroutine.data.task.impl.repository.model.task.TaskDataModel
 import com.ignatlegostaev.inhabitroutine.data.task.impl.repository.util.toTaskDataModel
 import com.ignatlegostaev.inhabitroutine.data.task.impl.repository.util.toTaskModel
 import com.ignatlegostaev.inhabitroutine.domain.model.task.TaskModel
@@ -11,6 +12,7 @@ import com.ignatlegostaev.inhabitroutine.domain.model.util.checkIfMatches
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -34,9 +36,7 @@ internal class DefaultTaskRepository(
         taskDataSource.readTasksByQuery(query).map { allTasks ->
             if (allTasks.isNotEmpty()) {
                 withContext(defaultDispatcher) {
-                    allTasks.map {
-                        async { it.toTaskModel() }
-                    }.awaitAll().filterNotNull()
+                    allTasks.mapToTaskModel()
                 }
             } else emptyList()
         }
@@ -45,10 +45,8 @@ internal class DefaultTaskRepository(
         taskDataSource.readTasksByDate(targetDate).map { allTasks ->
             if (allTasks.isNotEmpty()) {
                 withContext(defaultDispatcher) {
-                    allTasks.map {
-                        async { it.toTaskModel() }
-                    }.awaitAll()
-                        .filterNotNull()
+                    allTasks
+                        .mapToTaskModel()
                         .filterByDate(targetDate)
                 }
             } else emptyList()
@@ -56,30 +54,21 @@ internal class DefaultTaskRepository(
 
     private fun List<TaskModel>.filterByDate(date: LocalDate) = this.let { allTasks ->
         allTasks.filter { taskModel ->
-            with(taskModel) {
-                checkIfTaskDateMatches(date) && checkIfTaskFrequencyMatches(date)
-            }
-        }
-    }
-
-    private fun TaskModel.checkIfTaskDateMatches(date: LocalDate): Boolean =
-        this.date.checkIfMatches(date)
-
-    private fun TaskModel.checkIfTaskFrequencyMatches(date: LocalDate): Boolean =
-        this.let { taskModel ->
             when (taskModel) {
-                is TaskModel.RecurringActivity -> taskModel.frequency.checkIfMatches(date)
+                is TaskModel.RecurringActivity -> {
+                    taskModel.date.checkIfMatches(date) && taskModel.frequency.checkIfMatches(date)
+                }
+
                 is TaskModel.Task.SingleTask -> taskModel.date.checkIfMatches(date)
             }
         }
+    }
 
     override fun readTasksById(taskId: String): Flow<List<TaskModel>> =
         taskDataSource.readTasksById(taskId).map { allTasks ->
             if (allTasks.isNotEmpty()) {
                 withContext(defaultDispatcher) {
-                    allTasks.map {
-                        async { it.toTaskModel() }
-                    }.awaitAll().filterNotNull()
+                    allTasks.mapToTaskModel()
                 }
             } else emptyList()
         }
@@ -88,11 +77,18 @@ internal class DefaultTaskRepository(
         taskDataSource.readTasksByTaskType(targetTaskTypes).map { allTasks ->
             if (allTasks.isNotEmpty()) {
                 withContext(defaultDispatcher) {
-                    allTasks.map {
-                        async { it.toTaskModel() }
-                    }.awaitAll().filterNotNull()
+                    allTasks.mapToTaskModel()
                 }
             } else emptyList()
+        }
+
+    private suspend fun List<TaskDataModel>.mapToTaskModel(): List<TaskModel> =
+        this.let { allTasks ->
+            coroutineScope {
+                allTasks.map {
+                    async { it.toTaskModel() }
+                }.awaitAll().filterNotNull()
+            }
         }
 
     override suspend fun saveTask(

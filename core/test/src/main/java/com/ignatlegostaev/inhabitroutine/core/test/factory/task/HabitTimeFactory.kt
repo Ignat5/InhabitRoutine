@@ -1,13 +1,15 @@
-package com.ignatlegostaev.inhabitroutine.core.test.factory
+package com.ignatlegostaev.inhabitroutine.core.test.factory.task
 
-import com.ignatlegostaev.inhabitroutine.core.test.factory.TaskAbstractFactory
+import com.ignatlegostaev.inhabitroutine.core.test.TestUtil
+import com.ignatlegostaev.inhabitroutine.core.test.factory.task.TaskAbstractFactory
 import com.ignatlegostaev.inhabitroutine.domain.model.task.TaskModel
 import com.ignatlegostaev.inhabitroutine.domain.model.task.content.TaskDate
 import com.ignatlegostaev.inhabitroutine.domain.model.task.content.TaskFrequency
 
-class RecurringTaskFactory : TaskAbstractFactory() {
-    override fun build(): TaskModel.Task.RecurringTask {
-        return TaskModel.Task.RecurringTask(
+class HabitTimeFactory : TaskAbstractFactory() {
+
+    override fun build(): TaskModel.Habit.HabitContinuous.HabitTime {
+        return TaskModel.Habit.HabitContinuous.HabitTime(
             id = super.taskId,
             title = super.taskTitle,
             description = TaskAbstractFactory.TASK_DESCRIPTION,
@@ -17,7 +19,9 @@ class RecurringTaskFactory : TaskAbstractFactory() {
             versionStartDate = super.startDate,
             isDraft = TaskAbstractFactory.TASK_IS_DRAFT,
             createdAt = super.createdAt,
-            frequency = TaskFrequency.EveryDay
+            frequency = TaskFrequency.EveryDay,
+            progress = TestUtil.buildRandomTaskProgressTime()
         )
     }
+
 }

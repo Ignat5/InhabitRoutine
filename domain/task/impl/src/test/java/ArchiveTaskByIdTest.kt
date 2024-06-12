@@ -1,4 +1,4 @@
-import com.ignatlegostaev.inhabitroutine.core.test.factory.SingleTaskFactory
+import com.ignatlegostaev.inhabitroutine.core.test.factory.task.SingleTaskFactory
 import com.ignatlegostaev.inhabitroutine.data.task.test.FakeTaskRepository
 import com.ignatlegostaev.inhabitroutine.domain.model.task.TaskModel
 import com.ignatlegostaev.inhabitroutine.domain.reminder.api.ResetTaskRemindersUseCase
@@ -17,8 +17,6 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import com.google.common.truth.Truth.assertThat
 import com.ignatlegostaev.inhabitroutine.core.util.randomUUID
-import com.ignatlegostaev.inhabitroutine.data.task.api.TaskRepository
-import org.mockito.kotlin.spy
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
 

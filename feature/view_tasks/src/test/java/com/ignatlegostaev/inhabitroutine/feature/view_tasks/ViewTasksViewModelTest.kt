@@ -2,7 +2,7 @@ package com.ignatlegostaev.inhabitroutine.feature.view_tasks
 
 import com.ignatlegostaev.inhabitroutine.core.presentation.ui.dialog.archive_task.components.ArchiveTaskScreenResult
 import com.ignatlegostaev.inhabitroutine.core.presentation.ui.dialog.delete_task.components.DeleteTaskScreenResult
-import com.ignatlegostaev.inhabitroutine.core.test.factory.SingleTaskFactory
+import com.ignatlegostaev.inhabitroutine.core.test.factory.task.SingleTaskFactory
 import com.ignatlegostaev.inhabitroutine.core.util.ResultModel
 import com.ignatlegostaev.inhabitroutine.core.util.randomUUID
 import com.ignatlegostaev.inhabitroutine.domain.model.task.TaskModel

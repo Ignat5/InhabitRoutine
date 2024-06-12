@@ -5,5 +5,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDate
 
 interface ReadTasksWithExtrasAndRecordByDateUseCase {
-    operator fun invoke(date: LocalDate): Flow<List<TaskWithExtrasAndRecordModel>>
+
+    operator fun invoke(
+        date: LocalDate,
+        excludeArchived: Boolean = true,
+        excludeDrafts: Boolean = true
+    ): Flow<List<TaskWithExtrasAndRecordModel>>
 }

@@ -3,10 +3,9 @@ package com.ignatlegostaev.inhabitroutine.feature.create_edit_task.edit
 import com.google.common.truth.Truth.assertThat
 import com.ignatlegostaev.inhabitroutine.core.presentation.ui.dialog.archive_task.components.ArchiveTaskScreenResult
 import com.ignatlegostaev.inhabitroutine.core.presentation.ui.dialog.delete_task.components.DeleteTaskScreenResult
-import com.ignatlegostaev.inhabitroutine.core.presentation.ui.dialog.reset_task.components.ResetTaskScreenEvent
 import com.ignatlegostaev.inhabitroutine.core.presentation.ui.dialog.reset_task.components.ResetTaskScreenResult
-import com.ignatlegostaev.inhabitroutine.core.test.factory.HabitYesNoFactory
-import com.ignatlegostaev.inhabitroutine.core.test.factory.SingleTaskFactory
+import com.ignatlegostaev.inhabitroutine.core.test.factory.task.HabitYesNoFactory
+import com.ignatlegostaev.inhabitroutine.core.test.factory.task.SingleTaskFactory
 import com.ignatlegostaev.inhabitroutine.core.util.ResultModel
 import com.ignatlegostaev.inhabitroutine.core.util.randomUUID
 import com.ignatlegostaev.inhabitroutine.domain.model.task.TaskModel

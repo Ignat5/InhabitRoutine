@@ -1,6 +1,6 @@
 package com.ignatlegostaev.inhabitroutine.feature.view_habits
 
-import com.ignatlegostaev.inhabitroutine.core.test.factory.HabitYesNoFactory
+import com.ignatlegostaev.inhabitroutine.core.test.factory.task.HabitYesNoFactory
 import com.ignatlegostaev.inhabitroutine.domain.model.task.TaskModel
 import com.ignatlegostaev.inhabitroutine.feature.view_habits.config.view_habit_actions.ViewHabitActionsStateHolder
 import com.ignatlegostaev.inhabitroutine.feature.view_habits.config.view_habit_actions.model.ItemHabitAction

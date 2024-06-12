@@ -25,7 +25,7 @@ internal class DefaultReminderRepository(
     override fun readRemindersByTaskId(taskId: String): Flow<List<ReminderModel>> =
         reminderDataSource.readRemindersByTaskId(taskId).map { allReminders ->
             withContext(defaultDispatcher) {
-                allReminders.map { it.toReminderModel() }
+                allReminders.mapToReminderModel()
             }
         }
 
@@ -42,9 +42,7 @@ internal class DefaultReminderRepository(
             if (allReminders.isNotEmpty()) {
                 withContext(defaultDispatcher) {
                     allReminders
-                        .map {
-                            async { it.toReminderModel() }
-                        }.awaitAll()
+                        .mapToReminderModel()
                         .filterByDate(targetDate)
                 }
             } else emptyList()
@@ -63,7 +61,16 @@ internal class DefaultReminderRepository(
 
     override fun readReminders(): Flow<List<ReminderModel>> =
         reminderDataSource.readReminders().map { allReminders ->
-            withContext(defaultDispatcher) {
+            if (allReminders.isNotEmpty()) {
+                withContext(defaultDispatcher) {
+                    allReminders.mapToReminderModel()
+                }
+            } else emptyList()
+        }
+
+    private suspend fun List<ReminderDataModel>.mapToReminderModel(): List<ReminderModel> =
+        this.let { allReminders ->
+            coroutineScope {
                 allReminders.map {
                     async { it.toReminderModel() }
                 }.awaitAll()

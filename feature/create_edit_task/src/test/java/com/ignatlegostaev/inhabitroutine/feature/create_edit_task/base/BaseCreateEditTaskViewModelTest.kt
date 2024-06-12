@@ -7,11 +7,11 @@ import com.ignatlegostaev.inhabitroutine.core.presentation.components.navigation
 import com.ignatlegostaev.inhabitroutine.core.presentation.components.state.ScreenState
 import com.ignatlegostaev.inhabitroutine.core.presentation.ui.dialog.pick_date.components.PickDateScreenResult
 import com.ignatlegostaev.inhabitroutine.core.test.TestUtil
-import com.ignatlegostaev.inhabitroutine.core.test.factory.HabitNumberFactory
-import com.ignatlegostaev.inhabitroutine.core.test.factory.HabitTimeFactory
-import com.ignatlegostaev.inhabitroutine.core.test.factory.HabitYesNoFactory
-import com.ignatlegostaev.inhabitroutine.core.test.factory.RecurringTaskFactory
-import com.ignatlegostaev.inhabitroutine.core.test.factory.SingleTaskFactory
+import com.ignatlegostaev.inhabitroutine.core.test.factory.task.HabitNumberFactory
+import com.ignatlegostaev.inhabitroutine.core.test.factory.task.HabitTimeFactory
+import com.ignatlegostaev.inhabitroutine.core.test.factory.task.HabitYesNoFactory
+import com.ignatlegostaev.inhabitroutine.core.test.factory.task.RecurringTaskFactory
+import com.ignatlegostaev.inhabitroutine.core.test.factory.task.SingleTaskFactory
 import com.ignatlegostaev.inhabitroutine.core.util.ResultModel
 import com.ignatlegostaev.inhabitroutine.domain.model.task.TaskModel
 import com.ignatlegostaev.inhabitroutine.domain.model.task.content.TaskDate

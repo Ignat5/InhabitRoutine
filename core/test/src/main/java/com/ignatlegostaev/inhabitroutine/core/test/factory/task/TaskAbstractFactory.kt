@@ -1,4 +1,4 @@
-package com.ignatlegostaev.inhabitroutine.core.test.factory
+package com.ignatlegostaev.inhabitroutine.core.test.factory.task
 
 import com.ignatlegostaev.inhabitroutine.core.util.randomUUID
 import com.ignatlegostaev.inhabitroutine.core.util.todayDate

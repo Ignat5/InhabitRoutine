@@ -9,14 +9,13 @@ import com.ignatlegostaev.inhabitroutine.domain.model.derived.TaskWithExtrasAndR
 import com.ignatlegostaev.inhabitroutine.domain.model.record.RecordModel
 import com.ignatlegostaev.inhabitroutine.domain.model.record.content.RecordEntry
 import com.ignatlegostaev.inhabitroutine.domain.model.reminder.ReminderModel
-import com.ignatlegostaev.inhabitroutine.domain.model.reminder.content.ReminderSchedule
 import com.ignatlegostaev.inhabitroutine.domain.model.task.TaskModel
-import com.ignatlegostaev.inhabitroutine.domain.model.util.checkIfMatches
 import com.ignatlegostaev.inhabitroutine.domain.task.api.use_case.ReadTasksWithExtrasAndRecordByDateUseCase
 import com.ignatlegostaev.inhabitroutine.domain.task.impl.util.getTaskStatusByRecordEntry
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -73,23 +72,66 @@ internal class DefaultReadTasksWithExtrasAndRecordByDateUseCase(
     private val defaultDispatcher: CoroutineDispatcher
 ) : ReadTasksWithExtrasAndRecordByDateUseCase {
 
-    override operator fun invoke(date: LocalDate): Flow<List<TaskWithExtrasAndRecordModel>> =
+    override operator fun invoke(
+        date: LocalDate,
+        excludeArchived: Boolean,
+        excludeDrafts: Boolean
+    ): Flow<List<TaskWithExtrasAndRecordModel>> =
         combine(
-            readTasksByDate(date),
+            readTasksByDate(
+                date = date,
+                excludeArchived = excludeArchived,
+                excludeDrafts = excludeDrafts
+            ),
             readRemindersByDate(date),
             readRecordsByDate(date)
         ) { allTasks, allReminders, allRecords ->
             withContext(defaultDispatcher) {
-                allTasks.map { taskModel ->
-                    async {
-                        taskModel.toTaskWithExtrasAndRecord(
-                            allReminders = allReminders.filter { it.taskId == taskModel.id },
-                            record = allRecords.find { it.taskId == taskModel.id }
-                        )
-                    }
-                }.awaitAll()
+                mapToTaskWithExtrasAndRecord(allTasks, allReminders, allRecords)
             }
         }
+
+    private fun readTasksByDate(date: LocalDate, excludeArchived: Boolean, excludeDrafts: Boolean) =
+        taskRepository.readTasksByDate(date).map { allTasks ->
+            withContext(defaultDispatcher) {
+                allTasks
+                    .let { if (excludeDrafts) it.excludeDrafts() else it }
+                    .let { if (excludeArchived) it.excludeArchived() else it }
+            }
+        }
+
+    private fun List<TaskModel>.excludeDrafts() = this.let { allTasks ->
+        allTasks.filterNot { it.isDraft }
+    }
+
+    private fun List<TaskModel>.excludeArchived() = this.let { allTasks ->
+        allTasks.filterNot { it.isArchived }
+    }
+
+    private fun readRemindersByDate(date: LocalDate) = reminderRepository.readRemindersByDate(date)
+
+    private fun readRecordsByDate(date: LocalDate) = recordRepository.readRecordsByDate(date)
+
+    private suspend fun mapToTaskWithExtrasAndRecord(
+        allTasks: List<TaskModel>,
+        allReminders: List<ReminderModel>,
+        allRecords: List<RecordModel>
+    ): List<TaskWithExtrasAndRecordModel> = coroutineScope {
+        allTasks.map { taskModel ->
+            async {
+                taskModel.toTaskWithExtrasAndRecord(
+                    allReminders.filterByTaskId(taskModel.id),
+                    allRecords.findByTaskId(taskModel.id)
+                )
+            }
+        }.awaitAll()
+    }
+
+    private fun List<ReminderModel>.filterByTaskId(taskId: String) =
+        this.filter { it.taskId == taskId }
+
+    private fun List<RecordModel>.findByTaskId(taskId: String) =
+        this.find { it.taskId == taskId }
 
     private fun TaskModel.toTaskWithExtrasAndRecord(
         allReminders: List<ReminderModel>,
@@ -165,46 +207,6 @@ internal class DefaultReadTasksWithExtrasAndRecordByDateUseCase(
                 }
             }
         }
-    }
-
-    private fun readRecordsByDate(date: LocalDate): Flow<List<RecordModel>> =
-        recordRepository.readRecordsByDate(date)
-
-    private fun readTasksByDate(date: LocalDate) =
-        taskRepository.readTasksByDate(date)
-            .map { allTasks ->
-                if (allTasks.isNotEmpty()) {
-                    withContext(defaultDispatcher) {
-                        allTasks.filterTasks(date)
-                    }
-                } else emptyList()
-            }.distinctUntilChanged()
-
-    private fun readRemindersByDate(date: LocalDate) =
-        reminderRepository.readRemindersByDate(date)
-
-    private fun List<TaskModel>.filterTasks(date: LocalDate) = this.let { allTasks ->
-        allTasks
-            .asSequence()
-            .filterDrafts()
-            .filterArchived()
-            .filterByDate(date)
-            .toList()
-    }
-
-    private fun Sequence<TaskModel>.filterByDate(date: LocalDate) = this.let { allTasks ->
-        allTasks.filter { taskModel ->
-            taskModel.date.checkIfMatches(date) &&
-                    (taskModel as? TaskModel.RecurringActivity)?.frequency?.checkIfMatches(date) ?: true
-        }
-    }
-
-    private fun Sequence<TaskModel>.filterDrafts() = this.let { allTasks ->
-        allTasks.filterNot { it.isDraft }
-    }
-
-    private fun Sequence<TaskModel>.filterArchived() = this.let { allTasks ->
-        allTasks.filterNot { it.isArchived }
     }
 
 }

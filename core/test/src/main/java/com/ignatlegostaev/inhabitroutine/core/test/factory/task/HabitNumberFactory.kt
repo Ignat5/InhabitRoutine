@@ -1,14 +1,10 @@
-package com.ignatlegostaev.inhabitroutine.core.test.factory
+package com.ignatlegostaev.inhabitroutine.core.test.factory.task
 
 import com.ignatlegostaev.inhabitroutine.core.test.TestUtil
-import com.ignatlegostaev.inhabitroutine.core.util.randomUUID
+import com.ignatlegostaev.inhabitroutine.core.test.factory.task.TaskAbstractFactory
 import com.ignatlegostaev.inhabitroutine.domain.model.task.TaskModel
 import com.ignatlegostaev.inhabitroutine.domain.model.task.content.TaskDate
 import com.ignatlegostaev.inhabitroutine.domain.model.task.content.TaskFrequency
-import com.ignatlegostaev.inhabitroutine.domain.model.task.content.TaskProgress
-import com.ignatlegostaev.inhabitroutine.domain.model.task.type.ProgressLimitType
-import com.ignatlegostaev.inhabitroutine.domain.model.util.DomainConst
-import kotlin.random.Random
 
 class HabitNumberFactory : TaskAbstractFactory() {
 

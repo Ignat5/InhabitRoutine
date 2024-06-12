@@ -1,6 +1,6 @@
 import com.google.common.truth.Truth.assertThat
 import com.ignatlegostaev.inhabitroutine.core.test.TestUtil
-import com.ignatlegostaev.inhabitroutine.core.test.factory.HabitNumberFactory
+import com.ignatlegostaev.inhabitroutine.core.test.factory.task.HabitNumberFactory
 import com.ignatlegostaev.inhabitroutine.core.util.ResultModel
 import com.ignatlegostaev.inhabitroutine.data.task.test.FakeTaskRepository
 import com.ignatlegostaev.inhabitroutine.domain.model.task.TaskModel

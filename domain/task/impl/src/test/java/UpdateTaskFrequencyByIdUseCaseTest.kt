@@ -1,5 +1,5 @@
 import com.google.common.truth.Truth.assertThat
-import com.ignatlegostaev.inhabitroutine.core.test.factory.RecurringTaskFactory
+import com.ignatlegostaev.inhabitroutine.core.test.factory.task.RecurringTaskFactory
 import com.ignatlegostaev.inhabitroutine.core.util.ResultModel
 import com.ignatlegostaev.inhabitroutine.core.util.randomUUID
 import com.ignatlegostaev.inhabitroutine.data.task.test.FakeTaskRepository
