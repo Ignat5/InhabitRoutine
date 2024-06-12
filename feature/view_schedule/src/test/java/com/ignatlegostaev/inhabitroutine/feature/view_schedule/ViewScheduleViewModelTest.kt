@@ -1059,8 +1059,14 @@ class ViewScheduleViewModelTest {
 
 private class FakeReadTasksWithExtrasAndRecordByDateUseCase :
     ReadTasksWithExtrasAndRecordByDateUseCase {
+
     val dataState = MutableStateFlow<List<TaskWithExtrasAndRecordModel>>(emptyList())
-    override fun invoke(date: LocalDate): Flow<List<TaskWithExtrasAndRecordModel>> {
+
+    override fun invoke(
+        date: LocalDate,
+        excludeArchived: Boolean,
+        excludeDrafts: Boolean
+    ): Flow<List<TaskWithExtrasAndRecordModel>> {
         return dataState
     }
 }
