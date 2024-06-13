@@ -133,12 +133,10 @@ object LocalReminderDomainModule {
     fun provideResetTaskRemindersUseCase(
         reminderRepository: ReminderRepository,
         reminderManager: ReminderManager,
-        defaultDispatcher: CoroutineDispatcher
     ): ResetTaskRemindersUseCase {
         return DefaultResetTaskRemindersUseCase(
             reminderRepository = reminderRepository,
             reminderManager = reminderManager,
-            defaultDispatcher = defaultDispatcher
         )
     }
 

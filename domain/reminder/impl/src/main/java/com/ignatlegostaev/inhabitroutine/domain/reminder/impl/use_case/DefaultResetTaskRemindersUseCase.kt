@@ -10,18 +10,17 @@ import kotlinx.coroutines.withContext
 internal class DefaultResetTaskRemindersUseCase(
     private val reminderRepository: ReminderRepository,
     private val reminderManager: ReminderManager,
-    private val defaultDispatcher: CoroutineDispatcher
 ) : ResetTaskRemindersUseCase {
 
     override suspend operator fun invoke(taskId: String) {
-        withContext(defaultDispatcher) {
-            reminderRepository.readReminderIdsByTaskId(taskId).firstOrNull()?.toSet()
-                ?.let { allReminderIds ->
-                    allReminderIds.forEach { reminderId ->
-                        reminderManager.resetReminderById(reminderId)
-                    }
-                }
+        val allReminderIds = getReminderIdsByTaskId(taskId)
+        allReminderIds.forEach { reminderId ->
+            reminderManager.resetReminderById(reminderId)
         }
     }
+
+    private suspend fun getReminderIdsByTaskId(taskId: String) =
+        reminderRepository.readReminderIdsByTaskId(taskId).firstOrNull()
+            ?: emptyList()
 
 }
