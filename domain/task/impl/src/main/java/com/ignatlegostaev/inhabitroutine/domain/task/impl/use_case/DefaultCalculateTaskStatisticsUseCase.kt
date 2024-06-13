@@ -22,7 +22,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -38,28 +37,31 @@ internal class DefaultCalculateTaskStatisticsUseCase(
     private val defaultDispatcher: CoroutineDispatcher
 ) : CalculateTaskStatisticsUseCase {
 
-    override suspend operator fun invoke(taskId: String): ResultModel<TaskStatisticsModel, Throwable> {
-        return combine(
-            readTasksById(taskId),
-            recordRepository.readRecordsByTaskId(taskId)
-        ) { allTasks, allRecords ->
-            allTasks.firstOrNull()?.let { taskModel ->
-                withContext(defaultDispatcher) {
-                    val startDate = taskModel.date.startDate
-                    val endDate =
-                        taskModel.date.endDate?.let { minOf(it, Clock.System.todayDate) }
-                            ?: Clock.System.todayDate
-                    getStatusMap(
-                        allTasks = allTasks,
-                        allRecords = allRecords,
-                        startDate = startDate,
-                        endDate = endDate
-                    ).let { statusMap ->
-                        ResultModel.success(getTaskStatisticsModel(statusMap))
+    override suspend operator fun invoke(taskId: String): ResultModel<TaskStatisticsModel, Throwable> =
+        coroutineScope {
+            val allTasksDeferred = async {
+                readTasksById(taskId).firstOrNull()
+            }
+            val allRecordsDeferred = async {
+                readRecordsById(taskId).firstOrNull()
+            }
+
+            allTasksDeferred.await()?.let { allTasks ->
+                allRecordsDeferred.await()?.let { allRecords ->
+                    withContext(defaultDispatcher) {
+                        val taskStatistics = calculateStatistics(allTasks, allRecords)
+                        ResultModel.success(taskStatistics)
                     }
-                }
+                } ?: ResultModel.failure(IllegalStateException())
             } ?: ResultModel.failure(IllegalStateException())
-        }.firstOrNull() ?: ResultModel.failure(NoSuchElementException())
+        }
+
+    private suspend fun calculateStatistics(
+        allTasks: List<TaskModel.Habit>,
+        allRecords: List<RecordModel>
+    ): TaskStatisticsModel {
+        val statusMap = buildStatusMap(allTasks, allRecords)
+        return getTaskStatisticsModel(statusMap)
     }
 
     private suspend fun getTaskStatisticsModel(statusMap: Map<LocalDate, TaskStatus>): TaskStatisticsModel =
@@ -132,10 +134,10 @@ internal class DefaultCalculateTaskStatisticsUseCase(
     private fun calculateStreak(statusMap: Map<LocalDate, TaskStatus>): TaskStreakModel {
         var currentStreakCount = 0
         var bestStreakCount = 0
-        statusMap.filterValues { it !is TaskStatus.NotCompleted.Skipped }.let { statusMap ->
-            statusMap.keys.sorted().let { allDays ->
+        with(statusMap.filterValues { it !is TaskStatus.NotCompleted.Skipped }) {
+            keys.sorted().let { allDays ->
                 allDays.forEach { day ->
-                    statusMap.getValue(day).let { status ->
+                    getValue(day).let { status ->
                         when (status) {
                             is TaskStatus.Completed -> {
                                 currentStreakCount++
@@ -151,11 +153,11 @@ internal class DefaultCalculateTaskStatisticsUseCase(
                     }
                 }
             }
-            return TaskStreakModel(
-                currentStreak = currentStreakCount,
-                bestStreak = bestStreakCount
-            )
         }
+        return TaskStreakModel(
+            currentStreak = currentStreakCount,
+            bestStreak = bestStreakCount
+        )
     }
 
     private fun calculateHabitScore(statusMap: Map<LocalDate, TaskStatus>): Float {
@@ -168,91 +170,94 @@ internal class DefaultCalculateTaskStatisticsUseCase(
         }
     }
 
-    private suspend fun getStatusMap(
+    private suspend fun buildStatusMap(
         allTasks: List<TaskModel.Habit>,
-        allRecords: List<RecordModel>,
-        startDate: LocalDate,
-        endDate: LocalDate
+        allRecords: List<RecordModel>
     ): Map<LocalDate, TaskStatus> {
         return coroutineScope {
-            startDate.until(endDate, DateTimeUnit.DAY).let { daysUntilEnd ->
-                (0..daysUntilEnd).map { dayOffset ->
-                    async {
-                        startDate.plus(dayOffset, DateTimeUnit.DAY).let { nextDate ->
-                            allTasks
-                                .asSequence()
-                                .filter { it.versionStartDate <= nextDate }
-                                .maxByOrNull { it.versionStartDate }
-                                ?.let { nextTask ->
-                                    allRecords.find { it.date == nextDate }.let { nextRecord ->
-                                        getDateToTaskWithRecordPair(
-                                            taskModel = nextTask,
-                                            entry = nextRecord?.entry,
-                                            date = nextDate
-                                        )
-                                    }
+            allTasks.firstOrNull()?.let { taskModel ->
+                val dateRange = getDateRange(taskModel)
+                val startDate = dateRange.start
+                val endDate = dateRange.endInclusive
+                startDate.until(endDate, DateTimeUnit.DAY).let { daysUntilEnd ->
+                    (0..daysUntilEnd).map { dayOffset ->
+                        async {
+                            startDate.plus(dayOffset, DateTimeUnit.DAY).let { nextDate ->
+                                findTaskRecordPairByDate(
+                                    allTasks,
+                                    allRecords,
+                                    nextDate
+                                )?.let { taskRecordPair ->
+                                    getDateToTaskStatusPair(
+                                        taskModel = taskRecordPair.first,
+                                        entry = taskRecordPair.second?.entry,
+                                        date = nextDate
+                                    )
                                 }
+                            }
                         }
-                    }
-                }.awaitAll().filterNotNull().toMap()
-            }
+                    }.awaitAll().filterNotNull().toMap()
+                }
+            } ?: emptyMap()
         }
     }
 
-    private fun getDateToTaskWithRecordPair(
+    private fun getDateRange(taskModel: TaskModel.Habit): ClosedRange<LocalDate> {
+        val startDate = taskModel.date.startDate
+        val endDate =
+            taskModel.date.endDate?.let { minOf(it, Clock.System.todayDate) }
+                ?: Clock.System.todayDate
+
+        return startDate..endDate
+    }
+
+    private fun findTaskRecordPairByDate(
+        allTasks: List<TaskModel.Habit>,
+        allRecords: List<RecordModel>,
+        date: LocalDate
+    ): Pair<TaskModel.Habit, RecordModel?>? {
+        return allTasks.findTaskByVersionStartDate(date)?.let { resultTask ->
+            val resultRecord = allRecords.find { it.date == date }
+            Pair(resultTask, resultRecord)
+        }
+    }
+
+    private fun List<TaskModel.Habit>.findTaskByVersionStartDate(date: LocalDate): TaskModel.Habit? =
+        this.let { allTasks ->
+            allTasks
+                .filter { it.versionStartDate <= date }
+                .maxByOrNull { it.versionStartDate }
+        }
+
+    private fun getDateToTaskStatusPair(
         taskModel: TaskModel.Habit,
         entry: RecordEntry?,
         date: LocalDate
     ): Pair<LocalDate, TaskStatus>? {
-        return if (taskModel.date.checkIfMatches(date) && taskModel.frequency.checkIfMatches(date) && !taskModel.isArchived) {
-            val taskStatus =
-                (taskModel.getTaskStatusByRecordEntry(entry) as? TaskStatus.Habit) ?: TaskStatus.NotCompleted.Pending
+        return if (taskModel.checkIfScheduled(date)) {
+            val taskStatus = getTaskStatus(taskModel, entry)
             Pair(date, taskStatus)
-        } else return null
+        } else null
     }
 
-//    private fun TaskModel.Habit.toTaskWithRecordModel(entry: RecordEntry?): TaskWithRecordModel.Habit {
-//        return this.let { taskModel ->
-//            taskModel.getTaskStatusByRecordEntry(entry).let { status ->
-//                when (taskModel) {
-//                    is TaskModel.Habit.HabitContinuous -> {
-//                        when (taskModel) {
-//                            is TaskModel.Habit.HabitContinuous.HabitNumber -> {
-//                                TaskWithRecordModel.Habit.HabitContinuous.HabitNumber(
-//                                    task = taskModel,
-//                                    recordEntry = entry as? RecordEntry.HabitEntry.Continuous.Number,
-//                                    status = (status as? TaskStatus.Habit)
-//                                        ?: TaskStatus.NotCompleted.Pending
-//                                )
-//                            }
-//
-//                            is TaskModel.Habit.HabitContinuous.HabitTime -> {
-//                                TaskWithRecordModel.Habit.HabitContinuous.HabitTime(
-//                                    task = taskModel,
-//                                    recordEntry = entry as? RecordEntry.HabitEntry.Continuous.Time,
-//                                    status = (status as? TaskStatus.Habit)
-//                                        ?: TaskStatus.NotCompleted.Pending
-//                                )
-//                            }
-//                        }
-//                    }
-//
-//                    is TaskModel.Habit.HabitYesNo -> {
-//                        TaskWithRecordModel.Habit.HabitYesNo(
-//                            task = taskModel,
-//                            recordEntry = entry as? RecordEntry.HabitEntry.YesNo,
-//                            status = (status as? TaskStatus.Habit)
-//                                ?: TaskStatus.NotCompleted.Pending
-//                        )
-//                    }
-//                }
-//            }
-//        }
-//    }
+    private fun TaskModel.Habit.checkIfScheduled(date: LocalDate): Boolean =
+        this.let { taskModel ->
+            return if (taskModel.isArchived) false
+            else taskModel.date.checkIfMatches(date) && taskModel.frequency.checkIfMatches(date)
+        }
+
+    private fun getTaskStatus(taskModel: TaskModel.Habit, entry: RecordEntry?): TaskStatus.Habit {
+        return (taskModel.getTaskStatusByRecordEntry(entry) as? TaskStatus.Habit)
+            ?: TaskStatus.NotCompleted.Pending
+    }
+
 
     private fun readTasksById(taskId: String): Flow<List<TaskModel.Habit>> =
         taskRepository.readTasksById(taskId).map { allTasks ->
-            allTasks.filterIsInstance(TaskModel.Habit::class.java)
+            allTasks.filterIsInstance<TaskModel.Habit>()
         }
+
+    private fun readRecordsById(taskId: String): Flow<List<RecordModel>> =
+        recordRepository.readRecordsByTaskId(taskId)
 
 }
