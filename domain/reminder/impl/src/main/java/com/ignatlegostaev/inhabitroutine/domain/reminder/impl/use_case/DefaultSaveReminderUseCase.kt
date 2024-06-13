@@ -2,6 +2,7 @@ package com.ignatlegostaev.inhabitroutine.domain.reminder.impl.use_case
 
 import com.ignatlegostaev.inhabitroutine.core.util.ResultModel
 import com.ignatlegostaev.inhabitroutine.core.util.mapFailure
+import com.ignatlegostaev.inhabitroutine.core.util.mapSuccess
 import com.ignatlegostaev.inhabitroutine.core.util.randomUUID
 import com.ignatlegostaev.inhabitroutine.data.reminder.api.ReminderRepository
 import com.ignatlegostaev.inhabitroutine.domain.model.reminder.ReminderModel
@@ -30,7 +31,7 @@ internal class DefaultSaveReminderUseCase(
         time: LocalTime,
         type: ReminderType,
         schedule: ReminderSchedule
-    ): ResultModel<Unit, SaveReminderUseCase.SaveReminderFailure> = withContext(defaultDispatcher) {
+    ): ResultModel<String, SaveReminderUseCase.SaveReminderFailure> = withContext(defaultDispatcher) {
         ReminderModel(
             id = randomUUID(),
             taskId = taskId,
@@ -47,7 +48,9 @@ internal class DefaultSaveReminderUseCase(
                         setUpNextReminderUseCase(reminderModel.id)
                     }
                 }
-                resultModel.mapFailure { SaveReminderUseCase.SaveReminderFailure.Other(it) }
+                resultModel
+                    .mapSuccess { reminderModel.id }
+                    .mapFailure { SaveReminderUseCase.SaveReminderFailure.Other(it) }
             } else {
                 ResultModel.failure(SaveReminderUseCase.SaveReminderFailure.Overlap)
             }

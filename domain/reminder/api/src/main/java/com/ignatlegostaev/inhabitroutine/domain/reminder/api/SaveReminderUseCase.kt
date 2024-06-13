@@ -17,5 +17,5 @@ interface SaveReminderUseCase {
         time: LocalTime,
         type: ReminderType,
         schedule: ReminderSchedule
-    ): ResultModel<Unit, SaveReminderFailure>
+    ): ResultModel<String, SaveReminderFailure>
 }
