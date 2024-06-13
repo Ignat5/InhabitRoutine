@@ -17,4 +17,13 @@ dependencies {
     implementation(project(":data:task:api"))
     implementation(libs.kotlin.coroutines.core)
     implementation(libs.kotlin.datetime)
+
+    testImplementation(project(":data:task:test"))
+    testImplementation(project(":data:reminder:test"))
+    testImplementation(project(":core:test"))
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlin.mockito)
+    testImplementation(libs.kotlin.coroutines.test)
+    testImplementation(libs.turbine)
+    testImplementation(libs.truth)
 }
