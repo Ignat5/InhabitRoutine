@@ -665,7 +665,7 @@ class ViewScheduleViewModelTest {
                 date = date,
                 requestType = SaveRecordUseCase.RequestType.EntryDone
             )
-        }.thenReturn(ResultModel.success(Unit))
+        }.thenReturn(ResultModel.success(randomUUID()))
     }
 
     private fun sendOnTaskClickEventForTask(taskId: String) {
@@ -738,7 +738,7 @@ class ViewScheduleViewModelTest {
                 date = result.date,
                 requestType = SaveRecordUseCase.RequestType.EntryDone
             )
-        }.thenReturn(ResultModel.success(Unit))
+        }.thenReturn(ResultModel.success(randomUUID()))
     }
 
     private fun verifySaveRecordUseCaseCalledOnceForResult(result: ViewTaskActionsScreenResult.OnActionClick.Done) {
@@ -777,7 +777,7 @@ class ViewScheduleViewModelTest {
                 date = result.date,
                 requestType = SaveRecordUseCase.RequestType.EntrySkip
             )
-        }.thenReturn(ResultModel.success(Unit))
+        }.thenReturn(ResultModel.success(randomUUID()))
     }
 
     private fun verifySaveRecordUseCaseCalledOnceForResult(result: ViewTaskActionsScreenResult.OnActionClick.Skip) {
@@ -816,7 +816,7 @@ class ViewScheduleViewModelTest {
                 date = result.date,
                 requestType = SaveRecordUseCase.RequestType.EntryFail
             )
-        }.thenReturn(ResultModel.success(Unit))
+        }.thenReturn(ResultModel.success(randomUUID()))
     }
 
     private fun verifySaveRecordUseCaseCalledOnceForResult(result: ViewTaskActionsScreenResult.OnActionClick.Fail) {
@@ -925,7 +925,7 @@ class ViewScheduleViewModelTest {
                 date = result.date,
                 requestType = SaveRecordUseCase.RequestType.EntryTime(result.time)
             )
-        }.thenReturn(ResultModel.success(Unit))
+        }.thenReturn(ResultModel.success(randomUUID()))
     }
 
     private fun sendEnterTimeRecordEventWithConfirmResult(result: EnterTaskTimeRecordScreenResult.Confirm) {
@@ -973,7 +973,7 @@ class ViewScheduleViewModelTest {
                 date = result.date,
                 requestType = SaveRecordUseCase.RequestType.EntryNumber(result.number)
             )
-        }.thenReturn(ResultModel.success(Unit))
+        }.thenReturn(ResultModel.success(randomUUID()))
     }
 
     private fun sendEnterTaskNumberRecordConfirmEvent(result: EnterTaskNumberRecordScreenResult.Confirm) {

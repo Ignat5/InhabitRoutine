@@ -104,7 +104,7 @@ class ViewRemindersViewModelTest {
                 type = confirmResult.reminderType,
                 schedule = confirmResult.reminderSchedule
             )
-        ).thenReturn(ResultModel.success(Unit))
+        ).thenReturn(ResultModel.success(randomUUID()))
         viewModel.onEvent(
             ViewRemindersScreenEvent.ResultEvent.CreateReminder(confirmResult)
         )
