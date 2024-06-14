@@ -17,5 +17,5 @@ interface SaveRecordUseCase {
         taskId: String,
         date: LocalDate,
         requestType: RequestType
-    ): ResultModel<Unit, Throwable>
+    ): ResultModel<String, Throwable>
 }

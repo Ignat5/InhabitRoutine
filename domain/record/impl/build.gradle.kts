@@ -15,4 +15,12 @@ dependencies {
     implementation(project(":core:util"))
     implementation(libs.kotlin.coroutines.core)
     implementation(libs.kotlin.datetime)
+
+    testImplementation(project(":data:record:test"))
+    testImplementation(project(":core:test"))
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlin.mockito)
+    testImplementation(libs.kotlin.coroutines.test)
+    testImplementation(libs.turbine)
+    testImplementation(libs.truth)
 }
